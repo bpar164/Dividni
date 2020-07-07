@@ -1,0 +1,22 @@
+body {
+   font-family: 'Open sans', sans-serif;
+   font-size: x-large;
+}
+
+h1 {
+   font-weight: 300;
+   font-size: 48px;
+   margin: 5px 5px 5px 5px;
+   line-height: 140%;
+   font-family: 'Open sans', sans-serif;
+   text-align: center;
+}
+
+h2 {
+   font-weight: 300;
+   font-size: 32px;
+   margin: 5px 5px 5px 5px;
+   line-height: 140%;
+   font-family: 'Open sans', sans-serif;
+   text-align: center;
+}

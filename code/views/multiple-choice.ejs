@@ -1,0 +1,86 @@
+<%- include('partials/header') -%>
+
+  <!-- form -->
+  <section class="section container blue lighten-5" id="main">
+    <div class="row">
+        <h5 class="teal-text">Question Details</h5>
+        <p>Fill-out the details of the question below, and click on <b>PREVIEW</b> to see what the question will look like.</p>
+        <p>Review the <a href="tutorials-mc" target="_blank">tutorial <i class="tiny material-icons">open_in_new</i></a> for help.</p>
+    </div>
+    <form action="multiple-choice-preview" method="POST">
+      <div class="row">
+        <div class="col s12 m8 l5">
+          <div class="input-field">
+            <label for="name">Question name</label>
+            <input type="text" id="name" name="name" required pattern="^[a-zA-Z0-9][a-zA-Z0-9 ]*">
+          </div> 
+          <div class="input-field">
+            <p>Question type:</p>
+            <p><label>
+                <input class="with-gap" type="radio" name="type" value="Truth" required onClick="createAnswers('Truth');">
+                <span>Truth</span>
+            </label></p>
+            <p><label>
+                <input class="with-gap" type="radio" name="type" value="Xyz" required onClick="createAnswers('Xyz');">
+                <span>XYZ</span>
+            </label></p>
+          </div>
+          <div class="input-field">
+              <label for="marks">Marks</label>
+              <input type="number" min="0" max="10" step="0.5" id="marks" name="marks" required>
+          </div>
+          <div class="input-field">
+            <label for="questionText">Question text</label>
+            <textarea id="questionText" name="questionText" class="materialize-textarea" required></textarea>
+          </div>   
+        </div>    
+      </div>
+      <div class="row">
+        <div class="col s12 m8 l5">
+          <div id="correctAnswers">
+            <h6>Correct Answers</h6>
+            <div id="correct"></div>
+            <a class="btn-floating btn-small waves-effect waves-light red disabled" id="addCorrect" onClick="addAnswer('correct', false);">
+              <i class="material-icons">add</i>
+            </a>
+          </div>
+        </div>
+        <div class="col s12 m8 l5 offset-l2">
+          <div id="incorrectAnswers">
+            <h6>Incorrect Answers</h6>
+            <div id="incorrect"></div>
+            <a class="btn-floating btn-small waves-effect waves-light red disabled" id="addIncorrect" onClick="addAnswer('incorrect', false);">
+              <i class="material-icons">add</i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <a class="waves-effect waves-light btn right disabled modal-trigger" id="preview" href="#previewModal" onClick="previewAnswer();">
+          Preview<i class="material-icons right">assignment_turned_in</i>
+        </a>
+      </div>
+      <div class="row">
+        <button class="btn waves-effect waves-light right disabled" id="generate" type="submit">
+          Generate<i class="material-icons right">send</i>
+        </button> 
+      </div>
+    </form>
+  </section>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="modal">
+    <div class="modal-content">
+      <h4>Question Preview</h4>
+      <p>Review these details before clicking <b>GENERATE</b>:</p>
+      <div id="previewModalContent"></div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">OK</a>
+    </div>
+  </div>
+
+<%- include('partials/footer') -%>
+<script src="mc-script.js"></script>
+</body>
+</html>

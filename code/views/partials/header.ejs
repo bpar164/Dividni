@@ -1,0 +1,86 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <title>Dividni</title>
+</head>
+<body>
+
+  <!-- navbar -->
+  <header>
+    <nav class="nav-wrapper blue darken-4">
+      <div class="container">
+        <a href="/" class="brand-logo logo">
+          <img src="logo.png">
+          <span>Dividni</span>
+        </a>
+        <a href="" class="sidenav-trigger" data-target="mobile-menu">
+          <i class="material-icons">menu</i>
+        </a>
+        <ul class="right">
+          <li><a href="profile" class="dropdown-trigger tooltipped btn-floating btn-med teal" data-tooltip="Profile" data-target="dropdownProfile">
+            <i class="material-icons" >account_box</i>
+          </a></li>
+        </ul>
+        <ul class="right hide-on-med-and-down">
+          <li><a href="#" class="dropdown-trigger" data-target="dropdownMC">Multiple-Choice</a></li>
+          <li><a href="#" class="dropdown-trigger" data-target="dropdownAdvanced">Advanced</a></li>
+          <li><a href="#" class="dropdown-trigger" data-target="dropdownExams">Exams</a></li>
+          <li><a href="#" class="dropdown-trigger" data-target="dropdownTut">Tutorials</a></li>
+        </ul>
+        <ul class="sidenav" id="mobile-menu">
+          <li><a href="/" class="blue darken-4 white-text left-align"><b>Dividni</b></a></li>
+          <li><a href="#" class="grey lighten-2 black-text left-align not-active">Multiple-Choice</a></li>
+          <li><a href="multiple-choice">Create</a></li>
+          <li><a href="multiple-choice-my">View Created</a></li>
+          <li><a href="#" class="grey lighten-2 black-text left-align not-active">Advanced</a></li>
+          <li><a href="advanced">Create</a></li>
+          <li><a href="advanced-my">View Created</a></li>
+          <li><a href="#" class="grey lighten-2 black-text left-align not-active">Exams</a></li>
+          <li><a href="exams">Create</a></li>
+          <li><a href="exams-my">View Created</a></li>
+          <li><a href="#" class="grey lighten-2 black-text left-align not-active">Tutorials</a></li>
+          <li><a href="tutorials-mc">Multiple-Choice</a></li>
+          <li><a href="tutorials-adv">Advanced</a></li> 
+          <li><a href="tutorials-exams">Exams</a></li> 
+        </ul>
+      </div>
+    </nav>  
+  </header>
+
+  <!-- dropdown lists for navbar -->
+  <ul id="dropdownMC" class="dropdown-content">
+    <li><a href="multiple-choice">Create</a></li>
+    <li><a href="multiple-choice-my">View Created</a></li>
+  </ul>
+  <ul id="dropdownAdvanced" class="dropdown-content">
+    <li><a href="advanced">Create</a></li>
+    <li><a href="advanced-my">View Created</a></li>
+  </ul>
+  <ul id="dropdownExams" class="dropdown-content">
+    <li><a href="exams">Create</a></li>
+    <li><a href="exams-my">View Created</a></li>
+  </ul>
+  <ul id="dropdownTut" class="dropdown-content">
+    <li><a href="tutorials-mc">Multiple-Choice</a></li>
+    <li><a href="tutorials-adv">Advanced</a></li>
+    <li><a href="tutorials-exams">Exams</a></li>
+  </ul>
+  <ul id="dropdownProfile" class="dropdown-content">
+    <li><a href="">Login</a></li>
+    <li><a href="">Logout</a></li>
+  </ul>
+
+    <!-- intro -->
+  <section class="section container center-align grey" id="intro">
+    <div class="row">
+      <h4 class="white-text"><%= title %></h4>
+      <p class="white-text"><%= description %></p>
+    </div>
+  </section>
