@@ -10,7 +10,12 @@
     </div>
     <div class="col s12 m7">
 
-      <p><%= questions %></p>
+      <% if (questions.length === 0) { %>
+        <p>No questions created yet - try creating one.</p>
+      <% } else { %>
+        <%= questions %>
+      <% } %>
+
       <!-- <div class="card">
         <div class="card-image waves-effect waves-block waves-light">
           <img src="advanced.jpg" onClick="">

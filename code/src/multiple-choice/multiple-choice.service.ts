@@ -52,7 +52,7 @@ export class MultipleChoiceService {
         });
     } 
 
-    async fetchUserQuestions(userID: string) {
+    async fetchUserQuestions(userID: string) {  
         return this.MCModel.find({ userID: userID }).exec();
     }
 }

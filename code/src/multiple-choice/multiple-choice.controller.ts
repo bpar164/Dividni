@@ -29,11 +29,11 @@ export class MultipleChoiceController {
 
     @Get('multiple-choice-my')
     @Render('multiple-choice-my')
-    getMultipleChoiceMyView() { 
+    async getMultipleChoiceMyView() { 
         return { 
             title: 'Multiple-Choice', 
             description: 'Browse the multiple-choice questions that you have created',
-            questions: this.multipleChoiceService.fetchUserQuestions('user1')
+            questions: await this.multipleChoiceService.fetchUserQuestions('user2')
           };
     }
 }
