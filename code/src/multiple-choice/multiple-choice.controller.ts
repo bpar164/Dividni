@@ -32,7 +32,8 @@ export class MultipleChoiceController {
     getMultipleChoiceMyView() { 
         return { 
             title: 'Multiple-Choice', 
-            description: 'Browse the multiple-choice questions that you have created' 
+            description: 'Browse the multiple-choice questions that you have created',
+            questions: this.multipleChoiceService.fetchUserQuestions('user1')
           };
     }
 }

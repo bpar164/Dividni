@@ -10,7 +10,7 @@ export class MultipleChoice extends Document {
     xml: string;
 
     @Prop()
-    user: string;
+    userID: string;
 }
 
 export const MCSchema = SchemaFactory.createForClass(MultipleChoice);

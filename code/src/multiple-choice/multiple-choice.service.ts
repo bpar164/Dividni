@@ -37,19 +37,22 @@ export class MultipleChoiceService {
     async createQuestion(question: QuestionFormDTO, xml: string): Promise<any> {
         let error;
         try {
-            let user: string = 'user1';
+            let userID: string = 'user1';
             //Save xml and question to database
             let multipleChoiceDTO = new MultipleChoiceDTO();
-            multipleChoiceDTO = {question, xml, user };
+            multipleChoiceDTO = {question, xml, userID };
             let newQuestion = new this.MCModel(multipleChoiceDTO);
             newQuestion.save();
         } catch (err) {
             error = err.name;
         }
-        
         //Return the result
         return new Promise(resolve => {
             resolve(error);
         });
     } 
+
+    async fetchUserQuestions(userID: string) {
+        return this.MCModel.find({ userID: userID }).exec();
+    }
 }
