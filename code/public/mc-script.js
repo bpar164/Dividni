@@ -41,7 +41,6 @@ createAnswers = (type) => {
     createCorrectAnswers(minCorrectXYZ, correctAnswers, true);
     createIncorrectAnswers(minIncorrectXYZ, incorrectAnswers, true);
   }
-  console.log(correctAnswers)
   if (correctAnswers.length >= 1) { //Create slots for any remaining correct answers
     createCorrectAnswers(correctAnswers.length, correctAnswers, false);
   }
@@ -89,31 +88,33 @@ addAnswer = (divName, isRequired, value) => {
     newdiv.innerHTML = "<input type='text' id='incorrectAnswers[" + incorrectCount + "]'" + "name='incorrectAnswers[" + (incorrectCount) + "]'" + (isRequired ? 'required' : '') + (value ? ' value=' + value : '') + ">";
     document.getElementById(divName).appendChild(newdiv);
   }
-
-  previewAnswer = () => {
-    //Enable the generate button
-    document.getElementById('generate').classList.remove("disabled");
-    //Clear the content
-    content = '';
-    //Fetch the values from the form
-    content += '<b>Name: </b>' + document.getElementById('name').value + '</br>';
-    content += '</br><b>Type: </b>' + currentType + '</br>';
-    content += '</br><b>Marks: </b>' + document.getElementById('marks').value + '</br>';
-    content += '</br><b>Question Text:</b></br>' + document.getElementById('questionText').value + '</br>';
-    content += '</br><b>Correct Answers:</b><ol>';
-    for (i = 1; i <= correctCount; i++) {
-      content += '<li>' + document.getElementById('correctAnswers[' + i + ']').value + '</li>';
-    }
-    content += '</ol>';
-    content += '<b>Incorrect Answers:</b><ol>';
-    for (i = 1; i <= incorrectCount; i++) {
-      content += '<li>' + document.getElementById('incorrectAnswers[' + i + ']').value + '</li>';
-    }
-    content += '</ol>';
-    //Add the values to the display content
-    document.getElementById('previewModalContent').innerHTML = content;
-  }
 }
+
+previewAnswer = () => {
+  //Enable the generate button
+  document.getElementById('generate').classList.remove("disabled");
+  //Clear the content
+  content = '';
+  //Fetch the values from the form
+  content += '<b>Name: </b>' + document.getElementById('name').value + '</br>';
+  content += '</br><b>Type: </b>' + currentType + '</br>';
+  content += '</br><b>Marks: </b>' + document.getElementById('marks').value + '</br>';
+  content += '</br><b>Question Text:</b></br>' + document.getElementById('questionText').value + '</br>';
+  content += '</br><b>Correct Answers:</b><ol>';
+  for (i = 1; i <= correctCount; i++) {
+    content += '<li>' + document.getElementById('correctAnswers[' + i + ']').value + '</li>';
+  }
+  content += '</ol>';
+  content += '<b>Incorrect Answers:</b><ol>';
+  for (i = 1; i <= incorrectCount; i++) {
+    content += '<li>' + document.getElementById('incorrectAnswers[' + i + ']').value + '</li>';
+  }
+  content += '</ol>';
+  //Add the values to the display content
+  document.getElementById('previewModalContent').innerHTML = content;
+}
+
+  
 
 
 

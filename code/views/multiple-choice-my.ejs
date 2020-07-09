@@ -12,34 +12,53 @@
       <% if (questions.length === 0) { %>
         <p>No questions created yet - try creating one.</p>
       <% } else { %>
-        <div class="col s12 m10 l10">
+
+        <!-- <div class="col s12 m10 l10">
           <ul class="collection with-header">
             <% questions.forEach(q => { %>
-              <li class="collection-item ">
+              <li class="collection-item">
                 <div><%= q.question.name %>
-                  <a href="#!" class="secondary-content"><i class="material-icons">more_vert</i></a>
+
+                  <a href="#!" class="secondary-content" onClick="showQuestionOptions();"><i class="material-icons">more_vert</i></a>
+
                 </div>
               </li>
+              <div>
+                <%= q.question.questionText %>
+              </div>
             <% }) %>
           </ul>
+        </div> -->
+        <div class="card">
+          <div class="card-image waves-effect waves-block waves-light">
+            <img class="activator" src="">
+          </div>
+          <div class="card-content">
+            <span class="card-title activator grey-text text-darken-4">Card Title<i class="material-icons right">more_vert</i></span>
+            <p><a href="#">This is a link</a></p>
+          </div>
+          <div class="card-reveal">
+            <span class="card-title grey-text text-darken-4">Card Title<i class="material-icons right">close</i></span>
+            <p>Here is some more information about this product that is only revealed once clicked on.</p>
+          </div>
         </div>
+
       <% } %>
   </section>
 
-  <!-- <div class="card">
-              <div class="card-image waves-effect waves-block waves-light">
-                <img src="inspect.png" onClick="">
-              </div>
-              <div class="card-content">
-                <span class="card-title activator grey-text text-darken-4"><%= q.question.name %><i class="material-icons right">more_vert</i></span>
-              </div>
-              <div class="card-reveal">
-                <span class="card-title grey-text text-darken-4">Options<i class="material-icons right">close</i></span>
-                <p>Here is some more information about this product that is only revealed once clicked on.</p>
-              </div>
-            </div> -->
-
+  <!-- Preview Modal -->
+  <div id="previewModal" class="modal">
+    <div class="modal-content">
+      <h4>Question Preview</h4>
+      <p>Review these details before clicking <b>GENERATE</b>:</p>
+      <div id="previewModalContent"></div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">OK</a>
+    </div>
+  </div>
 
 <%- include('partials/footer') -%>
+<script src="mc-script.js"></script>
 </body>
 </html>
