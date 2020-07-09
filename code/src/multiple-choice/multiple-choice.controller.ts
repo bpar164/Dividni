@@ -33,7 +33,7 @@ export class MultipleChoiceController {
         return { 
             title: 'Multiple-Choice', 
             description: 'Browse the multiple-choice questions that you have created',
-            questions: await this.multipleChoiceService.fetchUserQuestions('user2')
+            questions: await this.multipleChoiceService.fetchUserQuestions('user1')
           };
     }
 }
