@@ -24,10 +24,14 @@
               <div class="card-reveal">
                 <span class="card-title grey-text text-darken-4">Options<i class="material-icons right">close</i></span>
                 <div>
-                  <%= q.question.name %>
-                  <%= q.question.marks %>
+                  <ul class="collection with-header">
+                    <li class="collection-item"><div>Preview<a href="#previewModal" class="secondary-content modal-trigger" onClick="previewMyQuestion('<%= q.question %>');"><i class="material-icons">assignment_turned_in</i></a></div></li>
+                    <li class="collection-item"><div>Edit<a href="#!" class="secondary-content"><i class="material-icons">edit</i></a></div></li>
+                    <li class="collection-item"><div>Delete<a href="#!" class="secondary-content"><i class="material-icons">delete</i></a></div></li>
+                    <li class="collection-item"><div>Template<a href="#!" class="secondary-content"><i class="material-icons">content_copy</i></a></div></li>
+                    <li class="collection-item"><div>Share<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>
+                  </ul>
                 </div>
-                <p>Here is some more information about this product that is only revealed once clicked on.</p>
               </div>
             </div>
           </div> 
@@ -35,6 +39,17 @@
       <% } %>
     </div>
   </section>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="modal">
+    <div class="modal-content">
+      <h4>Question Preview</h4>
+      <div id="previewModalContent"></div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">OK</a>
+    </div>
+  </div>
 
 <%- include('partials/footer') -%>
 <script src="mc-script.js"></script>

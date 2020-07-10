@@ -93,27 +93,55 @@ addAnswer = (divName, isRequired, value) => {
 previewAnswer = () => {
   //Enable the generate button
   document.getElementById('generate').classList.remove("disabled");
-  //Clear the content
-  content = '';
-  //Fetch the values from the form
-  content += '<b>Name: </b>' + document.getElementById('name').value + '</br>';
-  content += '</br><b>Type: </b>' + currentType + '</br>';
-  content += '</br><b>Marks: </b>' + document.getElementById('marks').value + '</br>';
-  content += '</br><b>Question Text:</b></br>' + document.getElementById('questionText').value + '</br>';
-  content += '</br><b>Correct Answers:</b><ol>';
+  //Create the question object by fetching values from the form
+  question = {};
+  question.name = document.getElementById('name').value;
+  question.type = currentType;
+  question.marks = document.getElementById('marks').value;
+  question.questionText = document.getElementById('questionText').value;
+  question.correctAnswers = [];
   for (i = 1; i <= correctCount; i++) {
-    content += '<li>' + document.getElementById('correctAnswers[' + i + ']').value + '</li>';
+    question.correctAnswers.push(document.getElementById('incorrectAnswers[' + i + ']').value);
   }
-  content += '</ol>';
-  content += '<b>Incorrect Answers:</b><ol>';
+  question.incorrectAnswers = [];
   for (i = 1; i <= incorrectCount; i++) {
-    content += '<li>' + document.getElementById('incorrectAnswers[' + i + ']').value + '</li>';
+    question.incorrectAnswers.push(document.getElementById('incorrectAnswers[' + i + ']').value);
   }
-  content += '</ol>';
+  //Call a function to generate the content
+  content = generatePreviewContent(question);
   //Add the values to the display content
   document.getElementById('previewModalContent').innerHTML = content;
 }
 
+generatePreviewContent = (question) => {
+  //Clear the content
+  content = '';
+  //Build the content using the values with formatting 
+  content += '<b>Name: </b>' + question.name + '</br>';
+  content += '</br><b>Type: </b>' + question.type + '</br>';
+  content += '</br><b>Marks: </b>' + question.marks + '</br>';
+  content += '</br><b>Question Text:</b></br>' + question.questionText + '</br>';
+  content += '</br><b>Correct Answers:</b><ol>';
+  question.correctAnswers.forEach(ans => {
+    content += '<li>' + ans + '</li>';
+  });
+  content += '</ol>';
+  content += '<b>Incorrect Answers:</b><ol>';
+  question.incorrectAnswers.forEach(ans => {
+    content += '<li>' + ans + '</li>';
+  });
+  content += '</ol>'; 
+  return content;
+}
+
+//For the my questions section
+previewMyQuestion = (question) => {
+  console.log(question)
+  //Call a function to generate the content
+  content = generatePreviewContent(question);
+  //Add the values to the display content
+  document.getElementById('previewModalContent').innerHTML = content;
+}
   
 
 
