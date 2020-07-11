@@ -135,8 +135,15 @@ generatePreviewContent = (question) => {
 }
 
 //For the my questions section
-previewMyQuestion = (question) => {
-  console.log(question)
+previewMyQuestion = (name, type, marks, questionText, correctAnswers, incorrectAnswers) => {
+  //Create the question object 
+  question = {};
+  question.name = name;
+  question.type = type;
+  question.marks = marks;
+  question.questionText = questionText;
+  question.correctAnswers = correctAnswers.split(',');
+  question.incorrectAnswers = incorrectAnswers.split(',');
   //Call a function to generate the content
   content = generatePreviewContent(question);
   //Add the values to the display content

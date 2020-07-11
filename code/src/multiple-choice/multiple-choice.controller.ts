@@ -36,4 +36,16 @@ export class MultipleChoiceController {
             questions: await this.multipleChoiceService.fetchUserQuestions('user1')
           };
     }
+
+    @Delete('multiple-choice-preview')
+    @Redirect('/multiple-choice-my', 301)
+    async previewQuestion(@Req() request: Request) { 
+        let question = new QuestionFormDTO();
+        question = request.body;
+        question.correctAnswers = this.multipleChoiceService.removeEmptyElements(question.correctAnswers);
+        question.incorrectAnswers = this.multipleChoiceService.removeEmptyElements(question.incorrectAnswers);  
+        //TODO perform validation
+        let xml = this.multipleChoiceService.convertToXML(question);
+        await this.multipleChoiceService.createQuestion(question, xml);
+    }
 }
