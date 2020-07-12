@@ -150,8 +150,24 @@ previewMyQuestion = (name, type, marks, questionText, correctAnswers, incorrectA
   document.getElementById('previewModalContent').innerHTML = content;
 }
 
+confirmDialog = (action, name, id) => {
+  let content = '<p>';
+  //Build the display string and set the correct onClick function for the yes button
+  if (action === 'DELETE') {
+    content += 'Delete question:</br><b>' + name + '</b>';
+    document.getElementById('confirmModalYes').setAttribute('onClick', `deleteQuestion('` + id + `');`);
+  }
+  content += '</p>'
+  //Set the contents of the modal
+  document.getElementById('confirmModalContent').innerHTML = content;
+}
+
 deleteQuestion = (id) => {
-  console.log(id);
+  document.getElementById(id).remove();
+  $.ajax({
+    url : 'multiple-choice-my/' + id,
+    method : 'delete'
+  })
 }
   
 

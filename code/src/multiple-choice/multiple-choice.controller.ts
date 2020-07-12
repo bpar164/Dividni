@@ -38,9 +38,7 @@ export class MultipleChoiceController {
     }
 
     @Delete('multiple-choice-my/:id')
-    @Redirect('/multiple-choice-my', 301)
     async deleteQuestion(@Param('id') id) {
-        console.log(id);
-        //await this.multipleChoiceService.deleteQuestion(id);
+        await this.multipleChoiceService.deleteQuestion(id);
     }
 }
