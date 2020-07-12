@@ -1,4 +1,4 @@
-import { Controller, Get, Render, Post, Req, Redirect } from '@nestjs/common';
+import { Controller, Get, Render, Post, Req, Redirect, Delete, Param } from '@nestjs/common';
 import { MultipleChoiceService } from './multiple-choice.service';
 import { QuestionFormDTO } from './question-form.dto';
 import { Request } from 'express';
@@ -17,14 +17,14 @@ export class MultipleChoiceController {
 
     @Post('multiple-choice-preview')
     @Redirect('/multiple-choice-my', 301)
-    async previewQuestion(@Req() request: Request) { 
+    async generateQuestion(@Req() request: Request) { 
         let question = new QuestionFormDTO();
         question = request.body;
         question.correctAnswers = this.multipleChoiceService.removeEmptyElements(question.correctAnswers);
         question.incorrectAnswers = this.multipleChoiceService.removeEmptyElements(question.incorrectAnswers);  
         //TODO perform validation
         let xml = this.multipleChoiceService.convertToXML(question);
-        await this.multipleChoiceService.createQuestion(question, xml);
+        await this.multipleChoiceService.generateQuestion(question, xml);
     }
 
     @Get('multiple-choice-my')
@@ -37,15 +37,10 @@ export class MultipleChoiceController {
           };
     }
 
-    @Delete('multiple-choice-preview')
+    @Delete('multiple-choice-my/:id')
     @Redirect('/multiple-choice-my', 301)
-    async previewQuestion(@Req() request: Request) { 
-        let question = new QuestionFormDTO();
-        question = request.body;
-        question.correctAnswers = this.multipleChoiceService.removeEmptyElements(question.correctAnswers);
-        question.incorrectAnswers = this.multipleChoiceService.removeEmptyElements(question.incorrectAnswers);  
-        //TODO perform validation
-        let xml = this.multipleChoiceService.convertToXML(question);
-        await this.multipleChoiceService.createQuestion(question, xml);
+    async deleteQuestion(@Param('id') id) {
+        console.log(id);
+        //await this.multipleChoiceService.deleteQuestion(id);
     }
 }

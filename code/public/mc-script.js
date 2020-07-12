@@ -149,6 +149,10 @@ previewMyQuestion = (name, type, marks, questionText, correctAnswers, incorrectA
   //Add the values to the display content
   document.getElementById('previewModalContent').innerHTML = content;
 }
+
+deleteQuestion = (id) => {
+  console.log(id);
+}
   
 
 

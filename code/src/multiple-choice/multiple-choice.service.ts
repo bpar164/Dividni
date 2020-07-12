@@ -34,7 +34,7 @@ export class MultipleChoiceService {
     }
     
     //Use the XML file to create the Dividni question (C#)
-    async createQuestion(question: QuestionFormDTO, xml: string): Promise<any> {
+    async generateQuestion(question: QuestionFormDTO, xml: string): Promise<any> {
         let error;
         try {
             let userID: string = 'user1';
