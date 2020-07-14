@@ -7,6 +7,13 @@
  const minIncorrectXYZ = 3;
  const limit = 25;
 
+ tinymce.init({
+  selector: 'textarea',
+  menubar: '',
+  toolbar: 'undo redo | styleselect | bold italic underline strikethrough superscript subscript removeformat | bullist numlist table | ',
+  plugins: [ 'lists table' ],
+});
+
  /*Creates the answer slots, based on the question types
  Transfers existing answers when switching between types*/
 createAnswers = (type) => {
@@ -98,7 +105,7 @@ previewAnswer = () => {
   question.name = document.getElementById('name').value;
   question.type = currentType;
   question.marks = document.getElementById('marks').value;
-  question.questionText = document.getElementById('questionText').value;
+  question.questionText = tinyMCE.get('questionText').getContent()
   question.correctAnswers = [];
   for (i = 1; i <= correctCount; i++) {
     question.correctAnswers.push(document.getElementById('incorrectAnswers[' + i + ']').value);
