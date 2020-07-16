@@ -37,6 +37,11 @@ export class MultipleChoiceController {
           };
     }
 
+    @Get('multiple-choice-my/:id')
+    async getQuestion(@Param('id') id) {
+        return await this.multipleChoiceService.getQuestion(id);
+    }
+
     @Delete('multiple-choice-my/:id')
     async deleteQuestion(@Param('id') id) {
         await this.multipleChoiceService.deleteQuestion(id);

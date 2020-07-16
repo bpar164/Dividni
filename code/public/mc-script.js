@@ -105,10 +105,10 @@ previewAnswer = () => {
   question.name = document.getElementById('name').value;
   question.type = currentType;
   question.marks = document.getElementById('marks').value;
-  question.questionText = tinyMCE.get('questionText').getContent()
+  question.questionText = tinyMCE.get('questionText').getContent();
   question.correctAnswers = [];
   for (i = 1; i <= correctCount; i++) {
-    question.correctAnswers.push(document.getElementById('incorrectAnswers[' + i + ']').value);
+    question.correctAnswers.push(document.getElementById('correctAnswers[' + i + ']').value);
   }
   question.incorrectAnswers = [];
   for (i = 1; i <= incorrectCount; i++) {
@@ -141,22 +141,6 @@ generatePreviewContent = (question) => {
   return content;
 }
 
-//For the my questions section
-previewMyQuestion = (name, type, marks, questionText, correctAnswers, incorrectAnswers) => {
-  //Create the question object 
-  question = {};
-  question.name = name;
-  question.type = type;
-  question.marks = marks;
-  question.questionText = questionText;
-  question.correctAnswers = correctAnswers.split(',');
-  question.incorrectAnswers = incorrectAnswers.split(',');
-  //Call a function to generate the content
-  content = generatePreviewContent(question);
-  //Add the values to the display content
-  document.getElementById('previewModalContent').innerHTML = content;
-}
-
 confirmDialog = (action, name, id) => {
   let content = '<p>';
   //Build the display string and set the correct onClick function for the yes button
@@ -169,6 +153,25 @@ confirmDialog = (action, name, id) => {
   document.getElementById('confirmModalContent').innerHTML = content;
 }
 
+previewQuestion = (id) => {
+  document.getElementById('previewModalContent').innerHTML = '<p>Fetching data...</p>';
+  $.ajax({
+    url: 'multiple-choice-my/' + id,
+    method: 'GET',
+    dataType: 'json',
+    success: (res) => {
+      //Call a function to generate the content
+      content = generatePreviewContent(res.question);
+      //Add the content to the display
+      document.getElementById('previewModalContent').innerHTML = content;
+    },
+    error: () => {
+      document.getElementById('previewModalContent').innerHTML = '<p>Error fetching data.</p>';
+    }
+  });
+  
+}
+
 deleteQuestion = (id) => {
   document.getElementById(id).remove();
   $.ajax({
@@ -176,6 +179,7 @@ deleteQuestion = (id) => {
     method : 'delete'
   })
 }
+
   
 
 
