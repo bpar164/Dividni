@@ -56,6 +56,10 @@ export class MultipleChoiceService {
         return this.MCModel.find({ userID: userID }).exec();
     }
 
+    async getQuestion(id: string) {  
+        return this.MCModel.findOne({ _id: id }).exec();
+    }
+
     async deleteQuestion(id: string) {  
         return this.MCModel.findByIdAndDelete({ _id: id }).exec();
     }
