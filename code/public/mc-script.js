@@ -169,7 +169,6 @@ previewQuestion = (id) => {
       document.getElementById('previewModalContent').innerHTML = '<p>Error fetching data.</p>';
     }
   });
-  
 }
 
 deleteQuestion = (id) => {
