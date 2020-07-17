@@ -10,10 +10,16 @@
  let currentQuestionName;
 
  tinymce.init({
-  selector: 'textarea',
+  selector: '.textarea-description',
   menubar: '',
   toolbar: 'undo redo | styleselect | bold italic underline strikethrough superscript subscript removeformat | bullist numlist table | ',
   plugins: [ 'lists table' ],
+});
+
+//NEED TO RUN THIS WHEN TEXTAREAS ARE CREATED
+tinymce.init({
+  selector: '.textarea-small',
+  inline: true
 });
 
  /*Creates the answer slots, based on the question types
@@ -87,14 +93,14 @@ addAnswer = (divName, isRequired, value) => {
     correctCount++;
     var newdiv = document.createElement('div');
     newdiv.classList.add("input-field");
-    newdiv.innerHTML = "<input type='text' id='correctAnswers[" + correctCount + "]'" + "name='correctAnswers[" + (correctCount) + "]'" + (isRequired ? 'required' : '') + (value ? ' value=' + value : '') + ">";
+    newdiv.innerHTML = "<textarea class='textarea-small materialize-textarea' id='correctAnswers[" + correctCount + "]'" + "name='correctAnswers[" + (correctCount) + "]'" + (isRequired ? 'required' : '') + (value ? ' value=' + value : '') + ">";
     document.getElementById(divName).appendChild(newdiv);
   }
   else if ((incorrectCount <= limit) && (divName === 'incorrect')) {
     incorrectCount++;
     var newdiv = document.createElement('div');
     newdiv.classList.add("input-field");
-    newdiv.innerHTML = "<input type='text' id='incorrectAnswers[" + incorrectCount + "]'" + "name='incorrectAnswers[" + (incorrectCount) + "]'" + (isRequired ? 'required' : '') + (value ? ' value=' + value : '') + ">";
+    newdiv.innerHTML = "<textarea class='textarea-small materialize-textarea' id='incorrectAnswers[" + incorrectCount + "]'" + "name='incorrectAnswers[" + (incorrectCount) + "]'" + (isRequired ? 'required' : '') + (value ? ' value=' + value : '') + ">";
     document.getElementById(divName).appendChild(newdiv);
   }
 }
