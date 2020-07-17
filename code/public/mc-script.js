@@ -6,6 +6,8 @@
  const minCorrectXYZ = 3;
  const minIncorrectXYZ = 3;
  const limit = 25;
+ let currentQuestionID;
+ let currentQuestionName;
 
  tinymce.init({
   selector: 'textarea',
@@ -141,22 +143,27 @@ generatePreviewContent = (question) => {
   return content;
 }
 
-confirmDialog = (action, name, id) => {
+setCurrentQuestion = (id, name) => {
+  currentQuestionID = id;
+  currentQuestionName = name;
+}
+
+confirmDialog = (action) => {
   let content = '<p>';
   //Build the display string and set the correct onClick function for the yes button
   if (action === 'DELETE') {
-    content += 'Delete question:</br><b>' + name + '</b>';
-    document.getElementById('confirmModalYes').setAttribute('onClick', `deleteQuestion('` + id + `');`);
+    content += 'Delete question:</br><b>' + currentQuestionName + '</b>';
+    document.getElementById('confirmModalYes').setAttribute('onClick', `deleteQuestion('` + currentQuestionID + `');`);
   }
   content += '</p>'
   //Set the contents of the modal
   document.getElementById('confirmModalContent').innerHTML = content;
 }
 
-previewQuestion = (id) => {
+previewQuestion = () => {
   document.getElementById('previewModalContent').innerHTML = '<p>Fetching data...</p>';
   $.ajax({
-    url: 'multiple-choice-my/' + id,
+    url: 'multiple-choice-my/' + currentQuestionID,
     method: 'GET',
     dataType: 'json',
     success: (res) => {

@@ -53,7 +53,7 @@ export class MultipleChoiceService {
     } 
 
     async fetchUserQuestions(userID: string) {  
-        return this.MCModel.find({ userID: userID }).exec();
+        return this.MCModel.find({ userID: userID }).sort({$natural:-1}).exec();
     }
 
     async getQuestion(id: string) {  
