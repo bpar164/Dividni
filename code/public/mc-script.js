@@ -9,18 +9,25 @@
  let currentQuestionID;
  let currentQuestionName;
 
- tinymce.init({
-  selector: '.textarea-description',
-  menubar: '',
-  toolbar: 'undo redo | styleselect | bold italic underline strikethrough superscript subscript removeformat | bullist numlist table | ',
-  plugins: [ 'lists table' ],
+ $(document).ready(function(){
+  document.getElementsByTagName('textarea').readOnly = true;
+  tinymce.init({
+    selector: '.textarea-description', 
+    inline: true,
+    menubar: '',
+    toolbar: 'undo redo | styleselect | bold italic underline strikethrough superscript subscript removeformat | bullist numlist table | ',
+    plugins: [ 'lists table' ]
+  });
 });
 
-//NEED TO RUN THIS WHEN TEXTAREAS ARE CREATED
-tinymce.init({
-  selector: '.textarea-small',
-  inline: true
-});
+loadAnswerEditor = () => {
+  tinymce.init({
+    selector: '.textarea-small',
+    inline: true,
+    menubar: '',
+    toolbar: 'undo redo | styleselect | bold italic underline strikethrough superscript subscript removeformat | '
+  });
+}
 
  /*Creates the answer slots, based on the question types
  Transfers existing answers when switching between types*/
@@ -93,16 +100,19 @@ addAnswer = (divName, isRequired, value) => {
     correctCount++;
     var newdiv = document.createElement('div');
     newdiv.classList.add("input-field");
-    newdiv.innerHTML = "<textarea class='textarea-small materialize-textarea' id='correctAnswers[" + correctCount + "]'" + "name='correctAnswers[" + (correctCount) + "]'" + (isRequired ? 'required' : '') + (value ? ' value=' + value : '') + ">";
+    newdiv.classList.add("textarea-small");
+    newdiv.innerHTML = "<textarea id='correctAnswers[" + correctCount + "]'" + "name='correctAnswers[" + (correctCount) + "]'" + (isRequired ? 'required' : '') + (value ? ' value=' + value : '') + ">";
     document.getElementById(divName).appendChild(newdiv);
   }
   else if ((incorrectCount <= limit) && (divName === 'incorrect')) {
     incorrectCount++;
     var newdiv = document.createElement('div');
     newdiv.classList.add("input-field");
-    newdiv.innerHTML = "<textarea class='textarea-small materialize-textarea' id='incorrectAnswers[" + incorrectCount + "]'" + "name='incorrectAnswers[" + (incorrectCount) + "]'" + (isRequired ? 'required' : '') + (value ? ' value=' + value : '') + ">";
+    newdiv.classList.add("textarea-small");
+    newdiv.innerHTML = "<textarea id='incorrectAnswers[" + incorrectCount + "]'" + "name='incorrectAnswers[" + (incorrectCount) + "]'" + (isRequired ? 'required' : '') + (value ? ' value=' + value : '') + ">";
     document.getElementById(divName).appendChild(newdiv);
   }
+  loadAnswerEditor();
 }
 
 previewAnswer = () => {
@@ -113,7 +123,7 @@ previewAnswer = () => {
   question.name = document.getElementById('name').value;
   question.type = currentType;
   question.marks = document.getElementById('marks').value;
-  question.questionText = tinyMCE.get('questionText').getContent();
+  question.questionText = document.getElementById('questionText').value;//tinyMCE.get('questionText').getContent();
   question.correctAnswers = [];
   for (i = 1; i <= correctCount; i++) {
     question.correctAnswers.push(document.getElementById('correctAnswers[' + i + ']').value);

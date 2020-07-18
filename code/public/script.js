@@ -5,5 +5,5 @@ $(document).ready(function(){
     $('.modal').modal();
     $('.modal-not-dismissible').modal({ dismissible: false});
     $('#modal').modal('open');
-  });
+});
 
