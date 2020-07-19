@@ -12,14 +12,16 @@
     cursor: default;
 }
 
-.dialogModal {
+.dialog-modal {
     width: 50%;
 }
 
-.textarea-description {
+.tinymce-description {
     background-color: white;
 }
 
-.textarea-small {
+.tinymce-small {
     background-color: white;
 } 
+
+

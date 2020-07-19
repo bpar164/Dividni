@@ -12,8 +12,7 @@
  $(document).ready(function(){
   document.getElementsByTagName('textarea').readOnly = true;
   tinymce.init({
-    selector: '.textarea-description', 
-    inline: true,
+    selector: '.tinymce-description', 
     menubar: '',
     toolbar: 'undo redo | styleselect | bold italic underline strikethrough superscript subscript removeformat | bullist numlist table | ',
     plugins: [ 'lists table' ]
@@ -22,7 +21,7 @@
 
 loadAnswerEditor = () => {
   tinymce.init({
-    selector: '.textarea-small',
+    selector: '.tinymce-small',
     inline: true,
     menubar: '',
     toolbar: 'undo redo | styleselect | bold italic underline strikethrough superscript subscript removeformat | '
@@ -40,14 +39,16 @@ createAnswers = (type) => {
   //Fetch any existing answers 
   let correctAnswers = [];
   for (i = 1; i <= correctCount; i++) {
-    ans = document.getElementById('correctAnswers[' + i + ']').value;
+    ans = tinyMCE.get('correctAnswers[' + i + ']').getContent();
     if (!(ans === '')) { correctAnswers.push(ans) } //Only add non-empty answers to array
   }
+  console.log(correctAnswers)
   let incorrectAnswers = [];
   for (i = 1; i <= incorrectCount; i++) {
-    ans = document.getElementById('incorrectAnswers[' + i + ']').value;
+    ans = tinyMCE.get('incorrectAnswers[' + i + ']').getContent();
     if (!(ans === '')) { incorrectAnswers.push(ans) } //Only add non-empty answers to array
   }
+  console.log(incorrectAnswers)
   //Clear answer divs
   document.getElementById('correct').innerHTML = '';
   document.getElementById('incorrect').innerHTML = '';
@@ -100,17 +101,25 @@ addAnswer = (divName, isRequired, value) => {
     correctCount++;
     var newdiv = document.createElement('div');
     newdiv.classList.add("input-field");
-    newdiv.classList.add("textarea-small");
-    newdiv.innerHTML = "<textarea id='correctAnswers[" + correctCount + "]'" + "name='correctAnswers[" + (correctCount) + "]'" + (isRequired ? 'required' : '') + (value ? ' value=' + value : '') + ">";
+    newdiv.classList.add("tinymce-small");
+    let identifier = 'correctAnswers[' + correctCount + ']';
+    isRequired ? newdiv.classList.add("required-field") : null;
+    newdiv.id = identifier;
+    newdiv.name = identifier;
     document.getElementById(divName).appendChild(newdiv);
+    value ? tinyMCE.get(identifier).setContent(value) : null;
   }
   else if ((incorrectCount <= limit) && (divName === 'incorrect')) {
     incorrectCount++;
     var newdiv = document.createElement('div');
     newdiv.classList.add("input-field");
-    newdiv.classList.add("textarea-small");
-    newdiv.innerHTML = "<textarea id='incorrectAnswers[" + incorrectCount + "]'" + "name='incorrectAnswers[" + (incorrectCount) + "]'" + (isRequired ? 'required' : '') + (value ? ' value=' + value : '') + ">";
+    newdiv.classList.add("tinymce-small");
+    let identifier = 'incorrectAnswers[' + incorrectCount + ']';
+    isRequired ? newdiv.classList.add("required-field") : null;
+    newdiv.id = identifier;
+    newdiv.name = identifier;
     document.getElementById(divName).appendChild(newdiv);
+    value ? tinyMCE.get(identifier).setContent(value) : null;
   }
   loadAnswerEditor();
 }
@@ -123,14 +132,14 @@ previewAnswer = () => {
   question.name = document.getElementById('name').value;
   question.type = currentType;
   question.marks = document.getElementById('marks').value;
-  question.questionText = document.getElementById('questionText').value;//tinyMCE.get('questionText').getContent();
+  question.questionText = tinyMCE.get('questionText').getContent();
   question.correctAnswers = [];
   for (i = 1; i <= correctCount; i++) {
-    question.correctAnswers.push(document.getElementById('correctAnswers[' + i + ']').value);
+    question.correctAnswers.push(tinyMCE.get('correctAnswers[' + i + ']').getContent());
   }
   question.incorrectAnswers = [];
   for (i = 1; i <= incorrectCount; i++) {
-    question.incorrectAnswers.push(document.getElementById('incorrectAnswers[' + i + ']').value);
+    question.incorrectAnswers.push(tinyMCE.get('incorrectAnswers[' + i + ']').getContent());
   }
   //Call a function to generate the content
   content = generatePreviewContent(question);
