@@ -10,9 +10,9 @@
  let currentQuestionName;
 
  $(document).ready(function(){
-  document.getElementsByTagName('textarea').readOnly = true;
   tinymce.init({
     selector: '.tinymce-description', 
+    height: '15em',
     menubar: '',
     toolbar: 'undo redo | styleselect | bold italic underline strikethrough superscript subscript removeformat | bullist numlist table | ',
     plugins: [ 'lists table' ]
@@ -22,7 +22,7 @@
 loadAnswerEditor = () => {
   tinymce.init({
     selector: '.tinymce-small',
-    inline: true,
+    height: '7.5em',
     menubar: '',
     toolbar: 'undo redo | styleselect | bold italic underline strikethrough superscript subscript removeformat | '
   });
@@ -42,13 +42,11 @@ createAnswers = (type) => {
     ans = tinyMCE.get('correctAnswers[' + i + ']').getContent();
     if (!(ans === '')) { correctAnswers.push(ans) } //Only add non-empty answers to array
   }
-  console.log(correctAnswers)
   let incorrectAnswers = [];
   for (i = 1; i <= incorrectCount; i++) {
     ans = tinyMCE.get('incorrectAnswers[' + i + ']').getContent();
     if (!(ans === '')) { incorrectAnswers.push(ans) } //Only add non-empty answers to array
   }
-  console.log(incorrectAnswers)
   //Clear answer divs
   document.getElementById('correct').innerHTML = '';
   document.getElementById('incorrect').innerHTML = '';
@@ -97,31 +95,32 @@ createIncorrectAnswers = (numAnswers, incorrectAnswers, required) => {
 }
 
 addAnswer = (divName, isRequired, value) => {
+  let newdiv = document.createElement('div');
+  let newpar = document.createElement('p');
+  newdiv.classList.add("input-field");
+  newdiv.classList.add("tinymce-small");
+  isRequired ? newdiv.classList.add("required-field") : null;
+  let identifier;
   if ((correctCount <= limit) && (divName === 'correct')) {
     correctCount++;
-    var newdiv = document.createElement('div');
-    newdiv.classList.add("input-field");
-    newdiv.classList.add("tinymce-small");
-    let identifier = 'correctAnswers[' + correctCount + ']';
-    isRequired ? newdiv.classList.add("required-field") : null;
+    identifier = 'correctAnswers[' + correctCount + ']';
     newdiv.id = identifier;
     newdiv.name = identifier;
     document.getElementById(divName).appendChild(newdiv);
+    document.getElementById(divName).appendChild(newpar);
+    loadAnswerEditor();
     value ? tinyMCE.get(identifier).setContent(value) : null;
   }
   else if ((incorrectCount <= limit) && (divName === 'incorrect')) {
     incorrectCount++;
-    var newdiv = document.createElement('div');
-    newdiv.classList.add("input-field");
-    newdiv.classList.add("tinymce-small");
-    let identifier = 'incorrectAnswers[' + incorrectCount + ']';
-    isRequired ? newdiv.classList.add("required-field") : null;
+    identifier = 'incorrectAnswers[' + incorrectCount + ']';
     newdiv.id = identifier;
     newdiv.name = identifier;
     document.getElementById(divName).appendChild(newdiv);
+    document.getElementById(divName).appendChild(newpar);
+    loadAnswerEditor();
     value ? tinyMCE.get(identifier).setContent(value) : null;
   }
-  loadAnswerEditor();
 }
 
 previewAnswer = () => {
