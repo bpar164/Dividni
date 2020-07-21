@@ -16,15 +16,22 @@ export class MultipleChoiceController {
     }
 
     @Post('multiple-choice-preview')
-    @Redirect('/multiple-choice-my', 301)
-    async generateQuestion(@Req() request: Request) { 
+    async generateQuestion(formContents): Promise<boolean> { 
         let question = new QuestionFormDTO();
-        question = request.body;
-        question.correctAnswers = this.multipleChoiceService.removeEmptyElements(question.correctAnswers);
-        question.incorrectAnswers = this.multipleChoiceService.removeEmptyElements(question.incorrectAnswers);  
-        //TODO perform validation
-        let xml = this.multipleChoiceService.convertToXML(question);
-        await this.multipleChoiceService.generateQuestion(question, xml);
+        try {
+            question = formContents;
+            question.correctAnswers = this.multipleChoiceService.removeEmptyElements(question.correctAnswers);
+            question.incorrectAnswers = this.multipleChoiceService.removeEmptyElements(question.incorrectAnswers);
+            if (this.multipleChoiceService.validateQuestion(question)) {
+                let xml = this.multipleChoiceService.convertToXML(question);
+                await this.multipleChoiceService.generateQuestion(question, xml);
+                return true; //Question created
+            } else {
+                return false; //Question not created
+            }
+        } catch (err) {
+            return false;
+        }    
     }
 
     @Get('multiple-choice-my')

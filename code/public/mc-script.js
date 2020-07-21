@@ -167,6 +167,24 @@ generatePreviewContent = (question) => {
   return content;
 }
 
+generateQuestion = () => {
+  document.getElementById('previewModalContent').innerHTML = '<p>Fetching data...</p>';
+  $.ajax({
+    url: 'multiple-choice-preview',
+    method: 'POST',
+    dataType: 'json',
+    success: (res) => {
+      //Call a function to generate the content
+      content = generatePreviewContent(res.question);
+      //Add the content to the display
+      document.getElementById('previewModalContent').innerHTML = content;
+    },
+    error: () => {
+      document.getElementById('previewModalContent').innerHTML = '<p>Error fetching data.</p>';
+    }
+  });
+}
+
 setCurrentQuestion = (id, name) => {
   currentQuestionID = id;
   currentQuestionName = name;
