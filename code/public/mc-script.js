@@ -126,6 +126,16 @@ addAnswer = (divName, isRequired, value) => {
 previewAnswer = () => {
   //Enable the generate button
   document.getElementById('generate').classList.remove("disabled");
+  //Call a function to create the question object
+  question = fetchFormValues();
+  //Call a function to generate the content
+  content = generatePreviewContent(question);
+  //Add the values to the display content
+  document.getElementById('previewModalContent').innerHTML = content;
+}
+
+//Fetches all values from the form
+fetchFormValues = () => {
   //Create the question object by fetching values from the form
   question = {};
   question.name = document.getElementById('name').value;
@@ -140,10 +150,7 @@ previewAnswer = () => {
   for (i = 1; i <= incorrectCount; i++) {
     question.incorrectAnswers.push(tinyMCE.get('incorrectAnswers[' + i + ']').getContent());
   }
-  //Call a function to generate the content
-  content = generatePreviewContent(question);
-  //Add the values to the display content
-  document.getElementById('previewModalContent').innerHTML = content;
+  return question;
 }
 
 generatePreviewContent = (question) => {
@@ -167,20 +174,32 @@ generatePreviewContent = (question) => {
   return content;
 }
 
+$("#questionForm").submit(function(event) {
+  //Check that all required text fields have values
+  //Generate the question
+  generateQuestion();
+  alert( "Handler for .submit() called." );
+  event.preventDefault();
+});
+
 generateQuestion = () => {
-  document.getElementById('previewModalContent').innerHTML = '<p>Fetching data...</p>';
+  //Get the values from the form
+  let question = fetchFormValues();
   $.ajax({
     url: 'multiple-choice-preview',
     method: 'POST',
-    dataType: 'json',
+    data: question,
     success: (res) => {
-      //Call a function to generate the content
+      console.log(res);
+      
+      /*//Call a function to generate the content
       content = generatePreviewContent(res.question);
       //Add the content to the display
-      document.getElementById('previewModalContent').innerHTML = content;
+      document.getElementById('previewModalContent').innerHTML = content;*/
+
     },
     error: () => {
-      document.getElementById('previewModalContent').innerHTML = '<p>Error fetching data.</p>';
+      //document.getElementById('previewModalContent').innerHTML = '<p>Error fetching data.</p>';
     }
   });
 }

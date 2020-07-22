@@ -86,21 +86,12 @@ export class MultipleChoiceService {
     
     //Use the XML file to create the Dividni question (C#)
     async generateQuestion(question: QuestionFormDTO, xml: string): Promise<any> {
-        let error;
-        try {
-            let userID: string = 'user1';
-            //Save xml and question to database
-            let multipleChoiceDTO = new MultipleChoiceDTO();
-            multipleChoiceDTO = {question, xml, userID };
-            let newQuestion = new this.MCModel(multipleChoiceDTO);
-            newQuestion.save();
-        } catch (err) {
-            error = err.name;
-        }
-        //Return the result
-        return new Promise(resolve => {
-            resolve(error);
-        });
+        let userID: string = 'user1';
+        //Save xml and question to database
+        let multipleChoiceDTO = new MultipleChoiceDTO();
+        multipleChoiceDTO = {question, xml, userID };
+        let newQuestion = new this.MCModel(multipleChoiceDTO);
+        return newQuestion.save();    
     } 
 
     async fetchUserQuestions(userID: string) {  

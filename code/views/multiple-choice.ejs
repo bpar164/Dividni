@@ -7,7 +7,7 @@
         <p>Fill-out the details of the question below, and click on <b>PREVIEW</b> to see what the question will look like.</p>
         <p>Review the <a href="tutorials-mc" target="_blank">tutorial <i class="tiny material-icons">open_in_new</i></a> for help.</p>
     </div>
-    <form action="multiple-choice-preview" method="POST">
+    <form id="questionForm">
       <div class="row">
         <div class="col s12 m8 l5">
           <div class="input-field">
@@ -79,6 +79,19 @@
     </div>
     <div class="modal-footer">
       <a href="#!" class="modal-close waves-effect waves-green btn-flat">CLOSE</a>
+    </div>
+  </div>
+
+  <!-- Options Modal -->
+  <div id="optionsModal" class="modal modal-fixed-footer dialog-modal">
+    <div class="modal-content">
+      <h4>Options</h4>
+      <div id="optionsModalContent"></div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat" id="optionsModalRetry">RETRY</a>
+      <a href="'multiple-choice" class="modal-close waves-effect waves-green btn-flat">CREATE NEW</a>
+      <a href="multiple-choice-my" class="modal-close waves-effect waves-green btn-flat" >VIEW CREATED</a>
     </div>
   </div>
 
