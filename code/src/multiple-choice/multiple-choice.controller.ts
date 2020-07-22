@@ -16,10 +16,11 @@ export class MultipleChoiceController {
     }
 
     @Post('multiple-choice-preview')
-    async generateQuestion(formContents): Promise<boolean> { 
+    async generateQuestion(@Req() request: Request): Promise<boolean> { 
         let question = new QuestionFormDTO();
+        console.log(request.body)
         try {
-            question = formContents;
+            question = request.body;
             question.correctAnswers = this.multipleChoiceService.removeEmptyElements(question.correctAnswers);
             question.incorrectAnswers = this.multipleChoiceService.removeEmptyElements(question.incorrectAnswers);
             if (this.multipleChoiceService.validateQuestion(question)) {

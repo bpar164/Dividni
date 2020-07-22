@@ -63,7 +63,7 @@
         </a>
       </div>
       <div class="row">
-        <button class="btn waves-effect waves-light right disabled" id="generate" type="submit">
+        <button class="btn waves-effect waves-light right disabled" id="generate" type="submit"> 
           Generate<i class="material-icons right">send</i>
         </button> 
       </div>
@@ -83,15 +83,15 @@
   </div>
 
   <!-- Options Modal -->
-  <div id="optionsModal" class="modal modal-fixed-footer dialog-modal">
+  <div id="optionsModal" class="modal modal-fixed-footer modal-not-dismissible dialog-modal">
     <div class="modal-content">
       <h4>Options</h4>
       <div id="optionsModalContent"></div>
     </div>
-    <div class="modal-footer">
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat" id="optionsModalRetry">RETRY</a>
-      <a href="'multiple-choice" class="modal-close waves-effect waves-green btn-flat">CREATE NEW</a>
-      <a href="multiple-choice-my" class="modal-close waves-effect waves-green btn-flat" >VIEW CREATED</a>
+    <div class="modal-footer" id="optionsModalFooter">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat disabled" id="optionsModalRetry">RETRY</a>
+      <a href="multiple-choice" class="modal-close waves-effect waves-green btn-flat disabled" id="optionsModalCreate">CREATE NEW</a>
+      <a href="multiple-choice-my" class="modal-close waves-effect waves-green btn-flat disabled" id="optionsModalView">VIEW CREATED</a>
     </div>
   </div>
 

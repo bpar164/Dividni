@@ -176,32 +176,41 @@ generatePreviewContent = (question) => {
 
 $("#questionForm").submit(function(event) {
   //Check that all required text fields have values
+  let requiredFields = document.getElementsByClassName('required-field');
+  
   //Generate the question
   generateQuestion();
-  alert( "Handler for .submit() called." );
+  //Display options modal
+  $('#optionsModal').modal('open');
   event.preventDefault();
 });
 
 generateQuestion = () => {
+  document.getElementById('optionsModalContent').innerHTML = '<p>Generating question...</p>';
   //Get the values from the form
   let question = fetchFormValues();
+  console.log(question)
   $.ajax({
     url: 'multiple-choice-preview',
     method: 'POST',
     data: question,
     success: (res) => {
-      console.log(res);
-      
-      /*//Call a function to generate the content
-      content = generatePreviewContent(res.question);
-      //Add the content to the display
-      document.getElementById('previewModalContent').innerHTML = content;*/
-
+      if (res) {
+        //Question generated
+        document.getElementById('optionsModalContent').innerHTML = '<p>Question generated.</p>';
+      } else {
+        //Question not generated
+        document.getElementById('optionsModalContent').innerHTML = '<p>Error generating question.</p>';
+        document.getElementById('optionsModalRetry').classList.remove("disabled");
+      }  
     },
     error: () => {
-      //document.getElementById('previewModalContent').innerHTML = '<p>Error fetching data.</p>';
+      document.getElementById('optionsModalContent').innerHTML = '<p>Error generating question.</p>';
+      document.getElementById('optionsModalRetry').classList.remove("disabled");
     }
   });
+  document.getElementById('optionsModalCreate').classList.remove("disabled");
+  document.getElementById('optionsModalView').classList.remove("disabled");
 }
 
 setCurrentQuestion = (id, name) => {
