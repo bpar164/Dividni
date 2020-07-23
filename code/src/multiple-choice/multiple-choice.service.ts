@@ -86,7 +86,7 @@ export class MultipleChoiceService {
     
     //Use the XML file to create the Dividni question (C#)
     async generateQuestion(question: QuestionFormDTO, xml: string): Promise<any> {
-        let userID: string = 'user1';
+        let userID: string = 'user1'; //TODO Need to add params and send user ID
         //Save xml and question to database
         let multipleChoiceDTO = new MultipleChoiceDTO();
         multipleChoiceDTO = {question, xml, userID };

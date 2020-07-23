@@ -174,31 +174,48 @@ generatePreviewContent = (question) => {
   return content;
 }
 
-$("#questionForm").submit(function(event) {
-  //Check that all required text fields have values
-  let requiredFields = document.getElementsByClassName('required-field');
-  
-  //Generate the question
-  generateQuestion();
+$("#questionForm").submit((event) => {
+  event.preventDefault();
   //Display options modal
   $('#optionsModal').modal('open');
-  event.preventDefault();
+  //Check that all required text fields have values
+  let requiredFields = document.getElementsByClassName('required-field');
+  let missingFieldIDs = [];
+  let missingRequired = false;
+  Array.from(requiredFields).forEach(field => {
+    if (tinyMCE.get(field.id).getContent() === '') {
+      missingRequired = true;
+      missingFieldIDs.push(field.id);
+    }
+  });
+  if (missingRequired) {
+    let content = '<p>Please complete the following fields:<ul>'
+    missingFieldIDs.forEach(id => {
+      content += '<li>' + id + '</li>'
+    });
+    content += '</ul></p>';
+    document.getElementById('optionsModalContent').innerHTML = content;
+    document.getElementById('optionsModalRetry').classList.remove("disabled");
+  } else { //All required fields filled in
+    document.getElementById('optionsModalRetry').classList.add("disabled");
+    //Generate the question
+    generateQuestion();
+  } 
 });
 
 generateQuestion = () => {
   document.getElementById('optionsModalContent').innerHTML = '<p>Generating question...</p>';
   //Get the values from the form
   let question = fetchFormValues();
-  console.log(question)
   $.ajax({
     url: 'multiple-choice-preview',
     method: 'POST',
     data: question,
     success: (res) => {
-      if (res) {
+      if (res === 'true') {
         //Question generated
         document.getElementById('optionsModalContent').innerHTML = '<p>Question generated.</p>';
-      } else {
+      } else if (res === 'false') {
         //Question not generated
         document.getElementById('optionsModalContent').innerHTML = '<p>Error generating question.</p>';
         document.getElementById('optionsModalRetry').classList.remove("disabled");
@@ -224,6 +241,12 @@ confirmDialog = (action) => {
   if (action === 'DELETE') {
     content += 'Delete question:</br><b>' + currentQuestionName + '</b>';
     document.getElementById('confirmModalYes').setAttribute('onClick', `deleteQuestion('` + currentQuestionID + `');`);
+  } else if (action === 'EDIT') {
+    content += 'Edit question:</br><b>' + currentQuestionName + '</b>';
+    document.getElementById('confirmModalYes').setAttribute('onClick', `editQuestion('` + currentQuestionID + `');`);
+  } else if (action === 'TEMPLATE') {
+    content += 'Use the following question as a template:</br><b>' + currentQuestionName + '</b>';
+    document.getElementById('confirmModalYes').setAttribute('onClick', `templateQuestion('` + currentQuestionID + `');`);
   }
   content += '</p>'
   //Set the contents of the modal
@@ -254,6 +277,14 @@ deleteQuestion = (id) => {
     url : 'multiple-choice-my/' + id,
     method : 'delete'
   })
+}
+
+editQuestion = (id) => {
+  console.log('Edit question: ' + id);
+}
+
+templateQuestion = (id) => {
+  console.log('Template question: ' + id);
 }
 
   

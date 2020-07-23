@@ -18,7 +18,6 @@ export class MultipleChoiceController {
     @Post('multiple-choice-preview')
     async generateQuestion(@Req() request: Request): Promise<boolean> { 
         let question = new QuestionFormDTO();
-        console.log(request.body)
         try {
             question = request.body;
             question.correctAnswers = this.multipleChoiceService.removeEmptyElements(question.correctAnswers);
@@ -31,12 +30,12 @@ export class MultipleChoiceController {
                 return false; //Question not created
             }
         } catch (err) {
-            return false;
+            return false; //Question not created
         }    
     }
 
     @Get('multiple-choice-my')
-    @Render('multiple-choice-my')
+    @Render('multiple-choice-my') //TODO Need to add params and send user ID
     async getMultipleChoiceMyView() { 
         return { 
             title: 'Multiple-Choice', 
