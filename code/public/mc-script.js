@@ -254,7 +254,7 @@ confirmDialog = (action) => {
 }
 
 previewQuestion = () => {
-  document.getElementById('previewModalContent').innerHTML = '<p>Fetching data...</p>';
+  document.getElementById('previewModalContent').innerHTML = '<p>Fetching question...</p>';
   $.ajax({
     url: 'multiple-choice-my/' + currentQuestionID,
     method: 'GET',
@@ -266,7 +266,7 @@ previewQuestion = () => {
       document.getElementById('previewModalContent').innerHTML = content;
     },
     error: () => {
-      document.getElementById('previewModalContent').innerHTML = '<p>Error fetching data.</p>';
+      document.getElementById('previewModalContent').innerHTML = '<p>Error fetching question.</p>';
     }
   });
 }
@@ -284,7 +284,32 @@ editQuestion = (id) => {
 }
 
 templateQuestion = (id) => {
-  console.log('Template question: ' + id);
+  //Fetch question
+  $.ajax({
+    url: 'multiple-choice-my/' + currentQuestionID,
+    method: 'GET',
+    dataType: 'json',
+    success: (res) => {
+      //Load the question into the form page
+      preloadQuestionForm(res.question);
+    },
+    error: () => {
+      alert('Error fetching question.');
+    }
+  });
+}
+
+//Go to the multiple-choice page and pre-populate the form with the question
+preloadQuestionForm = (question) => {
+  $.ajax({
+    url: 'multiple-choice',
+    method: 'POST',
+    data: question,
+    error: () => {
+      alert('Error loading question form.');
+    }
+  });
+  window.location.href = "multiple-choice";
 }
 
   

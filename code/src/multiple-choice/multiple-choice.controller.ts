@@ -11,7 +11,20 @@ export class MultipleChoiceController {
     getMultipleChoiceView() { 
         return { 
             title: 'Multiple-Choice', 
-            description: 'Create questions with multiple answers' 
+            description: 'Create questions with multiple answers',
+            question: false
+          };
+    }
+
+    @Post('multiple-choice')
+    @Render('multiple-choice')
+    getMultipleChoiceViewAndLoadQuestion(@Req() request: Request) { 
+        console.log('In post')
+        console.log(request.body)
+        return { 
+            title: 'Multiple-Choice', 
+            description: 'Create questions with multiple answers',
+            question: request.body
           };
     }
 
