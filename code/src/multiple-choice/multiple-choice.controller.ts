@@ -2,29 +2,32 @@ import { Controller, Get, Render, Post, Req, Redirect, Delete, Param } from '@ne
 import { MultipleChoiceService } from './multiple-choice.service';
 import { QuestionFormDTO } from './question-form.dto';
 import { Request } from 'express';
+import { MultipleChoiceDTO } from './multiple-choice.dto';
 
 @Controller()
 export class MultipleChoiceController {
     constructor(private readonly multipleChoiceService: MultipleChoiceService) {}
+
+    @Get('multiple-choice/:id')
+    //@Render('multiple-choice')
+    async getMultipleChoiceViewAndLoadQuestion(@Param('id') id) { 
+        let multipleChoice = new MultipleChoiceDTO();
+        multipleChoice = await this.multipleChoiceService.getQuestion(id);
+        console.log(multipleChoice);
+        /*return { 
+            title: 'Multiple-Choice', 
+            description: 'Create questions with multiple answers',
+            questionID: null
+          };*/
+    }
+    
     @Get('multiple-choice')
     @Render('multiple-choice')
     getMultipleChoiceView() { 
         return { 
             title: 'Multiple-Choice', 
             description: 'Create questions with multiple answers',
-            question: false
-          };
-    }
-
-    @Post('multiple-choice')
-    @Render('multiple-choice')
-    getMultipleChoiceViewAndLoadQuestion(@Req() request: Request) { 
-        console.log('In post')
-        console.log(request.body)
-        return { 
-            title: 'Multiple-Choice', 
-            description: 'Create questions with multiple answers',
-            question: request.body
+            questionID: null
           };
     }
 

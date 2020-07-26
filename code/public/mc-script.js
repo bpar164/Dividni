@@ -243,10 +243,10 @@ confirmDialog = (action) => {
     document.getElementById('confirmModalYes').setAttribute('onClick', `deleteQuestion('` + currentQuestionID + `');`);
   } else if (action === 'EDIT') {
     content += 'Edit question:</br><b>' + currentQuestionName + '</b>';
-    document.getElementById('confirmModalYes').setAttribute('onClick', `editQuestion('` + currentQuestionID + `');`);
+    //document.getElementById('confirmModalYes').setAttribute('onClick', `editQuestion('` + currentQuestionID + `');`);
   } else if (action === 'TEMPLATE') {
     content += 'Use the following question as a template:</br><b>' + currentQuestionName + '</b>';
-    document.getElementById('confirmModalYes').setAttribute('onClick', `templateQuestion('` + currentQuestionID + `');`);
+    document.getElementById('confirmModalYes').setAttribute('href', 'multiple-choice/' + currentQuestionID);
   }
   content += '</p>'
   //Set the contents of the modal
@@ -279,38 +279,8 @@ deleteQuestion = (id) => {
   })
 }
 
-editQuestion = (id) => {
-  console.log('Edit question: ' + id);
-}
 
-templateQuestion = (id) => {
-  //Fetch question
-  $.ajax({
-    url: 'multiple-choice-my/' + currentQuestionID,
-    method: 'GET',
-    dataType: 'json',
-    success: (res) => {
-      //Load the question into the form page
-      preloadQuestionForm(res.question);
-    },
-    error: () => {
-      alert('Error fetching question.');
-    }
-  });
-}
 
-//Go to the multiple-choice page and pre-populate the form with the question
-preloadQuestionForm = (question) => {
-  $.ajax({
-    url: 'multiple-choice',
-    method: 'POST',
-    data: question,
-    error: () => {
-      alert('Error loading question form.');
-    }
-  });
-  window.location.href = "multiple-choice";
-}
 
   
 
