@@ -243,10 +243,10 @@ confirmDialog = (action) => {
     document.getElementById('confirmModalYes').setAttribute('onClick', `deleteQuestion('` + currentQuestionID + `');`);
   } else if (action === 'EDIT') {
     content += 'Edit question:</br><b>' + currentQuestionName + '</b>';
-    document.getElementById('confirmModalYes').setAttribute('onClick', `editQuestion('` + currentQuestionID + `');`);
+    //document.getElementById('confirmModalYes').setAttribute('onClick', `editQuestion('` + currentQuestionID + `');`);
   } else if (action === 'TEMPLATE') {
     content += 'Use the following question as a template:</br><b>' + currentQuestionName + '</b>';
-    document.getElementById('confirmModalYes').setAttribute('onClick', `templateQuestion('` + currentQuestionID + `');`);
+    document.getElementById('confirmModalYes').setAttribute('href', 'multiple-choice/' + currentQuestionID);
   }
   content += '</p>'
   //Set the contents of the modal
@@ -254,7 +254,7 @@ confirmDialog = (action) => {
 }
 
 previewQuestion = () => {
-  document.getElementById('previewModalContent').innerHTML = '<p>Fetching data...</p>';
+  document.getElementById('previewModalContent').innerHTML = '<p>Fetching question...</p>';
   $.ajax({
     url: 'multiple-choice-my/' + currentQuestionID,
     method: 'GET',
@@ -266,7 +266,7 @@ previewQuestion = () => {
       document.getElementById('previewModalContent').innerHTML = content;
     },
     error: () => {
-      document.getElementById('previewModalContent').innerHTML = '<p>Error fetching data.</p>';
+      document.getElementById('previewModalContent').innerHTML = '<p>Error fetching question.</p>';
     }
   });
 }
@@ -279,13 +279,8 @@ deleteQuestion = (id) => {
   })
 }
 
-editQuestion = (id) => {
-  console.log('Edit question: ' + id);
-}
 
-templateQuestion = (id) => {
-  console.log('Template question: ' + id);
-}
+
 
   
 
