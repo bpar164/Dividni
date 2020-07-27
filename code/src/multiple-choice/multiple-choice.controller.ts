@@ -1,4 +1,4 @@
-import { Controller, Get, Render, Post, Req, Redirect, Delete, Param } from '@nestjs/common';
+import { Controller, Get, Render, Post, Req, Delete, Param } from '@nestjs/common';
 import { MultipleChoiceService } from './multiple-choice.service';
 import { QuestionFormDTO } from './question-form.dto';
 import { Request } from 'express';
@@ -8,26 +8,12 @@ import { MultipleChoiceDTO } from './multiple-choice.dto';
 export class MultipleChoiceController {
     constructor(private readonly multipleChoiceService: MultipleChoiceService) {}
 
-    @Get('multiple-choice/:id')
-    //@Render('multiple-choice')
-    async getMultipleChoiceViewAndLoadQuestion(@Param('id') id) { 
-        let multipleChoice = new MultipleChoiceDTO();
-        multipleChoice = await this.multipleChoiceService.getQuestion(id);
-        console.log(multipleChoice);
-        /*return { 
-            title: 'Multiple-Choice', 
-            description: 'Create questions with multiple answers',
-            questionID: null
-          };*/
-    }
-    
     @Get('multiple-choice')
     @Render('multiple-choice')
     getMultipleChoiceView() { 
         return { 
             title: 'Multiple-Choice', 
             description: 'Create questions with multiple answers',
-            questionID: null
           };
     }
 
@@ -68,5 +54,12 @@ export class MultipleChoiceController {
     @Delete('multiple-choice-my/:id')
     async deleteQuestion(@Param('id') id) {
         await this.multipleChoiceService.deleteQuestion(id);
+    }
+
+    @Get('template-question/:id')
+    async templateQuestion(@Param('id') id) {
+        let multipleChoice = new MultipleChoiceDTO();
+        multipleChoice = await this.getQuestion(id);
+        console.log(multipleChoice.question);
     }
 }

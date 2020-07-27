@@ -246,7 +246,7 @@ confirmDialog = (action) => {
     //document.getElementById('confirmModalYes').setAttribute('onClick', `editQuestion('` + currentQuestionID + `');`);
   } else if (action === 'TEMPLATE') {
     content += 'Use the following question as a template:</br><b>' + currentQuestionName + '</b>';
-    document.getElementById('confirmModalYes').setAttribute('href', 'multiple-choice/' + currentQuestionID);
+    document.getElementById('confirmModalYes').setAttribute('href', 'template-question/' + currentQuestionID);
   }
   content += '</p>'
   //Set the contents of the modal
@@ -260,10 +260,14 @@ previewQuestion = () => {
     method: 'GET',
     dataType: 'json',
     success: (res) => {
-      //Call a function to generate the content
-      content = generatePreviewContent(res.question);
-      //Add the content to the display
-      document.getElementById('previewModalContent').innerHTML = content;
+      if (res.question) {
+        //Call a function to generate the content
+        content = generatePreviewContent(res.question);
+        //Add the content to the display
+        document.getElementById('previewModalContent').innerHTML = content;
+      } else {
+        document.getElementById('previewModalContent').innerHTML = '<p>Error fetching question.</p>';
+      }  
     },
     error: () => {
       document.getElementById('previewModalContent').innerHTML = '<p>Error fetching question.</p>';
@@ -278,6 +282,10 @@ deleteQuestion = (id) => {
     method : 'delete'
   })
 }
+
+
+
+
 
 
 
