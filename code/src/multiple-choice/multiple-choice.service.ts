@@ -8,6 +8,7 @@ import { create } from 'xmlbuilder2';
 
 @Injectable()
 export class MultipleChoiceService {
+    private currentQuestionID: string;
     constructor(@InjectModel(MultipleChoice.name) private MCModel: Model<MultipleChoice>) {}
     //Remove all empty string elements
     removeEmptyElements(array: string[]) {
@@ -99,10 +100,18 @@ export class MultipleChoiceService {
     }
 
     async getQuestion(id: string) {  
-        return this.MCModel.findOne({ _id: id }).exec();
+        return this.MCModel.findOne({ _id: id }, '-_id').exec();
     }
 
     async deleteQuestion(id: string) {  
         return this.MCModel.findByIdAndDelete({ _id: id }).exec();
+    }
+
+    getCurrentQuestionID(): string {
+        return this.currentQuestionID;
+    }
+
+    setCurrentQuestionID(id: string) {
+        this.currentQuestionID = id;
     }
 }

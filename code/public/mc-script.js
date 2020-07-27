@@ -246,7 +246,7 @@ confirmDialog = (action) => {
     //document.getElementById('confirmModalYes').setAttribute('onClick', `editQuestion('` + currentQuestionID + `');`);
   } else if (action === 'TEMPLATE') {
     content += 'Use the following question as a template:</br><b>' + currentQuestionName + '</b>';
-    document.getElementById('confirmModalYes').setAttribute('href', 'template-question/' + currentQuestionID);
+    document.getElementById('confirmModalYes').setAttribute('onClick', `templateQuestion('` + currentQuestionID + `');`);
   }
   content += '</p>'
   //Set the contents of the modal
@@ -281,6 +281,16 @@ deleteQuestion = (id) => {
     url : 'multiple-choice-my/' + id,
     method : 'delete'
   })
+}
+
+templateQuestion = (id) => {
+  $.ajax({
+    url: 'template-question/' + id,
+    method: 'GET',
+    success: (res) => {
+      window.location.href ="multiple-choice";
+    }
+  });
 }
 
 

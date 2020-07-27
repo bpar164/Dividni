@@ -1,8 +1,7 @@
-import { Controller, Get, Render, Post, Req, Delete, Param } from '@nestjs/common';
+import { Controller, Get, Render, Post, Req, Delete, Param, Redirect, Res } from '@nestjs/common';
 import { MultipleChoiceService } from './multiple-choice.service';
 import { QuestionFormDTO } from './question-form.dto';
 import { Request } from 'express';
-import { MultipleChoiceDTO } from './multiple-choice.dto';
 
 @Controller()
 export class MultipleChoiceController {
@@ -11,9 +10,15 @@ export class MultipleChoiceController {
     @Get('multiple-choice')
     @Render('multiple-choice')
     getMultipleChoiceView() { 
+        let questionID= this.multipleChoiceService.getCurrentQuestionID();
+        console.log(questionID)
+        if (questionID) {
+            this.multipleChoiceService.setCurrentQuestionID(null);
+        } 
         return { 
             title: 'Multiple-Choice', 
             description: 'Create questions with multiple answers',
+            questionID: questionID
           };
     }
 
@@ -57,9 +62,7 @@ export class MultipleChoiceController {
     }
 
     @Get('template-question/:id')
-    async templateQuestion(@Param('id') id) {
-        let multipleChoice = new MultipleChoiceDTO();
-        multipleChoice = await this.getQuestion(id);
-        console.log(multipleChoice.question);
+    templateQuestion(@Param('id') id) {
+        this.multipleChoiceService.setCurrentQuestionID(id);
     }
 }
