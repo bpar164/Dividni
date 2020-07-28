@@ -10,15 +10,19 @@ export class MultipleChoiceController {
     @Get('multiple-choice')
     @Render('multiple-choice')
     getMultipleChoiceView() { 
-        let questionID= this.multipleChoiceService.getCurrentQuestionID();
-        console.log(questionID)
-        if (questionID) {
-            this.multipleChoiceService.setCurrentQuestionID(null);
+        let questionID = null;
+        let questionAction = null;
+        let questionMode = this.multipleChoiceService.getQuestionMode();
+        if (questionMode) {
+            questionID = questionMode.id;
+            questionAction = questionMode.action;
+            this.multipleChoiceService.setQuestionMode(null, null);
         } 
         return { 
             title: 'Multiple-Choice', 
             description: 'Create questions with multiple answers',
-            questionID: questionID
+            id: questionID,
+            action: questionAction
           };
     }
 
@@ -63,6 +67,6 @@ export class MultipleChoiceController {
 
     @Get('template-question/:id')
     templateQuestion(@Param('id') id) {
-        this.multipleChoiceService.setCurrentQuestionID(id);
+        this.multipleChoiceService.setQuestionMode(id, 'TEMPLATE');
     }
 }

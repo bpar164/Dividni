@@ -10,6 +10,11 @@
  let currentQuestionName;
 
  $(document).ready(function(){
+  //Check if there is data for a question that needs to be populated
+  let questionMode = document.getElementById('questionMode');
+  if (questionMode) { 
+    populateQuestionForm(questionMode.getAttribute('data-question-id'), questionMode.getAttribute('data-question-action'))
+  }
   tinymce.init({
     selector: '.tinymce-description', 
     height: '15em',
@@ -289,6 +294,46 @@ templateQuestion = (id) => {
     method: 'GET',
     success: (res) => {
       window.location.href ="multiple-choice";
+    }
+  });
+}
+
+populateQuestionForm = (id, action) => {
+  //Fetch question
+  $.ajax({
+    url: 'multiple-choice-my/' + id,
+    method: 'GET',
+    dataType: 'json',
+    success: (res) => {
+      if (!(res.question)) {
+        //Display message if no question found
+        $('#previewModal').modal();
+        document.getElementById('previewModalContent').innerHTML = '<p>Error loading question.</p>';
+      } else {
+        //Populate form
+        document.getElementById('name').value = res.question.name;
+        if (res.question.type === "Truth") {
+          document.getElementById('truth').setAttribute("checked", true);
+        } else {
+          document.getElementById('xyz').setAttribute("checked", true);
+        }
+        document.getElementById('marks').value = res.question.marks;
+        /*question.type = currentType;
+        question.marks = document.getElementById('marks').value;
+        question.questionText = tinyMCE.get('questionText').getContent();
+        question.correctAnswers = [];
+        for (i = 1; i <= correctCount; i++) {
+          question.correctAnswers.push(tinyMCE.get('correctAnswers[' + i + ']').getContent());
+        }
+        question.incorrectAnswers = [];
+        for (i = 1; i <= incorrectCount; i++) {
+          question.incorrectAnswers.push(tinyMCE.get('incorrectAnswers[' + i + ']').getContent());
+        }*/
+      }  
+    },
+    error: () => {
+      $('#previewModal').modal();
+      document.getElementById('previewModalContent').innerHTML = '<p>Error loading question.</p>';
     }
   });
 }

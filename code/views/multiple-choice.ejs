@@ -1,9 +1,9 @@
 <%- include('partials/header') -%>
 
-  <% if (questionID) { %>
-    <% console.log('from view' + questionID) %>
+  <% if (id && action) { %>
+    <div id="questionMode" data-question-id="<%= id %>" data-question-action="<%= action %>"></div> 
   <% } %>
-
+ 
   <!-- form -->
   <section class="section container blue lighten-5" id="main">
     <div class="row">
@@ -21,11 +21,11 @@
           <div class="input-field">
             <p>Question type:</p>
             <p><label>
-                <input class="with-gap" type="radio" name="type" value="Truth" required onClick="createAnswers('Truth');">
+                <input class="with-gap" type="radio" id="truth" name="type" value="Truth" required onClick="createAnswers('Truth');">
                 <span>Truth</span>
             </label></p>
             <p><label>
-                <input class="with-gap" type="radio" name="type" value="Xyz" required onClick="createAnswers('Xyz');">
+                <input class="with-gap" type="radio" id="xyz" name="type" value="Xyz" required onClick="createAnswers('Xyz');">
                 <span>XYZ</span>
             </label></p>
           </div>
