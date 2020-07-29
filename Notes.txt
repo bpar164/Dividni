@@ -1,1 +1,6 @@
 Only show logout/login button when needed
+
+Need to move xml generation step to when exam generated
+
+Future Work
+Allowing upload of XML files

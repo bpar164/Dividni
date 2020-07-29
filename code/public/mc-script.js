@@ -10,11 +10,6 @@
  let currentQuestionName;
 
  $(document).ready(function(){
-  //Check if there is data for a question that needs to be populated
-  let questionMode = document.getElementById('questionMode');
-  if (questionMode) { 
-    populateQuestionForm(questionMode.getAttribute('data-question-id'), questionMode.getAttribute('data-question-action'))
-  }
   tinymce.init({
     selector: '.tinymce-description', 
     height: '15em',
@@ -22,9 +17,14 @@
     toolbar: 'undo redo | styleselect | bold italic underline strikethrough superscript subscript removeformat | bullist numlist table | ',
     plugins: [ 'lists table' ]
   });
+  //Check if there is data for a question that needs to be populated
+  let questionMode = document.getElementById('questionMode');
+  if (questionMode) { 
+    setTimeout(function() { populateQuestionForm(questionMode.getAttribute('data-question-id'), questionMode.getAttribute('data-question-action')); }, 200); //Give tinyMCE time to load
+  }
 });
 
-loadAnswerEditor = () => {
+loadAnswerEditors = () => {
   tinymce.init({
     selector: '.tinymce-small',
     height: '7.5em',
@@ -35,22 +35,25 @@ loadAnswerEditor = () => {
 
  /*Creates the answer slots, based on the question types
  Transfers existing answers when switching between types*/
-createAnswers = (type) => {
+createAnswers = (type, correctAnswers, incorrectAnswers) => {
   currentType = type;
   //Enable both add answer and preview buttons
   document.getElementById('addCorrect').classList.remove("disabled");
   document.getElementById('addIncorrect').classList.remove("disabled");
   document.getElementById('preview').classList.remove("disabled");
-  //Fetch any existing answers 
-  let correctAnswers = [];
-  for (i = 1; i <= correctCount; i++) {
-    ans = tinyMCE.get('correctAnswers[' + i + ']').getContent();
-    if (!(ans === '')) { correctAnswers.push(ans) } //Only add non-empty answers to array
-  }
-  let incorrectAnswers = [];
-  for (i = 1; i <= incorrectCount; i++) {
-    ans = tinyMCE.get('incorrectAnswers[' + i + ']').getContent();
-    if (!(ans === '')) { incorrectAnswers.push(ans) } //Only add non-empty answers to array
+  //Answers will be empty unless the method is called by template or edit
+  if (!(correctAnswers)) { 
+    //Fetch any existing answers 
+    correctAnswers = [];
+    for (i = 1; i <= correctCount; i++) {
+      ans = tinyMCE.get('correctAnswers[' + i + ']').getContent();
+      if (!(ans === '')) { correctAnswers.push(ans) } //Only add non-empty answers to array
+    }
+    incorrectAnswers = [];
+    for (i = 1; i <= incorrectCount; i++) {
+      ans = tinyMCE.get('incorrectAnswers[' + i + ']').getContent();
+      if (!(ans === '')) { incorrectAnswers.push(ans) } //Only add non-empty answers to array
+    }
   }
   //Clear answer divs
   document.getElementById('correct').innerHTML = '';
@@ -113,7 +116,7 @@ addAnswer = (divName, isRequired, value) => {
     newdiv.name = identifier;
     document.getElementById(divName).appendChild(newdiv);
     document.getElementById(divName).appendChild(newpar);
-    loadAnswerEditor();
+    loadAnswerEditors();
     value ? tinyMCE.get(identifier).setContent(value) : null;
   }
   else if ((incorrectCount <= limit) && (divName === 'incorrect')) {
@@ -123,7 +126,7 @@ addAnswer = (divName, isRequired, value) => {
     newdiv.name = identifier;
     document.getElementById(divName).appendChild(newdiv);
     document.getElementById(divName).appendChild(newpar);
-    loadAnswerEditor();
+    loadAnswerEditors();
     value ? tinyMCE.get(identifier).setContent(value) : null;
   }
 }
@@ -318,17 +321,13 @@ populateQuestionForm = (id, action) => {
           document.getElementById('xyz').setAttribute("checked", true);
         }
         document.getElementById('marks').value = res.question.marks;
-        /*question.type = currentType;
-        question.marks = document.getElementById('marks').value;
-        question.questionText = tinyMCE.get('questionText').getContent();
-        question.correctAnswers = [];
-        for (i = 1; i <= correctCount; i++) {
-          question.correctAnswers.push(tinyMCE.get('correctAnswers[' + i + ']').getContent());
-        }
-        question.incorrectAnswers = [];
-        for (i = 1; i <= incorrectCount; i++) {
-          question.incorrectAnswers.push(tinyMCE.get('incorrectAnswers[' + i + ']').getContent());
-        }*/
+        let correctAnswers = res.question.correctAnswers;
+        let incorrectAnswers = res.question.incorrectAnswers;
+        createAnswers(res.question.type, correctAnswers, incorrectAnswers);
+        tinyMCE.get('questionText').setContent(res.question.questionText);
+        if (action === 'EDIT') {
+
+        } //Don't need to do anything extra for TEMPLATE
       }  
     },
     error: () => {
