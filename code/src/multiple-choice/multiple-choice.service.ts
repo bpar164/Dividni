@@ -10,6 +10,7 @@ import { create } from 'xmlbuilder2';
 export class MultipleChoiceService {
     private QuestionMode: { id: string, action: string };
     constructor(@InjectModel(MultipleChoice.name) private MCModel: Model<MultipleChoice>) {}
+
     //Remove all empty string elements
     removeEmptyElements(array: string[]) {
         return array.filter((i) => {return i != '';});
