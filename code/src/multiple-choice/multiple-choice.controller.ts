@@ -1,4 +1,4 @@
-import { Controller, Get, Render, Post, Req, Delete, Param, Redirect, Res } from '@nestjs/common';
+import { Controller, Get, Render, Post, Req, Delete, Param, Put } from '@nestjs/common';
 import { MultipleChoiceService } from './multiple-choice.service';
 import { QuestionFormDTO } from './question-form.dto';
 import { Request } from 'express';
@@ -26,7 +26,7 @@ export class MultipleChoiceController {
           };
     }
 
-    @Post('multiple-choice-preview')
+    @Post('multiple-choice')
     async generateQuestion(@Req() request: Request): Promise<boolean> { 
         let question = new QuestionFormDTO();
         try {
@@ -34,8 +34,25 @@ export class MultipleChoiceController {
             question.correctAnswers = this.multipleChoiceService.removeEmptyElements(question.correctAnswers);
             question.incorrectAnswers = this.multipleChoiceService.removeEmptyElements(question.incorrectAnswers);
             if (this.multipleChoiceService.validateQuestion(question)) {
-                let xml = this.multipleChoiceService.convertToXML(question);
-                await this.multipleChoiceService.generateQuestion(question, xml);
+                await this.multipleChoiceService.generateQuestion(question);
+                return true; //Question created
+            } else {
+                return false; //Question not created
+            }
+        } catch (err) {
+            return false; //Question not created
+        }    
+    }
+
+    @Put('multiple-choice/:id')
+    async updateQuestion(@Req() request: Request, @Param('id') id): Promise<boolean> { 
+        let question = new QuestionFormDTO();
+        try {
+            question = request.body;
+            question.correctAnswers = this.multipleChoiceService.removeEmptyElements(question.correctAnswers);
+            question.incorrectAnswers = this.multipleChoiceService.removeEmptyElements(question.incorrectAnswers);
+            if (this.multipleChoiceService.validateQuestion(question)) {
+                await this.multipleChoiceService.updateQuestion(id, question);
                 return true; //Question created
             } else {
                 return false; //Question not created
@@ -68,5 +85,10 @@ export class MultipleChoiceController {
     @Get('template-question/:id')
     templateQuestion(@Param('id') id) {
         this.multipleChoiceService.setQuestionMode(id, 'TEMPLATE');
+    }
+
+    @Get('edit-question/:id')
+    editQuestion(@Param('id') id) {
+        this.multipleChoiceService.setQuestionMode(id, 'EDIT');
     }
 }

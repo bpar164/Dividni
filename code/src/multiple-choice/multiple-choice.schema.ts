@@ -7,9 +7,6 @@ export class MultipleChoice extends Document {
     question: object;
 
     @Prop()
-    xml: string;
-
-    @Prop()
     userID: string;
 }
 

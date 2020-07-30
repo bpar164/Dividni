@@ -4,7 +4,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { MultipleChoice } from './multiple-choice.schema';
 import { QuestionFormDTO } from './question-form.dto';
 import { MultipleChoiceDTO } from './multiple-choice.dto';
-import { create } from 'xmlbuilder2';
 
 @Injectable()
 export class MultipleChoiceService {
@@ -66,32 +65,13 @@ export class MultipleChoiceService {
         }
         return true;
     }
-
-    //Convert question to XML
-    convertToXML(form: QuestionFormDTO) {
-        const root = create()
-            .ele('Question', {type: form.type, id: 'id', marks: form.marks}) //Id is just 'id' - value is not used at all.
-                .ele('Stem').txt(form.questionText).up();
-        const trueAnswers = root.ele('TrueAnswers');
-        for (let i = 0; i < form.correctAnswers.length; i++) {
-            trueAnswers.ele('Answer').txt(form.correctAnswers[i]).up()
-        }    
-        trueAnswers.up();       
-        const falseAnswers = root.ele('FalseAnswers');
-        for (let i = 0; i < form.incorrectAnswers.length; i++) {
-            falseAnswers.ele('Answer').txt(form.incorrectAnswers[i]).up()
-        }    
-        falseAnswers.up();     
-
-        return root.end({ prettyPrint: true });
-    }
     
-    //Use the XML file to create the Dividni question (C#)
-    async generateQuestion(question: QuestionFormDTO, xml: string): Promise<any> {
+    //Create the Dividni question 
+    async generateQuestion(question: QuestionFormDTO): Promise<any> {
         let userID: string = 'user1'; //TODO Need to add params and send user ID
-        //Save xml and question to database
+        //Save question to database
         let multipleChoiceDTO = new MultipleChoiceDTO();
-        multipleChoiceDTO = {question, xml, userID };
+        multipleChoiceDTO = {question, userID };
         let newQuestion = new this.MCModel(multipleChoiceDTO);
         return newQuestion.save();    
     } 
@@ -106,6 +86,10 @@ export class MultipleChoiceService {
 
     async deleteQuestion(id: string) {  
         return this.MCModel.findByIdAndDelete({ _id: id }).exec();
+    }
+
+    async updateQuestion(id: string, question) {
+        return this.MCModel.update({ _id: id}, {question: question}).exec();
     }
 
     getQuestionMode() {

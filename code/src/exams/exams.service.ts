@@ -3,6 +3,7 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import fs = require('fs');
 import { exec } from 'child_process';
+import { create } from 'xmlbuilder2';
 
 
 let errorDetails = { status: false, message: '' };
@@ -10,6 +11,26 @@ let errorDetails = { status: false, message: '' };
 @Injectable()
 export class ExamsService {
     constructor() {}
+
+    /*
+    //Convert multiple-choice question to XML
+    convertToXML(form: QuestionFormDTO) {
+        const root = create()
+            .ele('Question', {type: form.type, id: 'id', marks: form.marks}) //Id is just 'id' - value is not used at all.
+                .ele('Stem').txt(form.questionText).up();
+        const trueAnswers = root.ele('TrueAnswers');
+        for (let i = 0; i < form.correctAnswers.length; i++) {
+            trueAnswers.ele('Answer').txt(form.correctAnswers[i]).up()
+        }    
+        trueAnswers.up();       
+        const falseAnswers = root.ele('FalseAnswers');
+        for (let i = 0; i < form.incorrectAnswers.length; i++) {
+            falseAnswers.ele('Answer').txt(form.incorrectAnswers[i]).up()
+        }    
+        falseAnswers.up();     
+
+        return root.end({ prettyPrint: true });
+    }*/
 
     async createExam(): Promise<any> {
         //Create a temporary folder to hold the exam

@@ -9,7 +9,8 @@
  let currentQuestionID;
  let currentQuestionName;
 
- $(document).ready(function(){
+ $(document).ready(() => {
+   //Create questionText editor
   tinymce.init({
     selector: '.tinymce-description', 
     height: '15em',
@@ -20,10 +21,11 @@
   //Check if there is data for a question that needs to be populated
   let questionMode = document.getElementById('questionMode');
   if (questionMode) { 
-    setTimeout(function() { populateQuestionForm(questionMode.getAttribute('data-question-id'), questionMode.getAttribute('data-question-action')); }, 200); //Give tinyMCE time to load
+    setTimeout(() => { populateQuestionForm(questionMode.getAttribute('data-question-id')); }, 500); //Give tinyMCE time to load
   }
 });
 
+//For question slots
 loadAnswerEditors = () => {
   tinymce.init({
     selector: '.tinymce-small',
@@ -102,6 +104,7 @@ createIncorrectAnswers = (numAnswers, incorrectAnswers, required) => {
   }
 }
 
+//Creates the actual HTML answer slot
 addAnswer = (divName, isRequired, value) => {
   let newdiv = document.createElement('div');
   let newpar = document.createElement('p');
@@ -131,6 +134,7 @@ addAnswer = (divName, isRequired, value) => {
   }
 }
 
+//Calls methods to create and populate the preview window
 previewAnswer = () => {
   //Enable the generate button
   document.getElementById('generate').classList.remove("disabled");
@@ -144,7 +148,6 @@ previewAnswer = () => {
 
 //Fetches all values from the form
 fetchFormValues = () => {
-  //Create the question object by fetching values from the form
   question = {};
   question.name = document.getElementById('name').value;
   question.type = currentType;
@@ -161,6 +164,7 @@ fetchFormValues = () => {
   return question;
 }
 
+//Creates the HTML content for the preview window
 generatePreviewContent = (question) => {
   //Clear the content
   content = '';
@@ -182,6 +186,7 @@ generatePreviewContent = (question) => {
   return content;
 }
 
+//When form is submitted, check for required fields and generate the options modal
 $("#questionForm").submit((event) => {
   event.preventDefault();
   //Display options modal
@@ -206,17 +211,23 @@ $("#questionForm").submit((event) => {
     document.getElementById('optionsModalRetry').classList.remove("disabled");
   } else { //All required fields filled in
     document.getElementById('optionsModalRetry').classList.add("disabled");
-    //Generate the question
-    generateQuestion();
+    //Check if question is being edited or being created
+    let questionMode = document.getElementById('questionMode');
+    if ((questionMode) && (questionMode.getAttribute('data-question-action') === 'EDIT')) {
+      updateQuestion(questionMode.getAttribute('data-question-id')); //Edit question
+    } else {
+      generateQuestion(); //Create question
+    }
   } 
 });
 
+//Make the actual request to add the question to the database
 generateQuestion = () => {
   document.getElementById('optionsModalContent').innerHTML = '<p>Generating question...</p>';
   //Get the values from the form
   let question = fetchFormValues();
   $.ajax({
-    url: 'multiple-choice-preview',
+    url: 'multiple-choice',
     method: 'POST',
     data: question,
     success: (res) => {
@@ -238,11 +249,41 @@ generateQuestion = () => {
   document.getElementById('optionsModalView').classList.remove("disabled");
 }
 
+//Make the actual request to update the question in the database
+updateQuestion = (id) => {
+  document.getElementById('optionsModalContent').innerHTML = '<p>Editing question...</p>';
+  //Get the values from the form
+  let question = fetchFormValues();
+  $.ajax({
+    url: 'multiple-choice/' + id,
+    method: 'PUT',
+    data: question,
+    success: (res) => {
+      if (res === 'true') {
+        //Question updated
+        document.getElementById('optionsModalContent').innerHTML = '<p>Question edited.</p>';
+      } else if (res === 'false') {
+        //Question not updated
+        document.getElementById('optionsModalContent').innerHTML = '<p>Error editing question.</p>';
+        document.getElementById('optionsModalRetry').classList.remove("disabled");
+      }  
+    },
+    error: () => {
+      document.getElementById('optionsModalContent').innerHTML = '<p>Error editing question.</p>';
+      document.getElementById('optionsModalRetry').classList.remove("disabled");
+    }
+  });
+  document.getElementById('optionsModalCreate').classList.remove("disabled");
+  document.getElementById('optionsModalView').classList.remove("disabled");
+}
+
+//Used when a question in a list is clicked-on 
 setCurrentQuestion = (id, name) => {
   currentQuestionID = id;
   currentQuestionName = name;
 }
 
+//Creates a confirmation modal
 confirmDialog = (action) => {
   let content = '<p>';
   //Build the display string and set the correct onClick function for the yes button
@@ -251,16 +292,20 @@ confirmDialog = (action) => {
     document.getElementById('confirmModalYes').setAttribute('onClick', `deleteQuestion('` + currentQuestionID + `');`);
   } else if (action === 'EDIT') {
     content += 'Edit question:</br><b>' + currentQuestionName + '</b>';
-    //document.getElementById('confirmModalYes').setAttribute('onClick', `editQuestion('` + currentQuestionID + `');`);
+    document.getElementById('confirmModalYes').setAttribute('onClick', `editQuestion('` + currentQuestionID + `');`);
   } else if (action === 'TEMPLATE') {
     content += 'Use the following question as a template:</br><b>' + currentQuestionName + '</b>';
     document.getElementById('confirmModalYes').setAttribute('onClick', `templateQuestion('` + currentQuestionID + `');`);
+  } else if (action === 'SHARE') {
+    content += 'Share the following question with a different user:</br><b>' + currentQuestionName + '</b>';
+    document.getElementById('confirmModalYes').setAttribute('onClick', `shareQuestion('` + currentQuestionID + `');`);
   }
   content += '</p>'
   //Set the contents of the modal
   document.getElementById('confirmModalContent').innerHTML = content;
 }
 
+//Fetches question from database and displays it
 previewQuestion = () => {
   document.getElementById('previewModalContent').innerHTML = '<p>Fetching question...</p>';
   $.ajax({
@@ -269,7 +314,7 @@ previewQuestion = () => {
     dataType: 'json',
     success: (res) => {
       if (res.question) {
-        //Call a function to generate the content
+        //Call a function to generate the HTML content
         content = generatePreviewContent(res.question);
         //Add the content to the display
         document.getElementById('previewModalContent').innerHTML = content;
@@ -283,6 +328,7 @@ previewQuestion = () => {
   });
 }
 
+//Removes question from database
 deleteQuestion = (id) => {
   document.getElementById(id).remove();
   $.ajax({
@@ -291,6 +337,18 @@ deleteQuestion = (id) => {
   })
 }
 
+//Sets the id value and 'edit' in the backend and redirects to the create page
+editQuestion = (id) => {
+  $.ajax({
+    url: 'edit-question/' + id,
+    method: 'GET',
+    success: (res) => {
+      window.location.href ="multiple-choice";
+    }
+  });
+}
+
+//Sets the id value and 'template' in the backend and redirects to the create page
 templateQuestion = (id) => {
   $.ajax({
     url: 'template-question/' + id,
@@ -301,7 +359,14 @@ templateQuestion = (id) => {
   });
 }
 
-populateQuestionForm = (id, action) => {
+
+//
+shareQuestion = () => {
+  console.log('Sharing');
+}
+
+
+populateQuestionForm = (id) => {
   //Fetch question
   $.ajax({
     url: 'multiple-choice-my/' + id,
@@ -325,9 +390,6 @@ populateQuestionForm = (id, action) => {
         let incorrectAnswers = res.question.incorrectAnswers;
         createAnswers(res.question.type, correctAnswers, incorrectAnswers);
         tinyMCE.get('questionText').setContent(res.question.questionText);
-        if (action === 'EDIT') {
-
-        } //Don't need to do anything extra for TEMPLATE
       }  
     },
     error: () => {
