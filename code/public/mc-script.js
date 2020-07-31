@@ -298,6 +298,7 @@ confirmDialog = (action) => {
     document.getElementById('confirmModalYes').setAttribute('onClick', `templateQuestion('` + currentQuestionID + `');`);
   } else if (action === 'SHARE') {
     content += 'Share the following question with a different user:</br><b>' + currentQuestionName + '</b>';
+    document.getElementById('confirmModalYes').classList.remove('modal-close');
     document.getElementById('confirmModalYes').setAttribute('onClick', `shareQuestion('` + currentQuestionID + `');`);
   }
   content += '</p>'
@@ -361,8 +362,26 @@ templateQuestion = (id) => {
 
 
 //
-shareQuestion = () => {
-  console.log('Sharing');
+shareQuestion = (id) => {
+  console.log('In Share')
+  let content = `<form id="shareForm">
+                  <div class="input-field">
+                    <label for="name">Email</label>
+                    <input type="email" id="email" name="email" required>
+                  </div> 
+                  <button class="btn waves-effect waves-light right modal-close" type="submit"> 
+                    SHARE<i class="material-icons right">send</i>
+                  </button> 
+                </form>`;
+  document.getElementById('confirmModalNo').innerHTML= "CANCEl";
+  document.getElementById('confirmModalYes').classList.add("disabled");
+  document.getElementById('confirmModalContent').innerHTML = content;
+
+  //When form submitted, reset No and Yes buttons
+  /*
+  document.getElementById('confirmModalNo').innerHTML= "NO";
+  document.getElementById('confirmModalYes').classList.remove("disabled");
+  */
 }
 
 
