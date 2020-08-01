@@ -4,12 +4,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { MultipleChoice } from './multiple-choice.schema';
 import { QuestionFormDTO } from './question-form.dto';
 import { MultipleChoiceDTO } from './multiple-choice.dto';
-import { User } from 'src/user.schema';
 
 @Injectable()
 export class MultipleChoiceService {
     private QuestionMode: { id: string, action: string };
-    constructor(@InjectModel(MultipleChoice.name) private MCModel: Model<MultipleChoice>, @InjectModel(User.name) private UserModel: Model<User>) {}
+    constructor(@InjectModel(MultipleChoice.name) private MCModel: Model<MultipleChoice>) {}
 
     //Remove all empty string elements
     removeEmptyElements(array: string[]) {

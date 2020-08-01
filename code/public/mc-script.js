@@ -285,8 +285,11 @@ setCurrentQuestion = (id, name) => {
 
 //Creates a confirmation modal
 confirmDialog = (action) => {
-  let content = '<p>';
+  //Reset buttons
+  document.getElementById('confirmModalNo').innerHTML= "NO";
+  document.getElementById('confirmModalYes').classList.remove("disabled");
   //Build the display string and set the correct onClick function for the yes button
+  let content = '<p>';
   if (action === 'DELETE') {
     content += 'Delete question:</br><b>' + currentQuestionName + '</b>';
     document.getElementById('confirmModalYes').setAttribute('onClick', `deleteQuestion('` + currentQuestionID + `');`);
@@ -360,29 +363,43 @@ templateQuestion = (id) => {
   });
 }
 
-
 //
-shareQuestion = (id) => {
-  console.log('In Share')
+shareQuestion = () => {
   let content = `<form id="shareForm">
                   <div class="input-field">
                     <label for="name">Email</label>
                     <input type="email" id="email" name="email" required>
                   </div> 
-                  <button class="btn waves-effect waves-light right modal-close" type="submit"> 
+                  <button class="btn waves-effect waves-light right" type="submit"> 
                     SHARE<i class="material-icons right">send</i>
                   </button> 
                 </form>`;
   document.getElementById('confirmModalNo').innerHTML= "CANCEl";
   document.getElementById('confirmModalYes').classList.add("disabled");
   document.getElementById('confirmModalContent').innerHTML = content;
-
-  //When form submitted, reset No and Yes buttons
-  /*
-  document.getElementById('confirmModalNo').innerHTML= "NO";
-  document.getElementById('confirmModalYes').classList.remove("disabled");
-  */
 }
+
+$("#shareForm").submit((event) => {
+  event.preventDefault();
+  //Fetch question by email
+  console.log(document.getElementById('email').value)
+  $.ajax({
+    url: 'users/' + document.getElementById('email').value,
+    method: 'GET',
+    dataType: 'json',
+    success: (res) => {
+      console.log(res);
+    },
+    error: () => {
+     
+    }
+  });
+});
+
+  //Find question by id
+
+  //Insert the question into the database
+
 
 
 populateQuestionForm = (id) => {
