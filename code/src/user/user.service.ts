@@ -5,12 +5,11 @@ import { User } from './user.schema';
 import { UserDTO } from './user.dto';
 
 @Injectable()
-export class UsersService {
-    constructor(@InjectModel(User.name) private UsersModel: Model<User>) {}
+export class UserService {
+    constructor(@InjectModel(User.name) private UserModel: Model<User>) {}
 
     async getUserByEmail(email: string) {  
-        console.log(email);
-        return this.UsersModel.findOne({ email: email }).exec();
+        return this.UserModel.findOne({ email: email }).exec();
     }
 
 }

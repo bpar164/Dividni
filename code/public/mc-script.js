@@ -365,7 +365,7 @@ templateQuestion = (id) => {
 
 //
 shareQuestion = () => {
-  let content = `<form id="shareForm">
+  let content = `<form onSubmit="return submitShareForm(event)">
                   <div class="input-field">
                     <label for="name">Email</label>
                     <input type="email" id="email" name="email" required>
@@ -379,26 +379,32 @@ shareQuestion = () => {
   document.getElementById('confirmModalContent').innerHTML = content;
 }
 
-$("#shareForm").submit((event) => {
+submitShareForm = (event) => {
   event.preventDefault();
-  //Fetch question by email
-  console.log(document.getElementById('email').value)
+  let email = event.target.elements.email.value;
+  document.getElementById('confirmModalContent').innerHTML = '<p>Sharing question...</p>'
   $.ajax({
-    url: 'users/' + document.getElementById('email').value,
+    url: 'users/' + email,
     method: 'GET',
-    dataType: 'json',
     success: (res) => {
-      console.log(res);
+      if (res) {
+        //Find question by id
+        console.log(res._id);
+        //Insert the question into the database
+
+      } else { //Could not find user
+        document.getElementById('confirmModalContent').innerHTML= '<p>Could not find user.</p>';
+      }
     },
     error: () => {
-     
+      document.getElementById('confirmModalContent').innerHTML = '<p>Error sharing question.</p>';
     }
   });
-});
+  document.getElementById('confirmModalNo').innerHTML= "CLOSE";
+}
 
-  //Find question by id
 
-  //Insert the question into the database
+  
 
 
 

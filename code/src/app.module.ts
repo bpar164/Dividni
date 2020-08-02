@@ -5,13 +5,13 @@ import { MultipleChoiceModule } from './multiple-choice/multiple-choice.module';
 import { TutorialsModule } from './tutorials/tutorials.module';
 import { AdvancedModule } from './advanced/advanced.module';
 import { ExamsModule } from './exams/exams.module';
-import { UsersModule } from './users/users.module';
+import { UserModule } from './user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    MultipleChoiceModule, TutorialsModule, AdvancedModule, ExamsModule, UsersModule,
+    MultipleChoiceModule, TutorialsModule, AdvancedModule, ExamsModule, UserModule,
     ConfigModule.forRoot({
       isGlobal: true
     }),
