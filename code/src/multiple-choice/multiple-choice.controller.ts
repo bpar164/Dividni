@@ -26,15 +26,16 @@ export class MultipleChoiceController {
           };
     }
 
-    @Post('multiple-choice')
-    async generateQuestion(@Req() request: Request): Promise<boolean> { 
+    @Post('multiple-choice/:id')
+    async generateQuestion(@Req() request: Request, @Param('id') id): Promise<boolean> { 
+        console.log(id);
         let question = new QuestionFormDTO();
         try {
             question = request.body;
             question.correctAnswers = this.multipleChoiceService.removeEmptyElements(question.correctAnswers);
             question.incorrectAnswers = this.multipleChoiceService.removeEmptyElements(question.incorrectAnswers);
             if (this.multipleChoiceService.validateQuestion(question)) {
-                await this.multipleChoiceService.generateQuestion(question);
+                await this.multipleChoiceService.generateQuestion(question, id);
                 return true; //Question created
             } else {
                 return false; //Question not created
@@ -68,7 +69,7 @@ export class MultipleChoiceController {
         return { 
             title: 'Multiple-Choice', 
             description: 'Browse the multiple-choice questions that you have created',
-            questions: await this.multipleChoiceService.fetchUserQuestions('user1')
+            questions: await this.multipleChoiceService.fetchUserQuestions('5f268ce517c3a42d88156681')
           };
     }
 

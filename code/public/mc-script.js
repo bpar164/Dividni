@@ -227,7 +227,7 @@ generateQuestion = () => {
   //Get the values from the form
   let question = fetchFormValues();
   $.ajax({
-    url: 'multiple-choice',
+    url: 'multiple-choice/' + '5f268ce517c3a42d88156681', //TODO Need to get this from session
     method: 'POST',
     data: question,
     success: (res) => {
@@ -363,7 +363,7 @@ templateQuestion = (id) => {
   });
 }
 
-//
+//Creates a small form in the current modal, for submitting an email
 shareQuestion = () => {
   let content = `<form onSubmit="return submitShareForm(event)">
                   <div class="input-field">
@@ -379,6 +379,7 @@ shareQuestion = () => {
   document.getElementById('confirmModalContent').innerHTML = content;
 }
 
+//When the email form is submitted, load the user id, load the question details, and upload a copy of that question to the new user
 submitShareForm = (event) => {
   event.preventDefault();
   let email = event.target.elements.email.value;
@@ -388,10 +389,33 @@ submitShareForm = (event) => {
     method: 'GET',
     success: (res) => {
       if (res) {
+        let userId = res._id;
         //Find question by id
-        console.log(res._id);
-        //Insert the question into the database
-
+        $.ajax({
+          url: 'multiple-choice-my/' + currentQuestionID,
+          method: 'GET',
+          dataType: 'json',
+          success: (res) => {
+            if (res.question) {
+              let question = res.question;
+              //Upload new question
+              $.ajax({
+                url: 'multiple-choice/' + userId,
+                method: 'POST',
+                data: question,
+                success: (res) => {
+                  if (res === 'true') {
+                    document.getElementById('confirmModalContent').innerHTML = '<p>Question shared.</p>';
+                  } else if (res === 'false') {
+                    document.getElementById('confirmModalContent').innerHTML = '<p>Error sharing question.</p>';
+                  }  
+                }
+              });
+            } else {
+              document.getElementById('confirmModalContent').innerHTML = '<p>Error fetching question.</p>';
+            }  
+          }
+        });
       } else { //Could not find user
         document.getElementById('confirmModalContent').innerHTML= '<p>Could not find user.</p>';
       }
@@ -401,12 +425,8 @@ submitShareForm = (event) => {
     }
   });
   document.getElementById('confirmModalNo').innerHTML= "CLOSE";
+  document.getElementById('confirmModalYes').classList.add('modal-close');
 }
-
-
-  
-
-
 
 populateQuestionForm = (id) => {
   //Fetch question

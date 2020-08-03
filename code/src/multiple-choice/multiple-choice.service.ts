@@ -67,8 +67,8 @@ export class MultipleChoiceService {
     }
     
     //Create the Dividni question 
-    async generateQuestion(question: QuestionFormDTO): Promise<any> {
-        let userID: string = 'user1'; //TODO Need to add params and send user ID
+    async generateQuestion(question: QuestionFormDTO, id: string): Promise<any> {
+        let userID = id; 
         //Save question to database
         let multipleChoiceDTO = new MultipleChoiceDTO();
         multipleChoiceDTO = {question, userID };
