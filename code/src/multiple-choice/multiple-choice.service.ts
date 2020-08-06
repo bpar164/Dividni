@@ -89,7 +89,7 @@ export class MultipleChoiceService {
     }
 
     async updateQuestion(id: string, question) {
-        return this.MCModel.update({ _id: id}, {question: question}).exec();
+        return this.MCModel.updateOne({ _id: id}, {question: question}).exec();
     }
 
     getQuestionMode() {

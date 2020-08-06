@@ -12,7 +12,6 @@ export class UserController {
         try {
             //Fetch user
             user = await this.userService.getUserByEmail(email);
-            console.log(user)
             if (!(user)) { //User not found
                 return null;
             } else {

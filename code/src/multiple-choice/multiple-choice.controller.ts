@@ -28,7 +28,11 @@ export class MultipleChoiceController {
 
     @Post('multiple-choice/:id')
     async generateQuestion(@Req() request: Request, @Param('id') id): Promise<boolean> { 
-        console.log(id);
+        if (id === 'currentUserID') {
+            id = '5f268ce517c3a42d88156681'; //TODO Get user id from request
+        } else {
+            //User must not share question with self
+        }
         let question = new QuestionFormDTO();
         try {
             question = request.body;
@@ -64,7 +68,7 @@ export class MultipleChoiceController {
     }
 
     @Get('multiple-choice-my')
-    @Render('multiple-choice-my') //TODO Need to add params and send user ID
+    @Render('multiple-choice-my') //TODO Get user id from request
     async getMultipleChoiceMyView() { 
         return { 
             title: 'Multiple-Choice', 

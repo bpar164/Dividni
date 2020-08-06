@@ -227,7 +227,7 @@ generateQuestion = () => {
   //Get the values from the form
   let question = fetchFormValues();
   $.ajax({
-    url: 'multiple-choice/' + '5f268ce517c3a42d88156681', //TODO Need to get this from session
+    url: 'multiple-choice/currentUserID',
     method: 'POST',
     data: question,
     success: (res) => {
