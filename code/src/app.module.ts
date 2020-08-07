@@ -8,7 +8,7 @@ import { ExamsModule } from './exams/exams.module';
 import { UserModule } from './user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
-import { GoogleStrategy } from './google.strategy'
+
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { GoogleStrategy } from './google.strategy'
     MongooseModule.forRoot('mongodb+srv://admin:6q3RZH1a8oJo5xjV@dividni-bzvpa.mongodb.net/dividni?retryWrites=true&w=majority')
   ],
   controllers: [AppController],
-  providers: [AppService, GoogleStrategy],
+  providers: [AppService],
 })
 export class AppModule {}
 

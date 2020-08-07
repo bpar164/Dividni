@@ -8,8 +8,21 @@ import { UserDTO } from './user.dto';
 export class UserService {
     constructor(@InjectModel(User.name) private UserModel: Model<User>) {}
 
+    googleLogin(req) {
+        if (!req.user) {
+            return null;
+        } else {
+            return req.user;
+        }
+    }
+    
     async getUserByEmail(email: string) {  
         return this.UserModel.findOne({ email: email }).exec();
     }
+
+    async addUser(user: UserDTO) {  
+        let newUser= new this.UserModel(user);
+        return newUser.save();  
+    } 
 
 }
