@@ -18,13 +18,16 @@ export class UserController {
     @UseGuards(AuthGuard('google'))
     async googleAuthRedirect(@Req() req) {
       let googleUser = this.userService.googleLogin(req);
+      console.log('User from google:' + googleUser);
       if (googleUser) {
         //Check if user exists in database
         let user = await this.userService.getUserByEmail(googleUser.email);
+        console.log('User from database:' + user);
         if (!(user)) { //If user does not exist, add to database
             let newUser = new UserDTO();
             newUser = googleUser;
             user = await this.userService.addUser(newUser);
+            console.log('New user added:' + user);
         }
       } //Else user was not returned by google 
     }

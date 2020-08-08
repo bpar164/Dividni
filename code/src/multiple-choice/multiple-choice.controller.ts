@@ -29,7 +29,7 @@ export class MultipleChoiceController {
     @Post('multiple-choice/:id')
     async generateQuestion(@Req() request: Request, @Param('id') id): Promise<boolean> { 
         if (id === 'currentUserID') {
-            id = '5f268ce517c3a42d88156681'; //TODO Get user id from request
+            id = '5f2deda94789b23608c257f8'; //TODO Get user id from request
         } else {
             //User must not share question with self
         }
@@ -68,12 +68,12 @@ export class MultipleChoiceController {
     }
 
     @Get('multiple-choice-my')
-    @Render('multiple-choice-my') //TODO Get user id from request
+    @Render('multiple-choice-my') 
     async getMultipleChoiceMyView() { 
         return { 
             title: 'Multiple-Choice', 
             description: 'Browse the multiple-choice questions that you have created',
-            questions: await this.multipleChoiceService.fetchUserQuestions('5f268ce517c3a42d88156681')
+            questions: await this.multipleChoiceService.fetchUserQuestions('5f2deda94789b23608c257f8') //TODO Get user id from request
           };
     }
 
