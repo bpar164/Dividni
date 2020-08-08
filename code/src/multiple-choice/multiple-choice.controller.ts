@@ -69,7 +69,7 @@ export class MultipleChoiceController {
 
     @Get('multiple-choice-my')
     @Render('multiple-choice-my') 
-    async getMultipleChoiceMyView() { 
+    async getMultipleChoiceMyView(@Req() request: Request) { 
         return { 
             title: 'Multiple-Choice', 
             description: 'Browse the multiple-choice questions that you have created',

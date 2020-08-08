@@ -12,7 +12,9 @@ export class UserController {
     async googleAuth(@Req() req) {}
 
     @Get('logout')
-    async logout(@Req() req) {}
+    async logout(@Req() req) {
+        req.logout;
+    }
   
     @Get('google/redirect')
     @UseGuards(AuthGuard('google'))
@@ -30,6 +32,7 @@ export class UserController {
             console.log('New user added:' + user);
         }
       } //Else user was not returned by google 
+      
     }
 
     @Get('users/:email')
