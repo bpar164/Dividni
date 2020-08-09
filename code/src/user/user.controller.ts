@@ -1,38 +1,38 @@
-import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Req, Request, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
 import { UserService } from './user.service';
 import { UserDTO } from './user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { LoginGuard } from './login.guard';
 
 @Controller()
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @Get('login')
-    @UseGuards(AuthGuard('google'))
+    @UseGuards(LoginGuard)
     async googleAuth(@Req() req) {}
 
     @Get('logout')
-    async logout(@Req() req) {
-        req.logout;
+    async logout(@Request() req, @Res() res: Response) {
+        req.logout();
+        res.redirect('/');
     }
   
     @Get('google/redirect')
-    @UseGuards(AuthGuard('google'))
-    async googleAuthRedirect(@Req() req) {
+    @UseGuards(LoginGuard)
+    async googleAuthRedirect(@Request() req, @Res() res: Response) {
       let googleUser = this.userService.googleLogin(req);
-      console.log('User from google:' + googleUser);
       if (googleUser) {
         //Check if user exists in database
         let user = await this.userService.getUserByEmail(googleUser.email);
-        console.log('User from database:' + user);
         if (!(user)) { //If user does not exist, add to database
             let newUser = new UserDTO();
             newUser = googleUser;
             user = await this.userService.addUser(newUser);
-            console.log('New user added:' + user);
         }
       } //Else user was not returned by google 
-      
+      res.redirect('/');
     }
 
     @Get('users/:email')

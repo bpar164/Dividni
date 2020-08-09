@@ -20,6 +20,11 @@ export class UserService {
         return this.UserModel.findOne({ email: email }).exec();
     }
 
+    async getUserIDByEmail(email: string) {  
+        let user = this.UserModel.findOne({ email: email }).exec();
+        return (await user)._id;
+    }
+
     async addUser(user: UserDTO) {  
         let newUser= new this.UserModel(user);
         return newUser.save();  

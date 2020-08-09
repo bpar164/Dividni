@@ -1,11 +1,13 @@
-import { Controller, Get, Render, Post, Req, Delete, Param, Put } from '@nestjs/common';
+import { Controller, Get, Render, Post, Req, Request, Delete, Param, Put, UseGuards } from '@nestjs/common';
 import { MultipleChoiceService } from './multiple-choice.service';
 import { QuestionFormDTO } from './question-form.dto';
-import { Request } from 'express';
+import { AuthenticatedGuard } from 'src/user/authenticated.guard';
+import { UserService } from 'src/user/user.service';
+import { UserDTO } from 'src/user/user.dto';
 
 @Controller()
 export class MultipleChoiceController {
-    constructor(private readonly multipleChoiceService: MultipleChoiceService) {}
+    constructor(private readonly multipleChoiceService: MultipleChoiceService, private readonly userService: UserService) {}
 
     @Get('multiple-choice')
     @Render('multiple-choice')
@@ -27,15 +29,17 @@ export class MultipleChoiceController {
     }
 
     @Post('multiple-choice/:id')
-    async generateQuestion(@Req() request: Request, @Param('id') id): Promise<boolean> { 
+    async generateQuestion(@Request() req, @Param('id') id): Promise<boolean> { 
+        let userID = await this.userService.getUserIDByEmail(req.user.email);
         if (id === 'currentUserID') {
-            id = '5f2deda94789b23608c257f8'; //TODO Get user id from request
-        } else {
+            id = userID;
+        } else if (id == userID) {
             //User must not share question with self
+            return false;   
         }
         let question = new QuestionFormDTO();
         try {
-            question = request.body;
+            question = req.body;
             question.correctAnswers = this.multipleChoiceService.removeEmptyElements(question.correctAnswers);
             question.incorrectAnswers = this.multipleChoiceService.removeEmptyElements(question.incorrectAnswers);
             if (this.multipleChoiceService.validateQuestion(question)) {
@@ -50,10 +54,10 @@ export class MultipleChoiceController {
     }
 
     @Put('multiple-choice/:id')
-    async updateQuestion(@Req() request: Request, @Param('id') id): Promise<boolean> { 
+    async updateQuestion(@Request() req, @Param('id') id): Promise<boolean> { 
         let question = new QuestionFormDTO();
         try {
-            question = request.body;
+            question = req.body;
             question.correctAnswers = this.multipleChoiceService.removeEmptyElements(question.correctAnswers);
             question.incorrectAnswers = this.multipleChoiceService.removeEmptyElements(question.incorrectAnswers);
             if (this.multipleChoiceService.validateQuestion(question)) {
@@ -67,13 +71,15 @@ export class MultipleChoiceController {
         }    
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Get('multiple-choice-my')
     @Render('multiple-choice-my') 
-    async getMultipleChoiceMyView(@Req() request: Request) { 
+    async getMultipleChoiceMyView(@Request() req) { 
+        let userID = await this.userService.getUserIDByEmail(req.user.email);
         return { 
             title: 'Multiple-Choice', 
             description: 'Browse the multiple-choice questions that you have created',
-            questions: await this.multipleChoiceService.fetchUserQuestions('5f2deda94789b23608c257f8') //TODO Get user id from request
+            questions: await this.multipleChoiceService.fetchUserQuestions(userID)
           };
     }
 
