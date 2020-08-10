@@ -1,11 +1,13 @@
-import { Controller, Get, Param, Req, Request, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Req, Request, Res, UseGuards, UseFilters } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
 import { UserDTO } from './user.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { LoginGuard } from './login.guard';
+import { AuthExceptionFilter } from './auth-exceptions.filter';
 
 @Controller()
+@UseFilters(AuthExceptionFilter)
+
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
@@ -15,8 +17,12 @@ export class UserController {
 
     @Get('logout')
     async logout(@Request() req, @Res() res: Response) {
-        req.logout();
-        res.redirect('/');
+        req.session.destroy(() => {
+            req.logout();
+            res.redirect('/');
+        });
+        //req.logout();
+        //res.redirect('/');
     }
   
     @Get('google/redirect')

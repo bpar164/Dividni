@@ -1,17 +1,20 @@
-import { Controller, Get, Render, Post, Req, Request, Delete, Param, Put, UseGuards } from '@nestjs/common';
+import { Controller, Get, Render, Post, Request, Delete, Param, Put, UseGuards, UseFilters } from '@nestjs/common';
 import { MultipleChoiceService } from './multiple-choice.service';
 import { QuestionFormDTO } from './question-form.dto';
 import { AuthenticatedGuard } from 'src/user/authenticated.guard';
 import { UserService } from 'src/user/user.service';
-import { UserDTO } from 'src/user/user.dto';
+import { AuthExceptionFilter } from 'src/user/auth-exceptions.filter';
+
 
 @Controller()
+@UseFilters(AuthExceptionFilter)
+
 export class MultipleChoiceController {
     constructor(private readonly multipleChoiceService: MultipleChoiceService, private readonly userService: UserService) {}
 
     @Get('multiple-choice')
     @Render('multiple-choice')
-    getMultipleChoiceView() { 
+    getMultipleChoiceView(@Request() req) { 
         let questionID = null;
         let questionAction = null;
         let questionMode = this.multipleChoiceService.getQuestionMode();
@@ -24,7 +27,8 @@ export class MultipleChoiceController {
             title: 'Multiple-Choice', 
             description: 'Create questions with multiple answers',
             id: questionID,
-            action: questionAction
+            action: questionAction,
+            loggedIn: req.user ? true : false
           };
     }
 
@@ -79,7 +83,8 @@ export class MultipleChoiceController {
         return { 
             title: 'Multiple-Choice', 
             description: 'Browse the multiple-choice questions that you have created',
-            questions: await this.multipleChoiceService.fetchUserQuestions(userID)
+            questions: await this.multipleChoiceService.fetchUserQuestions(userID),
+            loggedIn: req.user ? true : false
           };
     }
 
