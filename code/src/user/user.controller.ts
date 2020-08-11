@@ -21,8 +21,6 @@ export class UserController {
             req.logout();
             res.redirect('/');
         });
-        //req.logout();
-        //res.redirect('/');
     }
   
     @Get('google/redirect')

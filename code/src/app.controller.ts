@@ -11,10 +11,12 @@ export class AppController {
   @Get()
   @Render('index.ejs')
   getIndexView(@Request() req) {
+    console.log(req.user)
     return { 
       title: 'Individualized Assessments', 
       description: 'Enhancing learning via assessments unique to every student',
       loggedIn: (typeof req.user !== undefined) ? true : false, 
+      picture: req.user ? req.user.picture : null,
       message: req.flash('Login')  
     };
   }

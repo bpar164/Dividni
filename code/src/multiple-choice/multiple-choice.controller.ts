@@ -28,7 +28,8 @@ export class MultipleChoiceController {
             description: 'Create questions with multiple answers',
             id: questionID,
             action: questionAction,
-            loggedIn: req.user ? true : false
+            loggedIn: req.user ? true : false,
+            picture: req.user ? req.user.picture : null
           };
     }
 

@@ -5,11 +5,12 @@ $(document).ready(function(){
     $('.modal').modal();
     $('.modal-not-dismissible').modal({ dismissible: false});
     $('#modal').modal('open');
-
-    message = document.getElementById('message').value;
-    console.log(message)
-    if ((message !== null) && (message != undefined)){
-        alert(message);
-    }
+    //Create an alert if there is a message waiting on the page.
+    if (document.getElementById('message') !== null) {
+        message = document.getElementById('message').getAttribute('data-message');
+        if ((message !== null) && (message !== '')) {
+            alert(message);
+        }
+    }   
 });
 
