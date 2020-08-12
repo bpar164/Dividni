@@ -17,10 +17,8 @@ export class UserController {
 
     @Get('logout')
     async logout(@Request() req, @Res() res: Response) {
-        req.session.destroy(() => {
-            req.logout();
-            res.redirect('/');
-        });
+        req.logout();
+        res.redirect('/');
     }
   
     @Get('google/redirect')

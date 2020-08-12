@@ -1,9 +1,7 @@
-import { Controller, Get, Render, Request, UseFilters } from '@nestjs/common';
+import { Controller, Get, Render, Request } from '@nestjs/common';
 import { TutorialsService } from './tutorials.service';
-import { AuthExceptionFilter } from 'src/user/auth-exceptions.filter';
 
 @Controller()
-@UseFilters(AuthExceptionFilter)
 
 export class TutorialsController {
     constructor(private readonly tutorialsService: TutorialsService) {}
@@ -13,7 +11,8 @@ export class TutorialsController {
         return { 
             title: 'Tutorial: Multiple-Choice', 
             description: 'Learn to create questions with multiple answers',
-            loggedIn: req.user ? true : false 
+            loggedIn: (req.user !== undefined) ? true : false, 
+            picture: req.user ? req.user.picture : null 
           };
     }
 
@@ -23,7 +22,8 @@ export class TutorialsController {
         return { 
             title: 'Tutorial: Advanced', 
             description: 'Learn to create questions with code',
-            loggedIn: req.user ? true : false 
+            loggedIn: (req.user !== undefined) ? true : false, 
+            picture: req.user ? req.user.picture : null 
           };
     }
 
@@ -33,7 +33,8 @@ export class TutorialsController {
         return { 
             title: 'Tutorial: Exams', 
             description: 'Learn to create exams using your questions',
-            loggedIn: req.user ? true : false 
+            loggedIn: (req.user !== undefined) ? true : false, 
+            picture: req.user ? req.user.picture : null 
           };
     }
 }

@@ -12,6 +12,7 @@ import { AuthExceptionFilter } from 'src/user/auth-exceptions.filter';
 export class MultipleChoiceController {
     constructor(private readonly multipleChoiceService: MultipleChoiceService, private readonly userService: UserService) {}
 
+    @UseGuards(AuthenticatedGuard)
     @Get('multiple-choice')
     @Render('multiple-choice')
     getMultipleChoiceView(@Request() req) { 
@@ -28,7 +29,7 @@ export class MultipleChoiceController {
             description: 'Create questions with multiple answers',
             id: questionID,
             action: questionAction,
-            loggedIn: req.user ? true : false,
+            loggedIn: (req.user !== undefined) ? true : false,
             picture: req.user ? req.user.picture : null
           };
     }
@@ -85,7 +86,8 @@ export class MultipleChoiceController {
             title: 'Multiple-Choice', 
             description: 'Browse the multiple-choice questions that you have created',
             questions: await this.multipleChoiceService.fetchUserQuestions(userID),
-            loggedIn: req.user ? true : false
+            loggedIn: (req.user !== undefined) ? true : false,
+            picture: req.user ? req.user.picture : null
           };
     }
 
