@@ -71,7 +71,7 @@ export class MultipleChoiceService {
         let userID = id; 
         //Save question to database
         let multipleChoiceDTO = new MultipleChoiceDTO();
-        multipleChoiceDTO = {question, userID };
+        multipleChoiceDTO = { question, userID };
         let newQuestion = new this.MCModel(multipleChoiceDTO);
         return newQuestion.save();    
     } 
