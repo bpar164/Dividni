@@ -2,9 +2,19 @@
 
   <!-- main -->
   <section class="section container blue lighten-5" id="main">
-    
+    <div class="row">
+      <div class="col s12 m10 l8">
+        <h6>Exam Cover Page</h6>
+        <div class="tinymce-description" id="coverPage" name="coverPage"></div>
+        <h6>Select Questions</h6>
+        <p><%= id %></p>
+        <h6>Appendix</h6>
+        <div class="tinymce-description" id="appendix" name="appendix"></div>
+      </div>   
+    </div>
   </section>
 
 <%- include('partials/footer') -%>
+<script src="exams-script.js"></script>
 </body>
 </html>
