@@ -2,16 +2,35 @@
 
   <!-- main -->
   <section class="section container blue lighten-5" id="main">
-    <div class="row">
-      <div class="col s12 m10 l8">
-        <h6>Exam Cover Page</h6>
-        <div class="tinymce-description" id="coverPage" name="coverPage"></div>
-        <h6>Select Questions</h6>
-        <p><%= id %></p>
-        <h6>Appendix</h6>
-        <div class="tinymce-description" id="appendix" name="appendix"></div>
-      </div>   
-    </div>
+    <form id="examForm">
+      <div class="row">
+        <div class="col s12 m10 l8">
+          <div id="coverPage">
+            <h6>Exam Cover Page</h6>
+            <label>
+              <input type="checkbox" id="coverPageCheckBox" onChange="checkBoxChanged(this, 'coverPage')"/>
+              <span>Include a cover page</span>
+            </label>
+          </div>
+          <div id="questions">
+            <h6>Select Questions</h6>
+            <p><%= id %></p>
+          </div>
+          <div id="appendix">
+            <h6>Appendix</h6>
+            <label>
+              <input type="checkbox" id="appendixCheckBox" onChange="checkBoxChanged(this, 'appendix')"/>
+              <span>Include an appendix</span>
+            </label>
+          </div>
+        </div>  
+      </div>
+      <div class="row">
+        <button class="btn waves-effect waves-light right" id="generate" type="submit"> <!-- disabled -->
+          Generate<i class="material-icons right">send</i>
+        </button> 
+      </div> 
+    </form>  
   </section>
 
 <%- include('partials/footer') -%>
