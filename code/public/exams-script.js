@@ -36,15 +36,27 @@ removeTextArea = (divName) => {
 
 $("#examForm").submit((event) => {
   event.preventDefault();
+  //Display options modal
+  $('#optionsModal').modal('open');
   //If cover page or appendix is checked, there must be some content
+  let content = '<p>Please complete the following sections, or uncheck the corresponding box:<ul>';
   if (document.getElementById('coverPageCheckBox').checked) {
-    let coverPageContent = tinyMCE.get('coverPageTextArea').getContent();
-    console.log(coverPageContent)
+    if (tinyMCE.get('coverPageTextArea').getContent() === '') {
+      content += '<li>Cover Page</li>';
+    }   
   }
   if (document.getElementById('appendixCheckBox').checked) {
-    let appendixContent = tinyMCE.get('appendixTextArea').getContent();
-    console.log(appendixContent)
+    if (tinyMCE.get('appendixTextArea').getContent() === '') {
+      content += '<li>Appendix</li>';
+    }   
   }
+  content += '</ul></p>';
+  document.getElementById('optionsModalContent').innerHTML = content;
+  document.getElementById('optionsModalRetry').classList.remove("disabled");
+
+  //Check at least one question 
+
+  //Generate exam - re-add class list of disabled, change content
 });
 
  
