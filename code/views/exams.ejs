@@ -8,18 +8,53 @@
           <div id="coverPage">
             <h6>Exam Cover Page</h6>
             <label>
-              <input type="checkbox" id="coverPageCheckBox" onChange="checkBoxChanged(this, 'coverPage')"/>
+              <input type="checkbox" id="coverPageCheckBox" onChange="checkBoxChanged(this, 'coverPage');"/>
               <span>Include a cover page</span>
             </label>
           </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s12 m8 l6">
           <div id="questions">
             <h6>Select Questions</h6>
-            <p><%= id %></p>
+            <% if (mcQuestions.length === 0) { %>
+              <p>No multiple-choice questions.</p>
+            <% } else { %>
+              <p>Multiple-choice questions:</p>
+              <ul class="collection with-header">
+                <% mcQuestions.forEach(q => { %>
+                  <li class="collection-item"><div><%= q.question.name %><a href="#!" class="secondary-content">
+                    <label>
+                      <input type="checkbox" onChange="questionCheckBoxChanged(this, '<%= q.id %>', 'mc');"/><span></span>
+                    </label>
+                  </a></div></li> 
+                <% }) %>
+              </ul>
+            <% } %>
+            <% if (advQuestions.length === 0) { %>
+              <p>No advanced questions.</p>
+            <% } else { %>
+              <p>Advanced questions:</p>
+              <ul class="collection with-header">
+                <% advQuestions.forEach(q => { %>
+                  <li class="collection-item"><div><%= q.question.name %><a href="#!" class="secondary-content">
+                    <label>
+                      <input type="checkbox" onChange="questionCheckBoxChanged(this, '<%= q.id %>', 'adv');"/><span></span>
+                    </label>
+                  </a></div></li>         
+                <% }) %>
+              </ul>
+            <% } %>
           </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s12 m10 l8">
           <div id="appendix">
             <h6>Appendix</h6>
             <label>
-              <input type="checkbox" id="appendixCheckBox" onChange="checkBoxChanged(this, 'appendix')"/>
+              <input type="checkbox" id="appendixCheckBox" onChange="checkBoxChanged(this, 'appendix');"/>
               <span>Include an appendix</span>
             </label>
           </div>

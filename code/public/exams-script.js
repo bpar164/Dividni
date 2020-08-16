@@ -1,3 +1,5 @@
+let mcQuestionList = [];
+
 checkBoxChanged = (checkbox, divName) => {
   if (checkbox.checked) {
     createTextArea(divName);
@@ -32,6 +34,28 @@ removeTextArea = (divName) => {
   let divID = divName + "TextArea";
   tinymce.remove('#' + divID);
   document.getElementById(divName).removeChild(document.getElementById(divID));
+}
+
+questionCheckBoxChanged = (checkbox, id, type) => {
+  if (type === 'mc') {
+    if (checkbox.checked) {
+      //Add to mc list
+      mcQuestionList.push(id);
+      console.log(mcQuestionList.length);
+    } else {
+      //Remove from mc list
+      mcQuestionList.splice(mcQuestionList.indexOf(id), 1);
+      console.log(mcQuestionList.length);
+    }
+  } else {//type is 'adv'
+    if (checkbox.checked) {
+      //Add to adv list
+      
+    } else {
+      //Remove from adv list
+      
+    }
+  }
 }
 
 $("#examForm").submit((event) => {
