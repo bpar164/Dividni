@@ -2,7 +2,24 @@
 
   <!-- main -->
   <section class="section container blue lighten-5" id="main">
+    <div class="row">
+      <h5 class="teal-text">Exam Details</h5>
+      <p>Complete the details for the exam below, and click on <b>GENERATE</b> to create the desired number of papers.</p>
+      <p>Review the <a href="tutorials-exams" target="_blank">tutorial <i class="tiny material-icons">open_in_new</i></a> for help.</p>
+    </div>
     <form id="examForm">
+      <div class="row">
+        <div class="col s12 m8 l5">
+          <div class="input-field">
+            <label for="name">Exam name</label>
+            <input type="text" id="name" name="name" required pattern="^[a-zA-Z0-9][a-zA-Z0-9 ]*">
+          </div> 
+          <div class="input-field">
+            <label for="paperCount">Paper count</label>
+            <input type="number" min="1" max="100" step="1" id="paperCount" name="paperCount" required>
+          </div>
+        </div>
+      </div>
       <div class="row">
         <div class="col s12 m10 l8">
           <div id="coverPage">
@@ -19,7 +36,7 @@
           <div id="questions">
             <h6>Select Questions</h6>
             <% if (mcQuestions.length === 0) { %>
-              <p>No multiple-choice questions.</p>
+              <p>No multiple-choice questions to display.</p>
             <% } else { %>
               <p>Multiple-choice questions:</p>
               <ul class="collection with-header">
@@ -33,7 +50,7 @@
               </ul>
             <% } %>
             <% if (advQuestions.length === 0) { %>
-              <p>No advanced questions.</p>
+              <p>No advanced questions to display.</p>
             <% } else { %>
               <p>Advanced questions:</p>
               <ul class="collection with-header">
@@ -61,7 +78,7 @@
         </div>  
       </div>
       <div class="row">
-        <button class="btn waves-effect waves-light right" id="generate" type="submit"> <!-- disabled -->
+        <button class="btn waves-effect waves-light right" id="generate" type="submit"> 
           Generate<i class="material-icons right">send</i>
         </button> 
       </div> 

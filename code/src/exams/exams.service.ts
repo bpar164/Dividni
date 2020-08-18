@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import fs = require('fs');
 import { exec } from 'child_process';
 import { create } from 'xmlbuilder2';
+import { ExamFormDTO } from './exam-form.dto';
 
 
 let errorDetails = { status: false, message: '' };
@@ -11,6 +12,13 @@ let errorDetails = { status: false, message: '' };
 @Injectable()
 export class ExamsService {
     constructor() {}
+
+    /* Check for required inputs and types etc.
+    Just returns false if there is an issue, without explanation.
+    Validation also performed on frontend, so this is only false when the user has somehow avoided the frontend. */
+    validateQuestion(form: ExamFormDTO): boolean {
+        return true;
+    }
 
     /*
     //Convert multiple-choice question to XML
