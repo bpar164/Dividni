@@ -4,6 +4,7 @@ import { AuthExceptionFilter } from 'src/user/auth-exceptions.filter';
 import { AuthenticatedGuard } from 'src/user/authenticated.guard';
 import { UserService } from 'src/user/user.service';
 import { MultipleChoiceService } from 'src/multiple-choice/multiple-choice.service';
+import { ExamFormDTO } from './exam-form.dto';
 
 @Controller()
 @UseFilters(AuthExceptionFilter)
@@ -25,7 +26,7 @@ export class ExamsController {
           };
     }
 
-    /*@Post('exams/:id')
+    @Post('exams/:id')
     async generateExam(@Request() req, @Param('id') id): Promise<boolean> { 
         let userID = await this.userService.getUserIDByEmail(req.user.email);
         if (id === 'currentUserID') {
@@ -34,21 +35,19 @@ export class ExamsController {
             //User must not share exam with self
             return false;   
         }
-        let question = new QuestionFormDTO();
+        let exam = new ExamFormDTO();
         try {
-            question = req.body;
-            question.correctAnswers = this.multipleChoiceService.removeEmptyElements(question.correctAnswers);
-            question.incorrectAnswers = this.multipleChoiceService.removeEmptyElements(question.incorrectAnswers);
-            if (this.multipleChoiceService.validateQuestion(question)) {
-                await this.multipleChoiceService.generateQuestion(question, id);
+            exam = req.body;
+            if (this.examsService.validateExam(exam)) {
+                await this.examsService.generateQuestion(exam, id); 
                 return true; //Question created
             } else {
                 return false; //Question not created
             }
         } catch (err) {
-            return false; //Question not created
-        }    
-    }*/
+            return false; //Exam not created
+        }   
+    }
 
     @UseGuards(AuthenticatedGuard)
     @Get('exams-my')

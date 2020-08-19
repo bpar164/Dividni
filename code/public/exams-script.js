@@ -94,11 +94,29 @@ $("#examForm").submit((event) => {
 });
 
 generateExam = () => {
-  console.log('Generating exam')
   //Get the values from the form
   let exam = fetchFormValues();
-  console.log(exam);
-  //Post
+  $.ajax({
+    url: 'exams/currentUserID',
+    method: 'POST',
+    data: exam,
+    success: (res) => {
+      if (res === 'true') {
+        //Exam generated
+        document.getElementById('optionsModalContent').innerHTML = '<p>Exam generated.</p>';
+      } else if (res === 'false') {
+        //Question not generated
+        document.getElementById('optionsModalContent').innerHTML = '<p>Error generating exam.</p>';
+        document.getElementById('optionsModalRetry').classList.remove("disabled");
+      }  
+    },
+    error: () => {
+      document.getElementById('optionsModalContent').innerHTML = '<p>Error generating exam.</p>';
+      document.getElementById('optionsModalRetry').classList.remove("disabled");
+    }
+  });
+  document.getElementById('optionsModalCreate').classList.remove("disabled");
+  document.getElementById('optionsModalView').classList.remove("disabled");
 }
 
 fetchFormValues = () => {
