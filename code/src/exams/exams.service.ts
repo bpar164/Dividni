@@ -5,20 +5,79 @@ import fs = require('fs');
 import { exec } from 'child_process';
 import { create } from 'xmlbuilder2';
 import { ExamFormDTO } from './exam-form.dto';
+import { Exams } from './exams.schema';
 
 
 let errorDetails = { status: false, message: '' };
 
 @Injectable()
 export class ExamsService {
-    constructor() {}
+    constructor(@InjectModel(Exams.name) private MCModel: Model<Exams>) {}
 
     /* Check for required inputs and types etc.
     Just returns false if there is an issue, without explanation.
     Validation also performed on frontend, so this is only false when the user has somehow avoided the frontend. */
-    validateQuestion(form: ExamFormDTO): boolean {
+    validateExam(form: ExamFormDTO): boolean {
+        //Name and paper count are required 
+        if ((!(form.name)) || (!(form.paperCount))) {
+            return false;
+        }
+         //Field types are all correct
+         if ((typeof(form.name) !== 'string') ||
+         (typeof(form.paperCount) !== 'string') ||
+         (typeof(form.coverPage) !== 'string') ||
+         (typeof(form.appendix) !== 'string') 
+        ) {
+            return false;
+        }
+        //questionLists can not exist - need to check this before checking type
+        if (form.mcQuestionList) {
+            if (typeof(form.mcQuestionList) !== 'object') {
+                return false;
+            }
+        }
+        if (form.advQuestionList) {
+            if (typeof(form.advQuestionList) !== 'object') {
+                return false;
+            }
+        }
+        //There must be at least one question
+        if ((form.mcQuestionList.length < 1) && (form.advQuestionList.length < 1)) {
+            return false;
+        }
+        //Name matches regular expression
+        const re = new RegExp("^[a-zA-Z0-9][a-zA-Z0-9 ]*");
+        if (!(re.test(form.name))) {
+            return false;
+        } 
+        //paperCount in [1, 100] and divisible by 1
+        let paperCount = parseFloat(form.paperCount);
+        if (isNaN(paperCount)) {
+            return false;
+        } else if (!((paperCount >= 1) && (paperCount <= 100))) {
+            return false;
+        } else if ((paperCount % 1) !== 0) {
+            return false;
+        }
         return true;
     }
+
+    //Create the Dividni rxam
+    async generateQuestion(exam: ExamFormDTO, id: string): Promise<any> {
+        //Do not include coverPage/appendix if they are empty
+        if (exam.coverPage === '') {
+            console.log('Do not generate cover page');
+        }
+        if (exam.appendix === '') {
+            console.log('Do not generate appendix');
+        }
+        /*let userID = id; 
+        //Save question to database
+        let multipleChoiceDTO = new MultipleChoiceDTO();
+        multipleChoiceDTO = { question, userID };
+        let newQuestion = new this.MCModel(multipleChoiceDTO);
+        return newQuestion.save();*/    
+    } 
 
     /*
     //Convert multiple-choice question to XML
