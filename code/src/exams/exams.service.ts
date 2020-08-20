@@ -6,13 +6,15 @@ import { exec } from 'child_process';
 import { create } from 'xmlbuilder2';
 import { ExamFormDTO } from './exam-form.dto';
 import { Exams } from './exams.schema';
-
+import { QuestionFormDTO } from '../multiple-choice/question-form.dto';
+import { MultipleChoiceDTO } from '../multiple-choice/multiple-choice.dto';
+import { MultipleChoice } from '../multiple-choice/multiple-choice.schema';
 
 let errorDetails = { status: false, message: '' };
 
 @Injectable()
 export class ExamsService {
-    constructor(@InjectModel(Exams.name) private MCModel: Model<Exams>) {}
+    constructor(@InjectModel(Exams.name) private ExamsModel: Model<Exams>, @InjectModel(MultipleChoice.name) private MCModel: Model<MultipleChoice>) {}
 
     /* Check for required inputs and types etc.
     Just returns false if there is an issue, without explanation.
@@ -62,8 +64,22 @@ export class ExamsService {
         return true;
     }
 
-    //Create the Dividni rxam
+    //Create the Dividni exam
     async generateQuestion(exam: ExamFormDTO, id: string): Promise<any> {
+        //Convert all multiple-choice questions to xml
+        let mcXML;
+        if (exam.mcQuestionList) {
+            for (let i = 0; i < exam.mcQuestionList.length; i++) {
+                //Fetch mc question by id
+                let multipleChoice = await this.MCModel.findById(exam.mcQuestionList[i]);
+                //Save the question into a separate variable
+                let question = new QuestionFormDTO;
+                Object.keys(multipleChoice.question).map(key => question[key] = multipleChoice.question[key]);
+                console.log(question)
+                //Convert question to xml and save to array
+                mcXML.push(this.convertToXML(question, `MC${i}`));
+            }
+        }
         //Do not include coverPage/appendix if they are empty
         if (exam.coverPage === '') {
             console.log('Do not generate cover page');
@@ -71,33 +87,32 @@ export class ExamsService {
         if (exam.appendix === '') {
             console.log('Do not generate appendix');
         }
-        /*let userID = id; 
-        //Save question to database
+        let userID = id; 
+        console.log(userID)
+        /*//Save question to database
         let multipleChoiceDTO = new MultipleChoiceDTO();
         multipleChoiceDTO = { question, userID };
         let newQuestion = new this.MCModel(multipleChoiceDTO);
         return newQuestion.save();*/    
     } 
 
-    /*
-    //Convert multiple-choice question to XML
-    convertToXML(form: QuestionFormDTO) {
+    //Convert multiple-choice question to XML format
+    convertToXML(question: QuestionFormDTO, id) {
         const root = create()
-            .ele('Question', {type: form.type, id: 'id', marks: form.marks}) //Id is just 'id' - value is not used at all.
-                .ele('Stem').txt(form.questionText).up();
+            .ele('Question', {type: question.type, id: id, marks: question.marks}) 
+                .ele('Stem').txt(question.questionText).up();
         const trueAnswers = root.ele('TrueAnswers');
-        for (let i = 0; i < form.correctAnswers.length; i++) {
-            trueAnswers.ele('Answer').txt(form.correctAnswers[i]).up()
+        for (let i = 0; i < question.correctAnswers.length; i++) {
+            trueAnswers.ele('Answer').txt(question.correctAnswers[i]).up()
         }    
         trueAnswers.up();       
         const falseAnswers = root.ele('FalseAnswers');
-        for (let i = 0; i < form.incorrectAnswers.length; i++) {
-            falseAnswers.ele('Answer').txt(form.incorrectAnswers[i]).up()
+        for (let i = 0; i < question.incorrectAnswers.length; i++) {
+            falseAnswers.ele('Answer').txt(question.incorrectAnswers[i]).up()
         }    
         falseAnswers.up();     
-
         return root.end({ prettyPrint: true });
-    }*/
+    }
 
     async createExam(): Promise<any> {
         //Create a temporary folder to hold the exam
