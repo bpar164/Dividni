@@ -52,10 +52,12 @@ export class ExamsController {
     @UseGuards(AuthenticatedGuard)
     @Get('exams-my')
     @Render('exams-my')
-    getExamsMyView(@Request() req) { 
+    async getExamsMyView(@Request() req) { 
+        let userID = await this.userService.getUserIDByEmail(req.user.email);
         return { 
             title: 'Exams', 
             description: 'Browse the exams that you have created',
+            exams: await this.examsService.fetchUserExams(userID),
             loggedIn: (req.user !== undefined) ? true : false, 
             picture: req.user ? req.user.picture : null 
           };

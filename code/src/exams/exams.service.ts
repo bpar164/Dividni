@@ -9,6 +9,7 @@ import { Exams } from './exams.schema';
 import { QuestionFormDTO } from '../multiple-choice/question-form.dto';
 import { MultipleChoiceDTO } from '../multiple-choice/multiple-choice.dto';
 import { MultipleChoice } from '../multiple-choice/multiple-choice.schema';
+import { ExamsDTO } from './exams.dto';
 
 let errorDetails = { status: false, message: '' };
 
@@ -67,7 +68,7 @@ export class ExamsService {
     //Create the Dividni exam
     async generateQuestion(exam: ExamFormDTO, id: string): Promise<any> {
         //Convert all multiple-choice questions to xml
-        let mcXML;
+        let mcXML: Array<String> = [];
         if (exam.mcQuestionList) {
             for (let i = 0; i < exam.mcQuestionList.length; i++) {
                 //Fetch mc question by id
@@ -75,9 +76,8 @@ export class ExamsService {
                 //Save the question into a separate variable
                 let question = new QuestionFormDTO;
                 Object.keys(multipleChoice.question).map(key => question[key] = multipleChoice.question[key]);
-                console.log(question)
                 //Convert question to xml and save to array
-                mcXML.push(this.convertToXML(question, `MC${i}`));
+                mcXML.push(this.convertToXML(question, 'MC' + i));  
             }
         }
         //Do not include coverPage/appendix if they are empty
@@ -87,13 +87,12 @@ export class ExamsService {
         if (exam.appendix === '') {
             console.log('Do not generate appendix');
         }
+        //Save exam settings to database
         let userID = id; 
-        console.log(userID)
-        /*//Save question to database
-        let multipleChoiceDTO = new MultipleChoiceDTO();
-        multipleChoiceDTO = { question, userID };
-        let newQuestion = new this.MCModel(multipleChoiceDTO);
-        return newQuestion.save();*/    
+        let examsDTO = new ExamsDTO();
+        examsDTO = { exam, userID };
+        let newExam = new this.ExamsModel(examsDTO);
+        return newExam.save();   
     } 
 
     //Convert multiple-choice question to XML format
@@ -173,6 +172,10 @@ export class ExamsService {
             resolve(data);
             });
         });
+    }
+
+    async fetchUserExams(userID: string) {  
+        return this.ExamsModel.find({ userID: userID }).sort({$natural:-1}).exec();
     }
 }
 

@@ -2,7 +2,29 @@
 
   <!-- main -->
   <section class="section container blue lighten-5" id="main">
-    
+    <div class="row">
+      <div class="col">
+        <h5 class="teal-text">My Exams</h5>
+        <p>Below are all of the exams that you have created.</p>
+        <p>You can write a new question on the <a href="exams" target="_blank">create <i class="tiny material-icons">open_in_new</i></a> page.</p>
+        <p>Review the <a href="tutorials-exams" target="_blank">tutorial <i class="tiny material-icons">open_in_new</i></a> for help.</p>
+      </div>
+    </div>
+    <div class="row">
+      <% if (exams.length === 0) { %>
+        <p>No exams created yet - try creating one.</p>
+      <% } else { %>
+        <div class="col s12 m8 l6">
+          <ul class="collection with-header">
+            <% exams.forEach(e => { %>
+              <li id="<%= e.id %>" class="collection-item"><div><%= e.exam.name %><a href="#!" class="dropdown-trigger secondary-content" data-target='dropdown' onClick="setCurrentQuestion('<%= e.id %>', '<%= e.exam.name %>');">
+                <i class="material-icons">more_vert</i>
+              </a></div></li>         
+            <% }) %>
+          </ul>
+        </div>
+      <% } %>
+    </div>
   </section>
 
 <%- include('partials/footer') -%>
