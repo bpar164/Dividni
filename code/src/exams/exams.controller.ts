@@ -39,8 +39,7 @@ export class ExamsController {
         try {
             exam = req.body;
             if (this.examsService.validateExam(exam)) {
-                await this.examsService.generateQuestion(exam, id); 
-                return true; //Question created
+                return await this.examsService.generateExam(exam, id); 
             } else {
                 return false; //Question not created
             }

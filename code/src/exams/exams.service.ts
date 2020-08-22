@@ -7,11 +7,8 @@ import { create } from 'xmlbuilder2';
 import { ExamFormDTO } from './exam-form.dto';
 import { Exams } from './exams.schema';
 import { QuestionFormDTO } from '../multiple-choice/question-form.dto';
-import { MultipleChoiceDTO } from '../multiple-choice/multiple-choice.dto';
 import { MultipleChoice } from '../multiple-choice/multiple-choice.schema';
 import { ExamsDTO } from './exams.dto';
-
-let errorDetails = { status: false, message: '' };
 
 @Injectable()
 export class ExamsService {
@@ -66,7 +63,9 @@ export class ExamsService {
     }
 
     //Create the Dividni exam
-    async generateQuestion(exam: ExamFormDTO, id: string): Promise<any> {
+    async generateExam(exam: ExamFormDTO, id: string): Promise<any> {
+        //String for holding the html with question ids
+        let questionHTML = `<div id="Questions"><ol class="qlist">`;
         //Convert all multiple-choice questions to xml
         let mcXML: Array<String> = [];
         if (exam.mcQuestionList) {
@@ -78,8 +77,12 @@ export class ExamsService {
                 Object.keys(multipleChoice.question).map(key => question[key] = multipleChoice.question[key]);
                 //Convert question to xml and save to array
                 mcXML.push(this.convertToXML(question, 'MC' + i));  
+                //Add the question ID to the list in the HTML
+                questionHTML += `<li class="q"><p class="cws_code_q">MC` + i + `</p></li>`;
             }
         }
+        //Close the questionHTML string
+        questionHTML += `</ol></div>`;
         //Do not include coverPage/appendix if they are empty
         if (exam.coverPage === '') {
             console.log('Do not generate cover page');
@@ -87,12 +90,19 @@ export class ExamsService {
         if (exam.appendix === '') {
             console.log('Do not generate appendix');
         }
-        //Save exam settings to database
-        let userID = id; 
-        let examsDTO = new ExamsDTO();
-        examsDTO = { exam, userID };
-        let newExam = new this.ExamsModel(examsDTO);
-        return newExam.save();   
+        //Create the actual exam files
+        let result = await this.createExam();
+        if (result === true) {
+            //Save exam settings to database
+            /*let userID = id; 
+            let examsDTO = new ExamsDTO();
+            examsDTO = { exam, userID };
+            let newExam = new this.ExamsModel(examsDTO);
+            return newExam.save(); */
+            return true;
+        } else {
+            return false;
+        }    
     } 
 
     //Convert multiple-choice question to XML format
@@ -114,13 +124,11 @@ export class ExamsService {
     }
 
     async createExam(): Promise<any> {
-        //Create a temporary folder to hold the exam
-        fs.mkdir('../exam', (err) => {
-            if (err) {
-                this.setErrorDetails(err);
-            } 
-        });
+        let status;
+         //Create a temporary folder to hold the exam
+         status = this.makeFolder('../temp');
 
+         return status;
         /*
         //Create the question files, from the XML content
         fs.writeFile('../exam/question.xml', xml, (err) => {
@@ -136,19 +144,22 @@ export class ExamsService {
         let code = await this.readFile('../question/question.cs');
         
         //Delete the folder and its contents
-        await this.execShellCommand(`cd .. && rmdir /Q /S question`);
-        
-        //Return the result
-        return new Promise(resolve => {
-            resolve(errorDetails);
-        });
-        */
+        await this.execShellCommand(`cd .. && rmdir /Q /S question`);*/
     }
 
-    //Function to set the values of the errorDetails object
-    setErrorDetails(err) {
-        errorDetails.status = true;
-        errorDetails.message = err.message;
+    //Make a directory 
+    makeFolder(path: string): Promise<any> {
+        let status;
+        return new Promise((resolve) => {
+            fs.mkdir(path, (err) => {
+                if (err) {
+                    status = false;
+                } else {
+                    status = true;
+                }
+            resolve(status);
+            });
+        });
     }
 
     //Run a given shell command, asynchronously 
@@ -156,7 +167,7 @@ export class ExamsService {
         return new Promise((resolve) => {
             exec(cmd, (err, stdout, stderr) => {
                 if (err) {
-                    this.setErrorDetails(err);
+                    return false;
                 }
             resolve(stdout? stdout : stderr);
             });
@@ -167,7 +178,7 @@ export class ExamsService {
         return new Promise((resolve) => {
             fs.readFile(path, 'utf8', (err, data) => {
                 if (err) {
-                    this.setErrorDetails(err);
+                    return false;
                 } 
             resolve(data);
             });
