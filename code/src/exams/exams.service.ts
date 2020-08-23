@@ -91,7 +91,7 @@ export class ExamsService {
             console.log('Do not generate appendix');
         }
         //Create the actual exam files
-        let result = await this.createExam();
+        let result = await this.createExam(exam.mcQuestionList, mcXML, exam.advQuestionList);
         if (result === true) {
             //Save exam settings to database
             /*let userID = id; 
@@ -123,26 +123,35 @@ export class ExamsService {
         return root.end({ prettyPrint: true });
     }
 
-    async createExam(): Promise<any> {
-        let status;
-         //Create a temporary folder to hold the exam
-         status = this.makeFolder('../temp');
-
-         return status;
-        /*
-        //Create the question files, from the XML content
-        fs.writeFile('../exam/question.xml', xml, (err) => {
-            if (err) {
-                this.setErrorDetails(err);
+    //Uses the Dividni tools to create the question and exam files
+    async createExam(mcQuestionList, mcXML,advQuestionList): Promise<any> {
+        let success;
+        let continueLoop; 
+        //Stop executing if any of the actions fail
+        while (continueLoop != false) {
+            success = false;
+            //Create a temporary folder to hold the exam
+            continueLoop = await this.makeFolder('../temp');
+            //Create a file for each mc question and then convert it to C#
+            if (mcQuestionList) {
+                for (let i = 0; i < mcQuestionList.length; i++) {
+                    //Create the xml files
+                    continueLoop = await this.makeFile('../temp/MC' + i + '.xml', mcXML[i]);
+                    //Generate the C# and HTML files
+                    continueLoop = await this.execShellCommand(`cd .. && cd .. && cd .. && cd temp`); //&& mono "..\\dividni\\XmlQuest.exe" MC` + i + `.xml`);
+                }  
             }
-        });
+            if (advQuestionList) {
+
+            }
+            success = true; //Only true if reach last operation
+            continueLoop = false;
+        }
+
+        return success;
+        /*
         
-         //Generate the C# and HTML files
-        await this.execShellCommand(`cd .. && cd question && mono "..\\dividni\\XmlQuest.exe" question.xml`);
-        //Retrieve the new files
-        let html = await this.readFile('../question/question.htm');
-        let code = await this.readFile('../question/question.cs');
-        
+
         //Delete the folder and its contents
         await this.execShellCommand(`cd .. && rmdir /Q /S question`);*/
     }
@@ -162,19 +171,38 @@ export class ExamsService {
         });
     }
 
-    //Run a given shell command, asynchronously 
-    execShellCommand(cmd: string): Promise<any> {
+    //Create a file from the input  
+    makeFile(path: string, xml: string): Promise<any> {
+        let status;
         return new Promise((resolve) => {
-            exec(cmd, (err, stdout, stderr) => {
+            fs.writeFile(path, xml, (err) => {
                 if (err) {
-                    return false;
+                    status = false;
+                } else {
+                    status = true;
                 }
-            resolve(stdout? stdout : stderr);
+            resolve(status);
             });
         });
     }
 
-    readFile(path: string): Promise<any> {
+    //Run a given shell command, asynchronously 
+    execShellCommand(cmd: string): Promise<any> {
+        let status;
+        return new Promise((resolve) => {
+            exec(cmd, (err, stdout, stderr) => {
+                if (err) {
+                    console.log(err, stdout, stderr)
+                    status = false;
+                } else {
+                    status = true;
+                }
+            resolve(status);
+            });
+        });
+    }
+
+    /*readFile(path: string): Promise<any> {
         return new Promise((resolve) => {
             fs.readFile(path, 'utf8', (err, data) => {
                 if (err) {
@@ -183,7 +211,7 @@ export class ExamsService {
             resolve(data);
             });
         });
-    }
+    }*/
 
     async fetchUserExams(userID: string) {  
         return this.ExamsModel.find({ userID: userID }).sort({$natural:-1}).exec();
