@@ -81,6 +81,20 @@ export class ExamsService {
                 questionHTML += `<li class="q"><p class="cws_code_q">MC` + i + `</p></li>`;
             }
         }
+        //Fetch the conents of the C# files for all of the advanced questions
+        let advCode: Array<String> = [];
+        if (exam.advQuestionList) {
+            /*for (let i = 0; i < exam.advQuestionList.length; i++) {
+                //Fetch adv question by id
+                let advanced = await this.AdvModel.findById(exam.advQuestionList[i]);
+                //Replace the question ID with AD + i
+
+                //Add the code (string) into the array
+                advCode.push(advanced);  
+                //Add the question ID to the list in the HTML
+                questionHTML += `<li class="q"><p class="cws_code_q">ADV` + i + `</p></li>`;
+            }*/
+        }
         //Close the questionHTML string
         questionHTML += `</ol></div>`;
         //Do not include coverPage/appendix if they are empty
@@ -91,7 +105,7 @@ export class ExamsService {
             console.log('Do not generate appendix');
         }
         //Create the actual exam files
-        let result = await this.createExam(exam.mcQuestionList, mcXML, exam.advQuestionList);
+        let result = await this.createExam(exam.mcQuestionList, mcXML, exam.advQuestionList, advCode, exam.paperCount);
         if (result === true) {
             //Save exam settings to database
             /*let userID = id; 
@@ -124,12 +138,13 @@ export class ExamsService {
     }
 
     //Uses the Dividni tools to create the question and exam files
-    async createExam(mcQuestionList, mcXML,advQuestionList): Promise<any> {
+    async createExam(mcQuestionList, mcXML,advQuestionList, advCode, paperCount): Promise<any> {
         let success;
         let continueLoop; 
         //Stop executing if any of the actions fail
         while (continueLoop != false) {
             success = false;
+            let questionList = "";
             //Create a temporary folder to hold the exam
             continueLoop = await this.makeFolder('../temp');
             //Create a file for each mc question and then convert it to C#
@@ -138,20 +153,29 @@ export class ExamsService {
                     //Create the xml files
                     continueLoop = await this.makeFile('../temp/MC' + i + '.xml', mcXML[i]);
                     //Generate the C# and HTML files
-                    continueLoop = await this.execShellCommand(`cd .. && cd .. && cd .. && cd temp`); //&& mono "..\\dividni\\XmlQuest.exe" MC` + i + `.xml`);
+                    continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\XmlQuest.exe" MC` + i + `.xml`);
+                    //Add file to list to be compiled
+                    questionList += " MC" + i + '.cs';
                 }  
             }
+            //Create a file for each adv question
             if (advQuestionList) {
-
+                for (let i = 0; i < advQuestionList.length; i++) {
+                    //Create the c# files
+                    continueLoop = await this.makeFile('../temp/ADV' + i + '.cs', advCode[i]);
+                    //Add file to list to be compiled
+                    questionList += " ADV" + i + '.cs';
+                } 
             }
+            //Compile all of the questions
+            continueLoop = await this.execShellCommand(`cd .. && cd temp && mcs -t:library -lib:"..\\dividni" -r:Utilities.Courses.dll -out:QHelper.dll` + questionList);
+            //Generate exam
+            //continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -paperCount ` + paperCount + ` Exam.Template.html`);
             success = true; //Only true if reach last operation
             continueLoop = false;
         }
-
         return success;
         /*
-        
-
         //Delete the folder and its contents
         await this.execShellCommand(`cd .. && rmdir /Q /S question`);*/
     }
@@ -172,10 +196,10 @@ export class ExamsService {
     }
 
     //Create a file from the input  
-    makeFile(path: string, xml: string): Promise<any> {
+    makeFile(path: string, contents: string): Promise<any> {
         let status;
         return new Promise((resolve) => {
-            fs.writeFile(path, xml, (err) => {
+            fs.writeFile(path, contents, (err) => {
                 if (err) {
                     status = false;
                 } else {
@@ -192,7 +216,6 @@ export class ExamsService {
         return new Promise((resolve) => {
             exec(cmd, (err, stdout, stderr) => {
                 if (err) {
-                    console.log(err, stdout, stderr)
                     status = false;
                 } else {
                     status = true;
