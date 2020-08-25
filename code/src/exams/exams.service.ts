@@ -64,8 +64,7 @@ export class ExamsService {
 
     //Create the Dividni exam
     async generateExam(exam: ExamFormDTO, id: string): Promise<any> {
-        //String for holding the html with question ids
-        let questionHTML = `<div id="Questions"><ol class="qlist">`;
+        
         //Convert all multiple-choice questions to xml
         let mcXML: Array<String> = [];
         if (exam.mcQuestionList) {
@@ -77,8 +76,6 @@ export class ExamsService {
                 Object.keys(multipleChoice.question).map(key => question[key] = multipleChoice.question[key]);
                 //Convert question to xml and save to array
                 mcXML.push(this.convertToXML(question, 'MC' + i));  
-                //Add the question ID to the list in the HTML
-                questionHTML += `<li class="q"><p class="cws_code_q">MC` + i + `</p></li>`;
             }
         }
         //Fetch the conents of the C# files for all of the advanced questions
@@ -91,12 +88,10 @@ export class ExamsService {
 
                 //Add the code (string) into the array
                 advCode.push(advanced);  
-                //Add the question ID to the list in the HTML
-                questionHTML += `<li class="q"><p class="cws_code_q">ADV` + i + `</p></li>`;
+                
             }*/
         }
-        //Close the questionHTML string
-        questionHTML += `</ol></div>`;
+       
         //Do not include coverPage/appendix if they are empty
         if (exam.coverPage === '') {
             console.log('Do not generate cover page');
@@ -105,7 +100,7 @@ export class ExamsService {
             console.log('Do not generate appendix');
         }
         //Create the actual exam files
-        let result = await this.createExam(exam.mcQuestionList, mcXML, exam.advQuestionList, advCode, exam.paperCount);
+        let result = await this.createExam(exam, mcXML, advCode);
         if (result === true) {
             //Save exam settings to database
             /*let userID = id; 
@@ -138,39 +133,58 @@ export class ExamsService {
     }
 
     //Uses the Dividni tools to create the question and exam files
-    async createExam(mcQuestionList, mcXML,advQuestionList, advCode, paperCount): Promise<any> {
+    async createExam(exam, mcXML, advCode): Promise<any> {
         let success;
         let continueLoop; 
         //Stop executing if any of the actions fail
         while (continueLoop != false) {
             success = false;
             let questionList = "";
+            //String for holding the html with question ids
+            let questionHTML = `<div id="Questions"><ol class="qlist">`;
             //Create a temporary folder to hold the exam
             continueLoop = await this.makeFolder('../temp');
             //Create a file for each mc question and then convert it to C#
-            if (mcQuestionList) {
-                for (let i = 0; i < mcQuestionList.length; i++) {
+            if (exam.mcQuestionList) {
+                for (let i = 0; i < exam.mcQuestionList.length; i++) {
                     //Create the xml files
                     continueLoop = await this.makeFile('../temp/MC' + i + '.xml', mcXML[i]);
                     //Generate the C# and HTML files
                     continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\XmlQuest.exe" MC` + i + `.xml`);
                     //Add file to list to be compiled
                     questionList += " MC" + i + '.cs';
+                    //Add the question ID to the list in the HTML
+                    questionHTML += `<li class="q"><p class="cws_code_q">MC` + i + `</p></li>`;
                 }  
             }
             //Create a file for each adv question
-            if (advQuestionList) {
-                for (let i = 0; i < advQuestionList.length; i++) {
+            if (exam.advQuestionList) {
+                for (let i = 0; i < exam.advQuestionList.length; i++) {
                     //Create the c# files
                     continueLoop = await this.makeFile('../temp/ADV' + i + '.cs', advCode[i]);
                     //Add file to list to be compiled
                     questionList += " ADV" + i + '.cs';
+                    //Add the question ID to the list in the HTML
+                    questionHTML += `<li class="q"><p class="cws_code_q">ADV` + i + `</p></li>`;
                 } 
             }
+             //Close the questionHTML string
+            questionHTML += `</ol></div>`;
             //Compile all of the questions
             continueLoop = await this.execShellCommand(`cd .. && cd temp && mcs -t:library -lib:"..\\dividni" -r:Utilities.Courses.dll -out:QHelper.dll` + questionList);
+            //Create html template
+            //Header with name
+            let examHTML = `<html><head><meta charset="utf-8"/><title>` + exam.name + `</title></head><body>`;
+            //Cover page
+            examHTML += `<div id="coverPage">` + exam.coverPage +  `</div>`;
+            //Questions
+            examHTML += `<div id="questions">` + questionHTML + `</div>`;
+            //Appendix
+            examHTML += `<div id="appendix">` + exam.appendix + `</div></body></html>`
+            //Create a file for the html
+            continueLoop = await this.makeFile('../temp/Exam.Template.html', examHTML);
             //Generate exam
-            //continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -paperCount ` + paperCount + ` Exam.Template.html`);
+            continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -paperCount ` + exam.paperCount + ` Exam.Template.html`);
             success = true; //Only true if reach last operation
             continueLoop = false;
         }
