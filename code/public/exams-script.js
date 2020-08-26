@@ -36,6 +36,51 @@ removeTextArea = (divName) => {
   document.getElementById(divName).removeChild(document.getElementById(divID));
 }
 
+//Fetch question and display in modal
+previewQuestion = (id) => {
+  document.getElementById('previewModalContent').innerHTML = '<p>Fetching question...</p>';
+  $.ajax({
+    url: 'multiple-choice-my/' + id,
+    method: 'GET',
+    dataType: 'json',
+    success: (res) => {
+      if (res.question) {
+        //Call a function to generate the HTML content
+        content = generatePreviewContent(res.question);
+        //Add the content to the display
+        document.getElementById('previewModalContent').innerHTML = content;
+      } else {
+        document.getElementById('previewModalContent').innerHTML = '<p>Error fetching question.</p>';
+      }  
+    },
+    error: () => {
+      document.getElementById('previewModalContent').innerHTML = '<p>Error fetching question.</p>';
+    }
+  });
+}
+
+//Creates the HTML content for the preview modal
+generatePreviewContent = (question) => {
+  //Clear the content
+  content = '';
+  //Build the content using the values with formatting 
+  content += '<b>Name: </b>' + question.name + '</br>';
+  content += '</br><b>Type: </b>' + question.type + '</br>';
+  content += '</br><b>Marks: </b>' + question.marks + '</br>';
+  content += '</br><b>Question Text:</b></br>' + question.questionText + '</br>';
+  content += '</br><b>Correct Answers:</b><ol>';
+  question.correctAnswers.forEach(ans => {
+    content += '<li>' + ans + '</li>';
+  });
+  content += '</ol>';
+  content += '<b>Incorrect Answers:</b><ol>';
+  question.incorrectAnswers.forEach(ans => {
+    content += '<li>' + ans + '</li>';
+  });
+  content += '</ol>'; 
+  return content;
+}
+
 questionCheckBoxChanged = (checkbox, id) => {
   if (checkbox.checked) {
     //Add to list

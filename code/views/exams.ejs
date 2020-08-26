@@ -45,8 +45,8 @@
                   <li class="collection-item"><div><%= q.question.name %><a href="#!" class="secondary-content">
                     <label>
                       <input type="checkbox" onChange="questionCheckBoxChanged(this, '<%= q.id %>');"/><span></span>
-                    </label>
-                  </a></div></li> 
+                    </label> 
+                  </a><a href="#previewModal" class="secondary-content modal-trigger" onClick="previewQuestion('<%= q.id %>');"><i class="material-icons">zoom_in</i></a></div></li> 
                 <% }) %>
               </ul>
             <% } %>
@@ -74,6 +74,17 @@
       </div> 
     </form>  
   </section>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="modal modal-fixed-footer">
+    <div class="modal-content">
+      <h4>Question Preview</h4>
+      <div id="previewModalContent"></div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">CLOSE</a>
+    </div>
+  </div>
 
    <!-- Options Modal -->
   <div id="optionsModal" class="modal modal-fixed-footer modal-not-dismissible dialog-modal">
