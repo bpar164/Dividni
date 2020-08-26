@@ -37,34 +37,22 @@
         <div class="col s12 m8 l6">
           <div id="questions">
             <h6>Select Questions</h6>
-            <% if (mcQuestions.length === 0) { %>
-              <p>No multiple-choice questions to display.</p>
+            <% if (questions.length === 0) { %>
+              <p>No questions to display.</p>
             <% } else { %>
-              <p>Multiple-choice questions:</p>
               <ul class="collection with-header">
-                <% mcQuestions.forEach(q => { %>
+                <% questions.forEach(q => { %>
                   <li class="collection-item"><div><%= q.question.name %><a href="#!" class="secondary-content">
                     <label>
-                      <input type="checkbox" onChange="questionCheckBoxChanged(this, '<%= q.id %>', 'mc');"/><span></span>
+                      <input type="checkbox" onChange="questionCheckBoxChanged(this, '<%= q.id %>');"/><span></span>
                     </label>
                   </a></div></li> 
                 <% }) %>
               </ul>
             <% } %>
-            <% if (advQuestions.length === 0) { %>
-              <p>No advanced questions to display.</p>
-            <% } else { %>
-              <p>Advanced questions:</p>
-              <ul class="collection with-header">
-                <% advQuestions.forEach(q => { %>
-                  <li class="collection-item"><div><%= q.question.name %><a href="#!" class="secondary-content">
-                    <label>
-                      <input type="checkbox" onChange="questionCheckBoxChanged(this, '<%= q.id %>', 'adv');"/><span></span>
-                    </label>
-                  </a></div></li>         
-                <% }) %>
-              </ul>
-            <% } %>
+          </div>
+          <div id="instructionSections">
+            <h6>Instruction Sections</h6>
           </div>
         </div>
       </div>

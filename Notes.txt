@@ -1,6 +1,13 @@
-Only show logout/login button when needed
-
-HTML blob questions
+TODO
+-CRUD for cover page
+-CRUD for appendix
+-CRUD for exam 
+-Create a 'blob' question
+-Change question/blob order 
+-Convert generated exams to pdf (cover page/questions/appendix each on new page)
+-Download file contents
 
 Future Work
-Allowing upload of XML files
+-Question groups for exams
+-Allowing upload of XML/C# files
+-Advanced questions

@@ -8,7 +8,6 @@ import { ExamFormDTO } from './exam-form.dto';
 import { Exams } from './exams.schema';
 import { QuestionFormDTO } from '../multiple-choice/question-form.dto';
 import { MultipleChoice } from '../multiple-choice/multiple-choice.schema';
-import { ExamsDTO } from './exams.dto';
 
 @Injectable()
 export class ExamsService {
@@ -26,23 +25,13 @@ export class ExamsService {
          if ((typeof(form.name) !== 'string') ||
          (typeof(form.paperCount) !== 'string') ||
          (typeof(form.coverPage) !== 'string') ||
+         (typeof(form.questionList) !== 'object') ||
          (typeof(form.appendix) !== 'string') 
         ) {
             return false;
         }
-        //questionLists can not exist - need to check this before checking type
-        if (form.mcQuestionList) {
-            if (typeof(form.mcQuestionList) !== 'object') {
-                return false;
-            }
-        }
-        if (form.advQuestionList) {
-            if (typeof(form.advQuestionList) !== 'object') {
-                return false;
-            }
-        }
         //There must be at least one question
-        if ((form.mcQuestionList.length < 1) && (form.advQuestionList.length < 1)) {
+        if (form.questionList.length < 1) {
             return false;
         }
         //Name matches regular expression
@@ -64,34 +53,17 @@ export class ExamsService {
 
     //Create the Dividni exam
     async generateExam(exam: ExamFormDTO, id: string): Promise<any> {
-        
-        //Convert all multiple-choice questions to xml
-        let mcXML: Array<String> = [];
-        if (exam.mcQuestionList) {
-            for (let i = 0; i < exam.mcQuestionList.length; i++) {
-                //Fetch mc question by id
-                let multipleChoice = await this.MCModel.findById(exam.mcQuestionList[i]);
-                //Save the question into a separate variable
-                let question = new QuestionFormDTO;
-                Object.keys(multipleChoice.question).map(key => question[key] = multipleChoice.question[key]);
-                //Convert question to xml and save to array
-                mcXML.push(this.convertToXML(question, 'MC' + i));  
-            }
+        //Convert all questions to xml
+        let questionXML: Array<String> = [];
+        for (let i = 0; i < exam.questionList.length; i++) {
+            //Fetch question by id
+            let multipleChoice = await this.MCModel.findById(exam.questionList[i]);
+            //Save the question into a separate variable
+            let question = new QuestionFormDTO;
+            Object.keys(multipleChoice.question).map(key => question[key] = multipleChoice.question[key]);
+            //Convert question to xml and save to array
+            questionXML.push(this.convertToXML(question, 'Q' + i));  
         }
-        //Fetch the conents of the C# files for all of the advanced questions
-        let advCode: Array<String> = [];
-        if (exam.advQuestionList) {
-            /*for (let i = 0; i < exam.advQuestionList.length; i++) {
-                //Fetch adv question by id
-                let advanced = await this.AdvModel.findById(exam.advQuestionList[i]);
-                //Replace the question ID with AD + i
-
-                //Add the code (string) into the array
-                advCode.push(advanced);  
-                
-            }*/
-        }
-       
         //Do not include coverPage/appendix if they are empty
         if (exam.coverPage === '') {
             console.log('Do not generate cover page');
@@ -100,7 +72,7 @@ export class ExamsService {
             console.log('Do not generate appendix');
         }
         //Create the actual exam files
-        let result = await this.createExam(exam, mcXML, advCode);
+        let result = await this.createExam(exam, questionXML);
         if (result === true) {
             //Save exam settings to database
             /*let userID = id; 
@@ -133,7 +105,7 @@ export class ExamsService {
     }
 
     //Uses the Dividni tools to create the question and exam files
-    async createExam(exam, mcXML, advCode): Promise<any> {
+    async createExam(exam, questionXML): Promise<any> {
         let success;
         let continueLoop; 
         //Stop executing if any of the actions fail
@@ -144,30 +116,17 @@ export class ExamsService {
             let questionHTML = `<div id="Questions"><ol class="qlist">`;
             //Create a temporary folder to hold the exam
             continueLoop = await this.makeFolder('../temp');
-            //Create a file for each mc question and then convert it to C#
-            if (exam.mcQuestionList) {
-                for (let i = 0; i < exam.mcQuestionList.length; i++) {
-                    //Create the xml files
-                    continueLoop = await this.makeFile('../temp/MC' + i + '.xml', mcXML[i]);
-                    //Generate the C# and HTML files
-                    continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\XmlQuest.exe" MC` + i + `.xml`);
-                    //Add file to list to be compiled
-                    questionList += " MC" + i + '.cs';
-                    //Add the question ID to the list in the HTML
-                    questionHTML += `<li class="q"><p class="cws_code_q">MC` + i + `</p></li>`;
-                }  
-            }
-            //Create a file for each adv question
-            if (exam.advQuestionList) {
-                for (let i = 0; i < exam.advQuestionList.length; i++) {
-                    //Create the c# files
-                    continueLoop = await this.makeFile('../temp/ADV' + i + '.cs', advCode[i]);
-                    //Add file to list to be compiled
-                    questionList += " ADV" + i + '.cs';
-                    //Add the question ID to the list in the HTML
-                    questionHTML += `<li class="q"><p class="cws_code_q">ADV` + i + `</p></li>`;
-                } 
-            }
+            //Create a file for each question and then convert it to C#
+            for (let i = 0; i < exam.questionList.length; i++) {
+                //Create the xml files
+                continueLoop = await this.makeFile('../temp/Q' + i + '.xml', questionXML[i]);
+                //Generate the C# and HTML files
+                continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\XmlQuest.exe" Q` + i + `.xml`);
+                //Add file to list to be compiled
+                questionList += " Q" + i + '.cs';
+                //Add the question ID to the list in the HTML
+                questionHTML += `<li class="q"><p class="cws_code_q">Q` + i + `</p></li>`;
+            }  
              //Close the questionHTML string
             questionHTML += `</ol></div>`;
             //Compile all of the questions

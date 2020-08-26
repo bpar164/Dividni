@@ -1,5 +1,4 @@
-let mcQuestionList = [];
-let advQuestionList = [];
+let questionList = [];
 
 checkBoxChanged = (checkbox, divName) => {
   if (checkbox.checked) {
@@ -37,23 +36,13 @@ removeTextArea = (divName) => {
   document.getElementById(divName).removeChild(document.getElementById(divID));
 }
 
-questionCheckBoxChanged = (checkbox, id, type) => {
-  if (type === 'mc') {
-    if (checkbox.checked) {
-      //Add to mc list
-      mcQuestionList.push(id);
-    } else {
-      //Remove from mc list
-      mcQuestionList.splice(mcQuestionList.indexOf(id), 1);
-    }
-  } else {//type is 'adv'
-    if (checkbox.checked) {
-      //Add to adv list
-      advQuestionList.push(id);
-    } else {
-      //Remove from adv list
-      advQuestionList.splice(mcQuestionList.indexOf(id), 1);
-    }
+questionCheckBoxChanged = (checkbox, id) => {
+  if (checkbox.checked) {
+    //Add to list
+    questionList.push(id);
+  } else {
+    //Remove from list
+    questionList.splice(questionList.indexOf(id), 1);
   }
 }
 
@@ -77,7 +66,7 @@ $("#examForm").submit((event) => {
     }   
   }
   //At least one question must be checked
-  if ((mcQuestionList.length < 1) && (advQuestionList.length < 1)) {
+  if (questionList.length < 1) {
     missingRequired = true;
     content += '<li>Select at least one question.</li>';
   }
@@ -125,8 +114,7 @@ fetchFormValues = () => {
   exam.paperCount = document.getElementById('paperCount').value;
   //The following values can be empty:
   document.getElementById('coverPageCheckBox').checked ? exam.coverPage = tinyMCE.get('coverPageTextArea').getContent() : exam.coverPage = null;
-  exam.mcQuestionList = mcQuestionList;
-  exam.advQuestionList = advQuestionList;
+  exam.questionList = questionList;
   document.getElementById('appendixCheckBox').checked ? exam.appendix = tinyMCE.get('appendixTextArea').getContent() : exam.appendix = null;
   return exam;
 }
