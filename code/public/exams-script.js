@@ -1,21 +1,25 @@
 let questionList = [];
+let blobList = []; //For storing instruction section contents
 
 checkBoxChanged = (checkbox, divName) => {
-  if (checkbox.checked) {
-    createTextArea(divName);
-  } else {
-    removeTextArea(divName);
-  }
+  checkbox.checked ? createTextArea(divName) : removeTextArea(divName);
 }
 
 //Create the HTML for the TinyMCE editor
 createTextArea = (divName) => {
-  let newdiv = document.createElement('div');
-  newdiv.classList.add('input-field');
-  newdiv.classList.add('tinymce-description');
-  newdiv.id = divName + "TextArea";
+  let newdiv = createHTMLElement('div', divName + "TextArea", ['input-field', 'tinymce-description']);
   document.getElementById(divName).appendChild(newdiv);
   loadTextArea();
+}
+
+//Create an HTML element and add the required classes
+createHTMLElement = (element, id, classList) => {
+  let newEle = document.createElement(element);
+  newEle.id = id;
+  for (let i = 0; i < classList.length; i++) {
+    newEle.classList.add(classList[i]);
+  }
+  return newEle;
 }
 
 //Initialize TinyMCE editor
@@ -34,6 +38,38 @@ removeTextArea = (divName) => {
   let divID = divName + "TextArea";
   tinymce.remove('#' + divID);
   document.getElementById(divName).removeChild(document.getElementById(divID));
+}
+
+//Event listener for btnInstructions to create textArea and additional buttons
+document.getElementById("btnInstructions").addEventListener("click", () => {
+  createTextArea('instructionSections');
+  document.getElementById("btnInstructions").classList.add('disabled');
+  //Create save and cancel buttons
+  let btnSave = createHTMLElement('a', 'btnSave', ['waves-effect', 'waves-light', 'btn-small']);
+  btnSave.innerHTML = 'Save';
+  let btnCancel = createHTMLElement('a', 'btnCancel', ['waves-effect', 'waves-light', 'btn-small', 'right']);
+  btnCancel.innerHTML = 'Cancel';
+  //Add buttons to display and add corresponding onClick listeners
+  document.getElementById('instructionSections').appendChild(btnSave);
+  document.getElementById("btnSave").addEventListener("click", () => {
+    let instructionItem = createHTMLElement('li', '', ['collection-item']);
+    //Add item to questionList
+    
+
+    removeInstructionSection();
+  }); 
+  document.getElementById('instructionSections').appendChild(btnCancel);
+  document.getElementById("btnCancel").addEventListener("click", () => {
+    removeInstructionSection();
+  }); 
+});
+
+//Remove the textArea and buttons
+removeInstructionSection = () => {
+  removeTextArea('instructionSections');
+  document.getElementById('instructionSections').removeChild(btnSave);
+  document.getElementById('instructionSections').removeChild(btnCancel);
+  document.getElementById("btnInstructions").classList.remove('disabled');
 }
 
 //Fetch question and display in modal
