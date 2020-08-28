@@ -3,5 +3,6 @@ export class ExamFormDTO {
     paperCount: number;
     coverPage: string;
     questionList: string[];
+    blobList: string[];
     appendix: string;
 }

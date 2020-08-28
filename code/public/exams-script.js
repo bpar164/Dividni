@@ -40,38 +40,6 @@ removeTextArea = (divName) => {
   document.getElementById(divName).removeChild(document.getElementById(divID));
 }
 
-//Event listener for btnInstructions to create textArea and additional buttons
-document.getElementById("btnInstructions").addEventListener("click", () => {
-  createTextArea('instructionSections');
-  document.getElementById("btnInstructions").classList.add('disabled');
-  //Create save and cancel buttons
-  let btnSave = createHTMLElement('a', 'btnSave', ['waves-effect', 'waves-light', 'btn-small']);
-  btnSave.innerHTML = 'Save';
-  let btnCancel = createHTMLElement('a', 'btnCancel', ['waves-effect', 'waves-light', 'btn-small', 'right']);
-  btnCancel.innerHTML = 'Cancel';
-  //Add buttons to display and add corresponding onClick listeners
-  document.getElementById('instructionSections').appendChild(btnSave);
-  document.getElementById("btnSave").addEventListener("click", () => {
-    let instructionItem = createHTMLElement('li', '', ['collection-item']);
-    //Add item to questionList
-    
-
-    removeInstructionSection();
-  }); 
-  document.getElementById('instructionSections').appendChild(btnCancel);
-  document.getElementById("btnCancel").addEventListener("click", () => {
-    removeInstructionSection();
-  }); 
-});
-
-//Remove the textArea and buttons
-removeInstructionSection = () => {
-  removeTextArea('instructionSections');
-  document.getElementById('instructionSections').removeChild(btnSave);
-  document.getElementById('instructionSections').removeChild(btnCancel);
-  document.getElementById("btnInstructions").classList.remove('disabled');
-}
-
 //Fetch question and display in modal
 previewQuestion = (id) => {
   document.getElementById('previewModalContent').innerHTML = '<p>Fetching question...</p>';
@@ -127,6 +95,76 @@ questionCheckBoxChanged = (checkbox, id) => {
   }
 }
 
+//Event listener for btnInstructions to create textArea and additional buttons
+document.getElementById("btnInstructions").addEventListener("click", () => {
+  createTextArea('instructionSections');
+  document.getElementById("btnInstructions").classList.add('disabled');
+  //Create save and cancel buttons
+  let btnSave = createHTMLElement('a', 'btnSave', ['waves-effect', 'waves-light', 'btn-small']);
+  btnSave.innerHTML = 'Save';
+  let btnCancel = createHTMLElement('a', 'btnCancel', ['waves-effect', 'waves-light', 'btn-small', 'right']);
+  btnCancel.innerHTML = 'Cancel';
+  //Add buttons to display and add corresponding onClick listeners
+  document.getElementById('instructionSections').appendChild(btnSave);
+  document.getElementById("btnSave").addEventListener("click", () => {
+    //Save blob question
+    if (!(tinyMCE.get('instructionSectionsTextArea').getContent() === '')) {
+      //Get content from textArea
+      blobList.push(tinyMCE.get('instructionSectionsTextArea').getContent());
+      //Create li item to append to display list
+      let instructionItem = createHTMLElement('li', '', ['collection-item']);
+      instructionItem.innerHTML = 
+      `<div>Instruction Section #` + blobList.length + `<a href="#!" class="secondary-content">
+          <label><input type="checkbox" onChange="blobCheckBoxChanged(this, ` + (blobList.length-1) + `);" checked/><span></span></label></a>
+        <a href="#previewModal" class="secondary-content modal-trigger" onClick="previewBlob(` + (blobList.length-1) + `);"><i class="material-icons">zoom_in</i></a>
+        <a href="#" class="secondary-content" onClick="editBlob(` + (blobList.length-1) + `);"><i class="material-icons">edit</i></a>
+      </div>`;
+      document.getElementById('questionList').appendChild(instructionItem);
+    }
+    removeInstructionSection();
+  }); 
+  document.getElementById('instructionSections').appendChild(btnCancel);
+  document.getElementById("btnCancel").addEventListener("click", () => {
+    removeInstructionSection();
+  }); 
+});
+
+//Remove the textArea and buttons
+removeInstructionSection = () => {
+  removeTextArea('instructionSections');
+  document.getElementById('instructionSections').removeChild(btnSave);
+  document.getElementById('instructionSections').removeChild(btnCancel);
+  document.getElementById("btnInstructions").classList.remove('disabled');
+}
+
+//Fetch blob and display in modal
+previewBlob = (id) => {
+  document.getElementById('previewModalContent').innerHTML = blobList[id];
+}
+
+//
+editBlob = (id) => {
+  console.log(id)
+  //Load contents into textarea
+
+  //Create save button
+  //Updates array
+  //removeInstructionSection();
+
+  //Create cancel button
+  //removeInstructionSection();
+}
+
+blobCheckBoxChanged = (checkbox, id) => {
+  if (checkbox.checked) {
+    //Add to list
+    blobList.push(id);
+  } else {
+    //Remove from list
+    blobList.splice(blobList.indexOf(id), 1);
+  }
+}
+
 $("#examForm").submit((event) => {
   event.preventDefault();
   //Display options modal
@@ -175,7 +213,7 @@ generateExam = () => {
         //Exam generated
         document.getElementById('optionsModalContent').innerHTML = '<p>Exam generated.</p>';
       } else if (res === 'false') {
-        //Question not generated
+        //Exam not generated
         document.getElementById('optionsModalContent').innerHTML = '<p>Error generating exam.</p>';
         document.getElementById('optionsModalRetry').classList.remove("disabled");
       }  
@@ -196,6 +234,7 @@ fetchFormValues = () => {
   //The following values can be empty:
   document.getElementById('coverPageCheckBox').checked ? exam.coverPage = tinyMCE.get('coverPageTextArea').getContent() : exam.coverPage = null;
   exam.questionList = questionList;
+  (blobList.length > 0) ? exam.blobList = blobList : exam.blobList = null; 
   document.getElementById('appendixCheckBox').checked ? exam.appendix = tinyMCE.get('appendixTextArea').getContent() : exam.appendix = null;
   return exam;
 }
