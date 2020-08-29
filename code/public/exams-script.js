@@ -1,6 +1,9 @@
-let questionList = [];
+let mcQuestionList = [];
 let blobQuestionContents = []; //For storing instruction section contents
 let blobIncludeList = []; //Corresponds to blobList, true if blob included in submission
+
+let questionList = document.getElementById('questionList');
+var sortable = Sortable.create(questionList);
 
 checkBoxChanged = (checkbox, divName) => {
   checkbox.checked ? createTextArea(divName) : removeTextArea(divName);
@@ -88,9 +91,9 @@ generatePreviewContent = (question) => {
 
 questionCheckBoxChanged = (checkbox, id) => {
   if (checkbox.checked) {
-    questionList.push(id); //Add to list
+    mcQuestionList.push(id); //Add to list
   } else {
-    questionList.splice(questionList.indexOf(id), 1); //Remove from list
+    mcQuestionList.splice(mcQuestionList.indexOf(id), 1); //Remove from list
   }
 }
 
@@ -199,7 +202,7 @@ $("#examForm").submit((event) => {
     }   
   }
   //At least one question must be checked
-  if (questionList.length < 1) {
+  if (mcQuestionList.length < 1) {
     missingRequired = true;
     content += '<li>Select at least one question.</li>';
   }
@@ -247,7 +250,7 @@ fetchFormValues = () => {
   exam.paperCount = document.getElementById('paperCount').value;
   //The following values can be empty:
   document.getElementById('coverPageCheckBox').checked ? exam.coverPage = tinyMCE.get('coverPageTextArea').getContent() : exam.coverPage = null;
-  exam.questionList = questionList;
+  exam.mcQuestionList = mcQuestionList;
   (blobList.length > 0) ? exam.blobList = blobList : exam.blobList = null; 
   document.getElementById('appendixCheckBox').checked ? exam.appendix = tinyMCE.get('appendixTextArea').getContent() : exam.appendix = null;
   return exam;

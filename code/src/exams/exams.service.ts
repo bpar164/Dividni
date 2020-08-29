@@ -25,13 +25,13 @@ export class ExamsService {
          if ((typeof(form.name) !== 'string') ||
          (typeof(form.paperCount) !== 'string') ||
          (typeof(form.coverPage) !== 'string') ||
-         (typeof(form.questionList) !== 'object') ||
+         (typeof(form.mcQuestionList) !== 'object') ||
          (typeof(form.appendix) !== 'string') 
         ) {
             return false;
         }
         //There must be at least one question
-        if (form.questionList.length < 1) {
+        if (form.mcQuestionList.length < 1) {
             return false;
         }
         //Name matches regular expression
@@ -55,9 +55,9 @@ export class ExamsService {
     async generateExam(exam: ExamFormDTO, id: string): Promise<any> {
         //Convert all questions to xml
         let questionXML: Array<String> = [];
-        for (let i = 0; i < exam.questionList.length; i++) {
+        for (let i = 0; i < exam.mcQuestionList.length; i++) {
             //Fetch question by id
-            let multipleChoice = await this.MCModel.findById(exam.questionList[i]);
+            let multipleChoice = await this.MCModel.findById(exam.mcQuestionList[i]);
             //Save the question into a separate variable
             let question = new QuestionFormDTO;
             Object.keys(multipleChoice.question).map(key => question[key] = multipleChoice.question[key]);

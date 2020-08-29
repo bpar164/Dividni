@@ -37,11 +37,12 @@
         <div class="col s12 m8 l6">
           <div id="questions">
             <h6>Select Questions</h6>
-            <% if (questions.length === 0) { %>
+            <p>(Click and drag to re-order)</p>
+            <% if (mcQuestions.length === 0) { %>
               <p>No questions to display.</p>
             <% } else { %>
               <ul id='questionList' class="collection with-header">
-                <% questions.forEach(q => { %>
+                <% mcQuestions.forEach(q => { %>
                   <li class="collection-item"><div><%= q.question.name %><a href="#!" class="secondary-content">
                     <label>
                       <input type="checkbox" onChange="questionCheckBoxChanged(this, '<%= q.id %>');"/><span></span>
@@ -103,6 +104,7 @@
   </div>
 
 <%- include('partials/footer') -%>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script src="exams-script.js"></script>
 </body>
 </html>

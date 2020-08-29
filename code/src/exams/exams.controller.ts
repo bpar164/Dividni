@@ -19,7 +19,7 @@ export class ExamsController {
         return { 
             title: 'Exams', 
             description: 'Create exams using your multiple-choice questions',
-            questions: await this.multipleChoiceService.fetchUserQuestions(userID),
+            mcQuestions: await this.multipleChoiceService.fetchUserQuestions(userID),
             loggedIn: (req.user !== undefined) ? true : false, 
             picture: req.user ? req.user.picture : null
           };
