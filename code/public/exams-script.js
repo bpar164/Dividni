@@ -1,5 +1,6 @@
 let questionList = [];
-let blobList = []; //For storing instruction section contents
+let blobQuestionContents = []; //For storing instruction section contents
+let blobIncludeList = []; //Corresponds to blobList, true if blob included in submission
 
 checkBoxChanged = (checkbox, divName) => {
   checkbox.checked ? createTextArea(divName) : removeTextArea(divName);
@@ -54,7 +55,7 @@ previewQuestion = (id) => {
         //Add the content to the display
         document.getElementById('previewModalContent').innerHTML = content;
       } else {
-        document.getElementById('previewModalContent').innerHTML = '<p>Error fetching question.</p>';
+        document.getElementById('previewModalContent').innerHTML = '<p>Could not find question.</p>';
       }  
     },
     error: () => {
@@ -87,16 +88,41 @@ generatePreviewContent = (question) => {
 
 questionCheckBoxChanged = (checkbox, id) => {
   if (checkbox.checked) {
-    //Add to list
-    questionList.push(id);
+    questionList.push(id); //Add to list
   } else {
-    //Remove from list
-    questionList.splice(questionList.indexOf(id), 1);
+    questionList.splice(questionList.indexOf(id), 1); //Remove from list
   }
 }
 
-//Event listener for btnInstructions to create textArea and additional buttons
+//Event listener for btnInstructions to create textArea and additional buttons - used when blob is created for first time
 document.getElementById("btnInstructions").addEventListener("click", () => {
+  createInstructionTextAreaAndButtons();
+  //Add corresponding onClick listeners to buttons
+  document.getElementById("btnSave").addEventListener("click", () => {
+    //Save blob question
+    if (!(tinyMCE.get('instructionSectionsTextArea').getContent() === '')) {
+      //Get content from textArea
+      blobQuestionContents.push(tinyMCE.get('instructionSectionsTextArea').getContent());
+      //Automatically include question 
+      blobIncludeList.push(true); 
+      //Create li item to append to display list
+      let instructionItem = createHTMLElement('li', '', ['collection-item']);
+      instructionItem.innerHTML =  
+      `<div>Instruction Section #` + blobQuestionContents.length + `<a href="#!" class="secondary-content">
+          <label><input type="checkbox" onChange="blobCheckBoxChanged(this, ` + (blobQuestionContents.length-1) + `);" checked/><span></span></label></a>  
+        <a href="#previewModal" class="secondary-content modal-trigger" onClick="previewBlob(` + (blobQuestionContents.length-1) + `);"><i class="material-icons">zoom_in</i></a> 
+        <a href="#" class="secondary-content" onClick="editBlob(` + (blobQuestionContents.length-1) + `);"><i class="material-icons">edit</i></a> 
+      </div>`; 
+      document.getElementById('questionList').appendChild(instructionItem); 
+    }
+    removeInstructionSection();
+  }); 
+  document.getElementById("btnCancel").addEventListener("click", () => {
+    removeInstructionSection();
+  }); 
+});
+
+createInstructionTextAreaAndButtons = () => {
   createTextArea('instructionSections');
   document.getElementById("btnInstructions").classList.add('disabled');
   //Create save and cancel buttons
@@ -104,30 +130,10 @@ document.getElementById("btnInstructions").addEventListener("click", () => {
   btnSave.innerHTML = 'Save';
   let btnCancel = createHTMLElement('a', 'btnCancel', ['waves-effect', 'waves-light', 'btn-small', 'right']);
   btnCancel.innerHTML = 'Cancel';
-  //Add buttons to display and add corresponding onClick listeners
+  //Add buttons to display 
   document.getElementById('instructionSections').appendChild(btnSave);
-  document.getElementById("btnSave").addEventListener("click", () => {
-    //Save blob question
-    if (!(tinyMCE.get('instructionSectionsTextArea').getContent() === '')) {
-      //Get content from textArea
-      blobList.push(tinyMCE.get('instructionSectionsTextArea').getContent());
-      //Create li item to append to display list
-      let instructionItem = createHTMLElement('li', '', ['collection-item']);
-      instructionItem.innerHTML = 
-      `<div>Instruction Section #` + blobList.length + `<a href="#!" class="secondary-content">
-          <label><input type="checkbox" onChange="blobCheckBoxChanged(this, ` + (blobList.length-1) + `);" checked/><span></span></label></a>
-        <a href="#previewModal" class="secondary-content modal-trigger" onClick="previewBlob(` + (blobList.length-1) + `);"><i class="material-icons">zoom_in</i></a>
-        <a href="#" class="secondary-content" onClick="editBlob(` + (blobList.length-1) + `);"><i class="material-icons">edit</i></a>
-      </div>`;
-      document.getElementById('questionList').appendChild(instructionItem);
-    }
-    removeInstructionSection();
-  }); 
   document.getElementById('instructionSections').appendChild(btnCancel);
-  document.getElementById("btnCancel").addEventListener("click", () => {
-    removeInstructionSection();
-  }); 
-});
+}
 
 //Remove the textArea and buttons
 removeInstructionSection = () => {
@@ -137,32 +143,40 @@ removeInstructionSection = () => {
   document.getElementById("btnInstructions").classList.remove('disabled');
 }
 
+blobCheckBoxChanged = (checkbox, id) => {
+  console.log('Before', blobQuestionContents, blobIncludeList);
+  if (checkbox.checked) {
+    //Add to include list
+    blobIncludeList[id] = true;
+    console.log('Add', blobQuestionContents, blobIncludeList);
+  } else {
+    //Remove from include list 
+    blobIncludeList[id] = false;
+    console.log('Remove', blobQuestionContents, blobIncludeList);
+  }
+}
+
 //Fetch blob and display in modal
 previewBlob = (id) => {
-  document.getElementById('previewModalContent').innerHTML = blobList[id];
+  document.getElementById('previewModalContent').innerHTML = blobQuestionContents[id];
 }
 
-//
+//Make changes to existing blob element
 editBlob = (id) => {
-  console.log(id)
-  //Load contents into textarea
-
-  //Create save button
-  //Updates array
-  //removeInstructionSection();
-
-  //Create cancel button
-  //removeInstructionSection();
-}
-
-blobCheckBoxChanged = (checkbox, id) => {
-  if (checkbox.checked) {
-    //Add to list
-    blobList.push(id);
-  } else {
-    //Remove from list
-    blobList.splice(blobList.indexOf(id), 1);
-  }
+  createInstructionTextAreaAndButtons(); 
+  //Load contents into textArea
+  tinyMCE.get('instructionSectionsTextArea').setContent(blobQuestionContents[id]);
+  //Add corresponding onClick listeners to buttons
+  document.getElementById("btnSave").addEventListener("click", () => {
+    let temp = tinyMCE.get('instructionSectionsTextArea').getContent();
+    if (!(temp === '')) {
+      blobQuestionContents[id] = temp;
+    }
+    removeInstructionSection();
+  }); 
+  document.getElementById("btnCancel").addEventListener("click", () => {
+    removeInstructionSection();
+  }); 
 }
 
 $("#examForm").submit((event) => {
