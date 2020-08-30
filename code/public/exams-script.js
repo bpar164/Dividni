@@ -90,6 +90,7 @@ generatePreviewContent = (question) => {
 }
 
 questionCheckBoxChanged = (checkbox, id) => {
+  $("#" + id).toggleClass('teal lighten-4');
   if (checkbox.checked) {
     mcQuestionList.push(id); //Add to list
   } else {
@@ -109,7 +110,7 @@ document.getElementById("btnInstructions").addEventListener("click", () => {
       //Automatically include question 
       blobIncludeList.push(true); 
       //Create li item to append to display list
-      let instructionItem = createHTMLElement('li', '', ['collection-item']);
+      let instructionItem = createHTMLElement('li', 'Blob' + (blobQuestionContents.length-1), ['collection-item', 'teal', 'lighten-4']);
       instructionItem.innerHTML =  
       `<div>Instruction Section #` + blobQuestionContents.length + `<a href="#!" class="secondary-content">
           <label><input type="checkbox" onChange="blobCheckBoxChanged(this, ` + (blobQuestionContents.length-1) + `);" checked/><span></span></label></a>  
@@ -147,15 +148,13 @@ removeInstructionSection = () => {
 }
 
 blobCheckBoxChanged = (checkbox, id) => {
-  console.log('Before', blobQuestionContents, blobIncludeList);
+  $("#Blob" + id).toggleClass('teal lighten-4');
   if (checkbox.checked) {
     //Add to include list
     blobIncludeList[id] = true;
-    console.log('Add', blobQuestionContents, blobIncludeList);
   } else {
     //Remove from include list 
     blobIncludeList[id] = false;
-    console.log('Remove', blobQuestionContents, blobIncludeList);
   }
 }
 
@@ -180,6 +179,38 @@ editBlob = (id) => {
   document.getElementById("btnCancel").addEventListener("click", () => {
     removeInstructionSection();
   }); 
+}
+
+//Preview exam and display in modal
+previewExam = () => {
+  document.getElementById('generate').classList.remove('disabled');
+  document.getElementById('previewModalContent').innerHTML = generateExamPreviewContent();
+}
+
+//Creates the HTML content for the preview modal
+generateExamPreviewContent = (question) => {
+  //Clear the content
+  content = '';
+  //Build the content using the values with formatting 
+  content += '<b>Name: </b>' + document.getElementById('name').value + '</br>';
+  content += '</br><b>Paper Count: </b>' + document.getElementById('paperCount').value + '</br>';
+  document.getElementById('coverPageCheckBox').checked ?
+    content += '</br><b>Cover Page:</b></br>' + tinyMCE.get('coverPageTextArea').getContent() + '</br>' : null; 
+
+  content += 'QUESTIONS';
+
+  document.getElementById('appendixCheckBox').checked ?
+    content += '</br><b>Appendix:</b></br>' + tinyMCE.get('appendixTextArea').getContent() + '</br>' : null; 
+    
+  
+
+  /*
+  content += '<b>Incorrect Answers:</b><ol>';
+  question.incorrectAnswers.forEach(ans => {
+    content += '<li>' + ans + '</li>';
+  });
+  content += '</ol>'; */
+  return content;
 }
 
 $("#examForm").submit((event) => {
