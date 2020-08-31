@@ -99,11 +99,11 @@ document.getElementById("btnInstructions").addEventListener("click", () => {
     if (!(tinyMCE.get('instructionSectionsTextArea').getContent() === '')) {
       let sectionId = (instructionSections.push(tinyMCE.get('instructionSectionsTextArea').getContent()) - 1);
       //Create li item to append to display list
-      let instructionItem = createHTMLElement('li', sectionId, ['collection-item', 'teal', 'lighten-4']);
+      let instructionItem = createHTMLElement('li', 'is' + sectionId, ['collection-item', 'teal', 'lighten-4']);
       instructionItem.setAttribute("name", "Instruction Section #" + (sectionId + 1));
       instructionItem.innerHTML =  
       `<div>Instruction Section #` + (sectionId + 1) + `<a href="#!" class="secondary-content">
-          <label><input type="checkbox" onChange="liCheckBoxChanged('` + sectionId + `');" checked/><span></span></label></a>  
+          <label><input type="checkbox" onChange="liCheckBoxChanged('is` + sectionId + `');" checked/><span></span></label></a>  
         <a href="#previewModal" class="secondary-content modal-trigger" onClick="previewInstructionSection(` + sectionId + `);"><i class="material-icons">zoom_in</i></a> 
         <a href="#" class="secondary-content" onClick="editInstructionSection(` + sectionId + `);"><i class="material-icons">edit</i></a> 
       </div>`; 
@@ -117,6 +117,10 @@ document.getElementById("btnInstructions").addEventListener("click", () => {
 });
 
 createInstructionTextAreaAndButtons = () => {
+   //If the textArea already exists, remove it 
+   if (document.getElementById("instructionSectionsTextArea") !== null) {
+    removeInstructionSection();
+  }
   createTextArea('instructionSections');
   document.getElementById("btnInstructions").classList.add('disabled');
   //Create save and cancel buttons
@@ -144,7 +148,6 @@ previewInstructionSection = (id) => {
 
 //Make changes to existing instruction section element
 editInstructionSection = (id) => {
-  removeInstructionSection(); //In case this section already existed
   createInstructionTextAreaAndButtons(); 
   //Load contents into textArea
   tinyMCE.get('instructionSectionsTextArea').setContent(instructionSections[id]);
@@ -176,25 +179,33 @@ generateExamPreviewContent = () => {
   content += '</br><b>Paper Count: </b>' + document.getElementById('paperCount').value + '</br>';
   document.getElementById('coverPageCheckBox').checked ?
     content += '</br><b>Cover Page:</b></br>' + tinyMCE.get('coverPageTextArea').getContent() + '</br>' : null; 
-
-  content += '</br><b>Questions:</b></br>' + '</br>';
-  console.log(fetchAllSelectedQuestions());
-
+  let selectedQuestionIds =  fetchAllSelectedQuestionIds(); 
+  let selectedQuestionNames = fetchAllSelectedQuestionNames(selectedQuestionIds);
+  content += '</br><b>Questions:</b><ol>';
+  selectedQuestionNames.forEach(qName => {
+    content += '<li>' + qName + '</li>';
+  });
+  content += '</ol>'; 
   document.getElementById('appendixCheckBox').checked ?
     content += '</br><b>Appendix:</b></br>' + tinyMCE.get('appendixTextArea').getContent() + '</br>' : null; 
-    
-  /*
-  content += '<b>Incorrect Answers:</b><ol>';
-  question.incorrectAnswers.forEach(ans => {
-    content += '<li>' + ans + '</li>';
-  });
-  content += '</ol>'; */
   return content;
 }
 
-fetchAllSelectedQuestions = () => {
-  let questions = Array.from(document.querySelectorAll('#questions>ul>li.teal')); //Get name
-  return questions;
+fetchAllSelectedQuestionIds = () => {
+  let selectedQuestions = document.querySelectorAll('#questions>ul>li.teal'); 
+  let selectedQuestionIds = [];
+  for (let i = 0; i < selectedQuestions.length; i++) {
+    selectedQuestionIds.push(selectedQuestions[i].id);
+  }
+  return selectedQuestionIds;
+}
+
+fetchAllSelectedQuestionNames = (selectedQuestionIds) => {
+  let selectedQuestionNames = [];
+  for (let i = 0; i < selectedQuestionIds.length; i++) {
+    selectedQuestionNames.push(document.getElementById(selectedQuestionIds[i]).getAttribute('name'));
+  }
+  return selectedQuestionNames;
 }
 
 $("#examForm").submit((event) => {
@@ -216,11 +227,13 @@ $("#examForm").submit((event) => {
       content += '<li>Complete appendix, or uncheck the corresponding box.</li>';
     }   
   }
+
   //At least one question must be checked
   if (mcQuestionList.length < 1) {
     missingRequired = true;
     content += '<li>Select at least one question.</li>';
   }
+  
   content += '</ul></p>';
   //Generate exam if all requirements are met, otherwise display message
   if (!(missingRequired)) {
