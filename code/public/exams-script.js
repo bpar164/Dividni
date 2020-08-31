@@ -1,9 +1,6 @@
-let mcQuestionList = [];
-let blobQuestionContents = []; //For storing instruction section contents
-let blobIncludeList = []; //Corresponds to blobList, true if blob included in submission
-
+let instructionSections = []; 
 let questionList = document.getElementById('questionList');
-var sortable = Sortable.create(questionList);
+let sortable = Sortable.create(questionList);
 
 checkBoxChanged = (checkbox, divName) => {
   checkbox.checked ? createTextArea(divName) : removeTextArea(divName);
@@ -89,33 +86,26 @@ generatePreviewContent = (question) => {
   return content;
 }
 
-questionCheckBoxChanged = (checkbox, id) => {
+liCheckBoxChanged = (id) => {
   $("#" + id).toggleClass('teal lighten-4');
-  if (checkbox.checked) {
-    mcQuestionList.push(id); //Add to list
-  } else {
-    mcQuestionList.splice(mcQuestionList.indexOf(id), 1); //Remove from list
-  }
 }
 
-//Event listener for btnInstructions to create textArea and additional buttons - used when blob is created for first time
+//Event listener for btnInstructions to create textArea and additional buttons - used when instruction section is created for first time
 document.getElementById("btnInstructions").addEventListener("click", () => {
   createInstructionTextAreaAndButtons();
   //Add corresponding onClick listeners to buttons
   document.getElementById("btnSave").addEventListener("click", () => {
-    //Save blob question
+    //Save instruction section (if there is content)
     if (!(tinyMCE.get('instructionSectionsTextArea').getContent() === '')) {
-      //Get content from textArea
-      blobQuestionContents.push(tinyMCE.get('instructionSectionsTextArea').getContent());
-      //Automatically include question 
-      blobIncludeList.push(true); 
+      let sectionId = (instructionSections.push(tinyMCE.get('instructionSectionsTextArea').getContent()) - 1);
       //Create li item to append to display list
-      let instructionItem = createHTMLElement('li', 'Blob' + (blobQuestionContents.length-1), ['collection-item', 'teal', 'lighten-4']);
+      let instructionItem = createHTMLElement('li', sectionId, ['collection-item', 'teal', 'lighten-4']);
+      instructionItem.setAttribute("name", "Instruction Section #" + (sectionId + 1));
       instructionItem.innerHTML =  
-      `<div>Instruction Section #` + blobQuestionContents.length + `<a href="#!" class="secondary-content">
-          <label><input type="checkbox" onChange="blobCheckBoxChanged(this, ` + (blobQuestionContents.length-1) + `);" checked/><span></span></label></a>  
-        <a href="#previewModal" class="secondary-content modal-trigger" onClick="previewBlob(` + (blobQuestionContents.length-1) + `);"><i class="material-icons">zoom_in</i></a> 
-        <a href="#" class="secondary-content" onClick="editBlob(` + (blobQuestionContents.length-1) + `);"><i class="material-icons">edit</i></a> 
+      `<div>Instruction Section #` + (sectionId + 1) + `<a href="#!" class="secondary-content">
+          <label><input type="checkbox" onChange="liCheckBoxChanged('` + sectionId + `');" checked/><span></span></label></a>  
+        <a href="#previewModal" class="secondary-content modal-trigger" onClick="previewInstructionSection(` + sectionId + `);"><i class="material-icons">zoom_in</i></a> 
+        <a href="#" class="secondary-content" onClick="editInstructionSection(` + sectionId + `);"><i class="material-icons">edit</i></a> 
       </div>`; 
       document.getElementById('questionList').appendChild(instructionItem); 
     }
@@ -147,32 +137,22 @@ removeInstructionSection = () => {
   document.getElementById("btnInstructions").classList.remove('disabled');
 }
 
-blobCheckBoxChanged = (checkbox, id) => {
-  $("#Blob" + id).toggleClass('teal lighten-4');
-  if (checkbox.checked) {
-    //Add to include list
-    blobIncludeList[id] = true;
-  } else {
-    //Remove from include list 
-    blobIncludeList[id] = false;
-  }
+//Fetch instruction section and display in modal
+previewInstructionSection = (id) => {
+  document.getElementById('previewModalContent').innerHTML = instructionSections[id];
 }
 
-//Fetch blob and display in modal
-previewBlob = (id) => {
-  document.getElementById('previewModalContent').innerHTML = blobQuestionContents[id];
-}
-
-//Make changes to existing blob element
-editBlob = (id) => {
+//Make changes to existing instruction section element
+editInstructionSection = (id) => {
+  removeInstructionSection(); //In case this section already existed
   createInstructionTextAreaAndButtons(); 
   //Load contents into textArea
-  tinyMCE.get('instructionSectionsTextArea').setContent(blobQuestionContents[id]);
+  tinyMCE.get('instructionSectionsTextArea').setContent(instructionSections[id]);
   //Add corresponding onClick listeners to buttons
   document.getElementById("btnSave").addEventListener("click", () => {
     let temp = tinyMCE.get('instructionSectionsTextArea').getContent();
     if (!(temp === '')) {
-      blobQuestionContents[id] = temp;
+      instructionSections[id] = temp;
     }
     removeInstructionSection();
   }); 
@@ -188,7 +168,7 @@ previewExam = () => {
 }
 
 //Creates the HTML content for the preview modal
-generateExamPreviewContent = (question) => {
+generateExamPreviewContent = () => {
   //Clear the content
   content = '';
   //Build the content using the values with formatting 
@@ -197,13 +177,12 @@ generateExamPreviewContent = (question) => {
   document.getElementById('coverPageCheckBox').checked ?
     content += '</br><b>Cover Page:</b></br>' + tinyMCE.get('coverPageTextArea').getContent() + '</br>' : null; 
 
-  content += 'QUESTIONS';
+  content += '</br><b>Questions:</b></br>' + '</br>';
+  console.log(fetchAllSelectedQuestions());
 
   document.getElementById('appendixCheckBox').checked ?
     content += '</br><b>Appendix:</b></br>' + tinyMCE.get('appendixTextArea').getContent() + '</br>' : null; 
     
-  
-
   /*
   content += '<b>Incorrect Answers:</b><ol>';
   question.incorrectAnswers.forEach(ans => {
@@ -211,6 +190,11 @@ generateExamPreviewContent = (question) => {
   });
   content += '</ol>'; */
   return content;
+}
+
+fetchAllSelectedQuestions = () => {
+  let questions = Array.from(document.querySelectorAll('#questions>ul>li.teal')); //Get name
+  return questions;
 }
 
 $("#examForm").submit((event) => {

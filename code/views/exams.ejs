@@ -43,9 +43,9 @@
             <% } else { %>
               <ul id='questionList' class="collection with-header">
                 <% mcQuestions.forEach(q => { %>
-                  <li class="collection-item" id='<%= q.id %>'><div><%= q.question.name %><a href="#!" class="secondary-content">
+                  <li class="collection-item" id='<%= q.id %>' name='<%= q.question.name %>'><div><%= q.question.name %><a href="#!" class="secondary-content">
                     <label>
-                      <input type="checkbox" onChange="questionCheckBoxChanged(this, '<%= q.id %>');"/><span></span>
+                      <input type="checkbox" onChange="liCheckBoxChanged('<%= q.id %>');"/><span></span>
                     </label> 
                   </a><a href="#previewModal" class="secondary-content modal-trigger" onClick="previewQuestion('<%= q.id %>');"><i class="material-icons">zoom_in</i></a></div></li> 
                 <% }) %>
