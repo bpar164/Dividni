@@ -8,6 +8,7 @@ import { ExamFormDTO } from './exam-form.dto';
 import { Exams } from './exams.schema';
 import { QuestionFormDTO } from '../multiple-choice/question-form.dto';
 import { MultipleChoice } from '../multiple-choice/multiple-choice.schema';
+import { QuestionDTO } from './question.dto';
 
 @Injectable()
 export class ExamsService {
@@ -25,13 +26,13 @@ export class ExamsService {
          if ((typeof(form.name) !== 'string') ||
          (typeof(form.paperCount) !== 'string') ||
          (typeof(form.coverPage) !== 'string') ||
-         (typeof(form.mcQuestionList) !== 'object') ||
+         (typeof(form.questionList) !== 'object') ||
          (typeof(form.appendix) !== 'string') 
         ) {
             return false;
         }
         //There must be at least one question
-        if (form.mcQuestionList.length < 1) {
+        if (form.questionList.length < 1) {
             return false;
         }
         //Name matches regular expression
@@ -53,17 +54,31 @@ export class ExamsService {
 
     //Create the Dividni exam
     async generateExam(exam: ExamFormDTO, id: string): Promise<any> {
+        //String for holding the html with question ids and instruction sections
+        let questionHTML = `<div id="Questions"><ol class="qlist">`;
         //Convert all questions to xml
         let questionXML: Array<String> = [];
-        for (let i = 0; i < exam.mcQuestionList.length; i++) {
-            //Fetch question by id
-            let multipleChoice = await this.MCModel.findById(exam.mcQuestionList[i]);
-            //Save the question into a separate variable
-            let question = new QuestionFormDTO;
-            Object.keys(multipleChoice.question).map(key => question[key] = multipleChoice.question[key]);
-            //Convert question to xml and save to array
-            questionXML.push(this.convertToXML(question, 'Q' + i));  
+        for (let i = 0; i < exam.questionList.length; i++) {
+            //Create the question object 
+            let question = new QuestionDTO;
+            Object.keys(exam.questionList[i]).map(key => question[key] = exam.questionList[i][key]);
+            //Generate xml for questions
+            if (question.type === 'mc') {
+                //Fetch question by id
+                let multipleChoice = await this.MCModel.findById(question.id);
+                //Save the question into a separate variable
+                let mcQuestion = new QuestionFormDTO;
+                Object.keys(multipleChoice.question).map(key => mcQuestion[key] = multipleChoice.question[key]);
+                //Convert question to xml and save to array
+                questionXML.push(this.convertToXML(mcQuestion, 'Q' + i));  
+                //Add the question ID to the list in the HTML
+                questionHTML += `<li class="q"><p class="cws_code_q">Q` + i + `</p></li>`;
+            } else {
+                questionHTML += question.contents;
+            }     
         }
+         //Close the questionHTML string
+         questionHTML += `</ol></div>`;    
         //Do not include coverPage/appendix if they are empty
         if (exam.coverPage === '') {
             console.log('Do not generate cover page');
@@ -72,7 +87,7 @@ export class ExamsService {
             console.log('Do not generate appendix');
         }
         //Create the actual exam files
-        let result = await this.createExam(exam, questionXML);
+        let result = await this.createExam(exam, questionXML, questionHTML);
         if (result === true) {
             //Save exam settings to database
             /*let userID = id; 
@@ -83,7 +98,7 @@ export class ExamsService {
             return true;
         } else {
             return false;
-        }    
+        }  
     } 
 
     //Convert multiple-choice question to XML format
@@ -105,30 +120,24 @@ export class ExamsService {
     }
 
     //Uses the Dividni tools to create the question and exam files
-    async createExam(exam, questionXML): Promise<any> {
+    async createExam(exam, questionXML, questionHTML): Promise<any> {
         let success;
         let continueLoop; 
         //Stop executing if any of the actions fail
         while (continueLoop != false) {
             success = false;
             let questionList = "";
-            //String for holding the html with question ids
-            let questionHTML = `<div id="Questions"><ol class="qlist">`;
             //Create a temporary folder to hold the exam
             continueLoop = await this.makeFolder('../temp');
             //Create a file for each question and then convert it to C#
-            for (let i = 0; i < exam.questionList.length; i++) {
+            for (let i = 0; i < questionXML.length; i++) {
                 //Create the xml files
                 continueLoop = await this.makeFile('../temp/Q' + i + '.xml', questionXML[i]);
                 //Generate the C# and HTML files
                 continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\XmlQuest.exe" Q` + i + `.xml`);
                 //Add file to list to be compiled
-                questionList += " Q" + i + '.cs';
-                //Add the question ID to the list in the HTML
-                questionHTML += `<li class="q"><p class="cws_code_q">Q` + i + `</p></li>`;
+                questionList += " Q" + i + '.cs';     
             }  
-             //Close the questionHTML string
-            questionHTML += `</ol></div>`;
             //Compile all of the questions
             continueLoop = await this.execShellCommand(`cd .. && cd temp && mcs -t:library -lib:"..\\dividni" -r:Utilities.Courses.dll -out:QHelper.dll` + questionList);
             //Create html template
@@ -150,7 +159,8 @@ export class ExamsService {
         return success;
         /*
         //Delete the folder and its contents
-        await this.execShellCommand(`cd .. && rmdir /Q /S question`);*/
+        await this.execShellCommand(`cd .. && rmdir /Q /S question`);
+        */
     }
 
     //Make a directory 

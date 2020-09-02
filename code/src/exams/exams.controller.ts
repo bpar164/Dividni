@@ -40,9 +40,10 @@ export class ExamsController {
             if (this.examsService.validateExam(exam)) {
                 return await this.examsService.generateExam(exam, id); 
             } else {
-                return false; //Question not created
+                return false; //Exam not created
             }
         } catch (err) {
+            console.log('error', err)
             return false; //Exam not created
         }   
     }

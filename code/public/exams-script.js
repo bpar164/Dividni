@@ -281,13 +281,34 @@ fetchFormValues = () => {
   exam = {};
   exam.name = document.getElementById('name').value;
   exam.paperCount = document.getElementById('paperCount').value;
+  exam.questionList = createExamQuestionList();
   //The following values can be empty:
   document.getElementById('coverPageCheckBox').checked ? exam.coverPage = tinyMCE.get('coverPageTextArea').getContent() : exam.coverPage = null;
-  exam.mcQuestionList = mcQuestionList;
-  (blobList.length > 0) ? exam.blobList = blobList : exam.blobList = null; 
   document.getElementById('appendixCheckBox').checked ? exam.appendix = tinyMCE.get('appendixTextArea').getContent() : exam.appendix = null;
   return exam;
 }
+
+createExamQuestionList = () => {
+  let selectedQuestionIds = fetchAllSelectedQuestionIds();
+  let questionList = [];
+  let instructionSectionsIndex = 0;
+  for (let i = 0; i < selectedQuestionIds.length; i++) {
+    let tempQuestion = {};
+    if (selectedQuestionIds[i].length === 24) { //All questions have ids of length 24 
+      tempQuestion.type = 'mc';
+      tempQuestion.id = selectedQuestionIds[i];
+      tempQuestion.contents = null;
+    } else {
+      tempQuestion.type = 'is';
+      tempQuestion.id = selectedQuestionIds[i];
+      tempQuestion.contents = instructionSections[instructionSectionsIndex];
+      instructionSectionsIndex++;
+    }
+    questionList.push(tempQuestion);
+  }
+  return questionList;
+}
+
  
 
  
