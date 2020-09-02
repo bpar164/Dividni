@@ -2,8 +2,7 @@ TODO
 -CRUD for cover page
 -CRUD for appendix
 -CRUD for exam 
--Create a 'blob' question
--Change question/blob order 
+-Generate exam using blobs/questions
 -Convert generated exams to pdf (cover page/questions/appendix each on new page)
 -Download file contents
 

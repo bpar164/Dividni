@@ -227,13 +227,18 @@ $("#examForm").submit((event) => {
       content += '<li>Complete appendix, or uncheck the corresponding box.</li>';
     }   
   }
-
   //At least one question must be checked
-  if (mcQuestionList.length < 1) {
+  let selectedQuestionIds = fetchAllSelectedQuestionIds();
+  let questionFound = false;
+  selectedQuestionIds.forEach(qId => {
+    if (qId.length === 24) { //All questions have ids of length 24 
+      questionFound = true;
+    } 
+  });
+  if (!(questionFound)) {
     missingRequired = true;
     content += '<li>Select at least one question.</li>';
   }
-  
   content += '</ul></p>';
   //Generate exam if all requirements are met, otherwise display message
   if (!(missingRequired)) {
