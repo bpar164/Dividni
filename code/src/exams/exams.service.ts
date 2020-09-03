@@ -79,13 +79,6 @@ export class ExamsService {
         }
          //Close the questionHTML string
          questionHTML += `</ol></div>`;    
-        //Do not include coverPage/appendix if they are empty
-        if (exam.coverPage === '') {
-            console.log('Do not generate cover page');
-        }
-        if (exam.appendix === '') {
-            console.log('Do not generate appendix');
-        }
         //Create the actual exam files
         let result = await this.createExam(exam, questionXML, questionHTML);
         if (result === true) {
@@ -152,7 +145,7 @@ export class ExamsService {
             //Create a file for the html
             continueLoop = await this.makeFile('../temp/Exam.Template.html', examHTML);
             //Generate exam
-            continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -paperCount ` + exam.paperCount + ` Exam.Template.html`);
+            continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -htmlFolder papers -answerFolder answers -paperCount ` + exam.paperCount + ` Exam.Template.html`);
             success = true; //Only true if reach last operation
             continueLoop = false;
         }
