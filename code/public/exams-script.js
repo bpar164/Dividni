@@ -1,4 +1,5 @@
 let instructionSections = []; 
+let examType = 'standard'; //Standard as a default
 let questionList = document.getElementById('questionList');
 let sortable = Sortable.create(questionList);
 
@@ -240,18 +241,43 @@ $("#examForm").submit((event) => {
     content += '<li>Select at least one question.</li>';
   }
   content += '</ul></p>';
-  //Generate exam if all requirements are met, otherwise display message
+  //Show exam type form if all requirements are met, otherwise display message
   if (!(missingRequired)) {
-    content = '<p>Generating exam...</p>';
-    document.getElementById('optionsModalRetry').classList.add("disabled");
-    generateExam();
+    content = createExamTypeForm();
   } else {
     document.getElementById('optionsModalRetry').classList.remove("disabled");
   }
   document.getElementById('optionsModalContent').innerHTML = content;
 });
 
+createExamTypeForm = () => {
+  return `<div class="input-field">
+      <p>Exam type:</p>
+      <p><label>
+          <input class="with-gap" type="radio" name="type" value="standard" required" onClick="setExamType('standard');" checked>
+          <span>Standard</span>
+      </label></p>
+      <p><label>
+          <input class="with-gap" type="radio" name="type" value="canvas" required" onClick="setExamType('canvas');">
+          <span>Canvas</span>
+      </label></p>
+      <p><label>
+          <input class="with-gap" type="radio" name="type" value="inspera" required" onClick="setExamType('inspera');">
+          <span>Inspera</span>
+      </label></p>
+    </div>
+    <button class="btn waves-effect waves-light" onClick="generateExam('');"> 
+        Select<i class="material-icons right">send</i>
+    </button>`
+}
+
+setExamType = (type) => {
+  examType = type;
+}
+
 generateExam = () => {
+  document.getElementById('optionsModalRetry').classList.add("disabled");   
+  document.getElementById('optionsModalContent').innerHTML = '<p>Generating exam...</p>';
   //Get the values from the form
   let exam = fetchFormValues();
   $.ajax({
@@ -281,6 +307,7 @@ fetchFormValues = () => {
   exam = {};
   exam.name = document.getElementById('name').value;
   exam.paperCount = document.getElementById('paperCount').value;
+  exam.examType = examType;
   exam.questionList = createExamQuestionList();
   //The following values can be empty:
   document.getElementById('coverPageCheckBox').checked ? exam.coverPage = tinyMCE.get('coverPageTextArea').getContent() : exam.coverPage = null;

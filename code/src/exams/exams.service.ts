@@ -18,13 +18,14 @@ export class ExamsService {
     Just returns false if there is an issue, without explanation.
     Validation also performed on frontend, so this is only false when the user has somehow avoided the frontend. */
     validateExam(form: ExamFormDTO): boolean {
-        //Name and paper count are required 
-        if ((!(form.name)) || (!(form.paperCount))) {
+        //Name, paper count and type are required 
+        if ((!(form.name)) || (!(form.paperCount)) || (!(form.examType))) {
             return false;
         }
          //Field types are all correct
          if ((typeof(form.name) !== 'string') ||
          (typeof(form.paperCount) !== 'string') ||
+         (typeof(form.examType) !== 'string') ||
          (typeof(form.coverPage) !== 'string') ||
          (typeof(form.questionList) !== 'object') ||
          (typeof(form.appendix) !== 'string') 
@@ -49,11 +50,20 @@ export class ExamsService {
         } else if ((paperCount % 1) !== 0) {
             return false;
         }
+        //examType can only have 3 options
+        let examType = form.examType;
+        if (!((examType === 'standard') || (examType === 'canvas') || (examType === 'inspera'))) {
+            return false;
+        }
         return true;
     }
 
     //Create the Dividni exam
     async generateExam(exam: ExamFormDTO, id: string): Promise<any> {
+
+        //examType
+        console.log(exam.examType)
+        /*
         //String for holding the html with question ids and instruction sections
         let questionHTML = `<div id="Questions"><ol class="qlist">`;
         //Convert all questions to xml
@@ -87,11 +97,11 @@ export class ExamsService {
             let examsDTO = new ExamsDTO();
             examsDTO = { exam, userID };
             let newExam = new this.ExamsModel(examsDTO);
-            return newExam.save(); */
+            return newExam.save(); 
             return true;
         } else {
             return false;
-        }  
+        }  */
     } 
 
     //Convert multiple-choice question to XML format

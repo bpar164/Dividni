@@ -4,4 +4,5 @@ export class ExamFormDTO {
     coverPage: string;
     questionList: object[];
     appendix: string;
+    examType: string;
 }
