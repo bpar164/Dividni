@@ -60,13 +60,9 @@ export class ExamsService {
 
     //Create the Dividni exam
     async generateExam(exam: ExamFormDTO, id: string): Promise<any> {
-
-        //examType
-        console.log(exam.examType)
-        /*
         //String for holding the html with question ids and instruction sections
         let questionHTML = `<div id="Questions"><ol class="qlist">`;
-        //Convert all questions to xml
+        //Convert all questions to xml, and create html question list
         let questionXML: Array<String> = [];
         for (let i = 0; i < exam.questionList.length; i++) {
             //Create the question object 
@@ -88,7 +84,7 @@ export class ExamsService {
             }     
         }
          //Close the questionHTML string
-         questionHTML += `</ol></div>`;    
+         questionHTML += `</ol></div>`;  
         //Create the actual exam files
         let result = await this.createExam(exam, questionXML, questionHTML);
         if (result === true) {
@@ -97,11 +93,15 @@ export class ExamsService {
             let examsDTO = new ExamsDTO();
             examsDTO = { exam, userID };
             let newExam = new this.ExamsModel(examsDTO);
-            return newExam.save(); 
+            return newExam.save(); */
             return true;
         } else {
             return false;
-        }  */
+        }  
+        /*
+        //Delete the folder and its contents
+        await this.execShellCommand(`cd .. && rmdir /Q /S question`);
+        */
     } 
 
     //Convert multiple-choice question to XML format
@@ -141,29 +141,32 @@ export class ExamsService {
                 //Add file to list to be compiled
                 questionList += " Q" + i + '.cs';     
             }  
-            //Compile all of the questions
-            continueLoop = await this.execShellCommand(`cd .. && cd temp && mcs -t:library -lib:"..\\dividni" -r:Utilities.Courses.dll -out:QHelper.dll` + questionList);
-            //Create html template
-            //Header with name
-            let examHTML = `<html><head><meta charset="utf-8"/><title>` + exam.name + `</title></head><body>`;
-            //Cover page
-            examHTML += `<div id="coverPage">` + exam.coverPage +  `</div>`;
-            //Questions
-            examHTML += `<div id="questions">` + questionHTML + `</div>`;
-            //Appendix
-            examHTML += `<div id="appendix">` + exam.appendix + `</div></body></html>`
-            //Create a file for the html
-            continueLoop = await this.makeFile('../temp/Exam.Template.html', examHTML);
-            //Generate exam
-            continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -htmlFolder papers -answerFolder answers -paperCount ` + exam.paperCount + ` Exam.Template.html`);
+            //Create standard exam with html template
+            if (exam.examType === 'standard') {
+                //Compile all of the questions
+                continueLoop = await this.execShellCommand(`cd .. && cd temp && mcs -t:library -lib:"..\\dividni" -r:Utilities.Courses.dll -out:QHelper.dll` + questionList);
+                //Create html template
+                //Header with name
+                let examHTML = `<html><head><meta charset="utf-8"/><title>` + exam.name + `</title></head><body>`;
+                //Cover page
+                examHTML += `<div id="coverPage">` + exam.coverPage +  `</div>`;
+                //Questions
+                examHTML += `<div id="questions">` + questionHTML + `</div>`;
+                //Appendix
+                examHTML += `<div id="appendix">` + exam.appendix + `</div></body></html>`
+                //Create a file for the html
+                continueLoop = await this.makeFile('../temp/Exam.Template.html', examHTML);
+                //Generate exam
+                continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -htmlFolder papers -answerFolder answers -paperCount ` + exam.paperCount + ` Exam.Template.html`);
+            } else if (exam.examType === 'canvas') { //Create Canvas compatible zip 
+                continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\QtiGen.exe" -qtiVers 1.2 -variant ` + exam.paperCount + ` -id ` + exam.name + questionList);
+            } else { //Create Inspera compatible zip 
+                continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\QtiGen.exe" -qtiVers 2.1 -variant ` + exam.paperCount + ` -id ` + exam.name + questionList);
+            }
             success = true; //Only true if reach last operation
             continueLoop = false;
         }
         return success;
-        /*
-        //Delete the folder and its contents
-        await this.execShellCommand(`cd .. && rmdir /Q /S question`);
-        */
     }
 
     //Make a directory 
