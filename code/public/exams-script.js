@@ -305,7 +305,7 @@ generateExam = () => {
 
 fetchFormValues = () => {
   exam = {};
-  exam.name = document.getElementById('name').value;
+  exam.name = document.getElementById('name').value.replace(' ', '_');
   exam.paperCount = document.getElementById('paperCount').value;
   exam.examType = examType;
   exam.questionList = createExamQuestionList();

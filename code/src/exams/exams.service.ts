@@ -9,6 +9,7 @@ import { Exams } from './exams.schema';
 import { QuestionFormDTO } from '../multiple-choice/question-form.dto';
 import { MultipleChoice } from '../multiple-choice/multiple-choice.schema';
 import { QuestionDTO } from './question.dto';
+import e = require('express');
 
 @Injectable()
 export class ExamsService {
@@ -158,10 +159,16 @@ export class ExamsService {
                 continueLoop = await this.makeFile('../temp/Exam.Template.html', examHTML);
                 //Generate exam
                 continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -htmlFolder papers -answerFolder answers -paperCount ` + exam.paperCount + ` Exam.Template.html`);
-                //Convert all html question files to pdf
-                for (let i = 0; i < questionXML.length; i++) {
-                    continueLoop = await this.execShellCommand(`cd .. && cd temp && cd papers && "..\\..\\dividni\\wkhtmltopdf ` + `FILENAME` +`.html ` + exam.name + `#` + (i+1) + `.pdf"`);
-                }
+                //Convert all html question files in the papers folder to pdf
+                fs.readdir("../temp/papers", (err, files) => {
+                    if (err) {
+                        continueLoop = false;
+                    }  else {
+                        files.forEach(async (file) => {
+                            continueLoop = await this.execShellCommand(`cd .. && cd temp && cd papers && ..\\..\\dividni\\wkhtmltopdf ` + file + ` ` + exam.name + `#` + file.substr(0, file.indexOf('.')) + `.pdf`);
+                        });
+                    }  
+                });
             } else if (exam.examType === 'canvas') { //Create Canvas compatible zip 
                 continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\QtiGen.exe" -qtiVers 1.2 -variant ` + exam.paperCount + ` -id ` + exam.name + questionList);
             } else { //Create Inspera compatible zip 
