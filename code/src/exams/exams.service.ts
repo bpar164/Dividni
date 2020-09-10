@@ -9,7 +9,6 @@ import { Exams } from './exams.schema';
 import { QuestionFormDTO } from '../multiple-choice/question-form.dto';
 import { MultipleChoice } from '../multiple-choice/multiple-choice.schema';
 import { QuestionDTO } from './question.dto';
-import e = require('express');
 
 @Injectable()
 export class ExamsService {
@@ -150,25 +149,22 @@ export class ExamsService {
                 //Header with name
                 let examHTML = `<html><head><meta charset="utf-8"/><title>` + exam.name + `</title></head><body>`;
                 //Cover page
-                examHTML += `<div id="coverPage">` + exam.coverPage +  `</div>`;
+                exam.coverPage !== '' ? examHTML += `<div id="coverPage">` + exam.coverPage +  `</div>` : null;
                 //Questions
                 examHTML += `<div id="questions">` + questionHTML + `</div>`;
                 //Appendix
-                examHTML += `<div id="appendix">` + exam.appendix + `</div></body></html>`
+                exam.appendix !== '' ? examHTML += `<div id="appendix">` + exam.appendix + `</div></body></html>` : examHTML += `</body></html>`;
                 //Create a file for the html
                 continueLoop = await this.makeFile('../temp/Exam.Template.html', examHTML);
                 //Generate exam
                 continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -htmlFolder papers -answerFolder answers -paperCount ` + exam.paperCount + ` Exam.Template.html`);
+                
+                //If there is more than one paper, create an html file that combines all versions
+                if (exam.paperCount > 1) {
+                    
+                }   
                 //Convert all html question files in the papers folder to pdf
-                fs.readdir("../temp/papers", (err, files) => {
-                    if (err) {
-                        continueLoop = false;
-                    }  else {
-                        files.forEach(async (file) => {
-                            continueLoop = await this.execShellCommand(`cd .. && cd temp && cd papers && ..\\..\\dividni\\wkhtmltopdf ` + file + ` ` + exam.name + `#` + file.substr(0, file.indexOf('.')) + `.pdf`);
-                        });
-                    }  
-                });
+                continueLoop = await this.convertFilesToPDF("../temp/papers", exam.name); 
             } else if (exam.examType === 'canvas') { //Create Canvas compatible zip 
                 continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\QtiGen.exe" -qtiVers 1.2 -variant ` + exam.paperCount + ` -id ` + exam.name + questionList);
             } else { //Create Inspera compatible zip 
@@ -225,16 +221,22 @@ export class ExamsService {
         });
     }
 
-    /*readFile(path: string): Promise<any> {
+    convertFilesToPDF(path: string, examName: string): Promise<any> {
+        let status;
         return new Promise((resolve) => {
-            fs.readFile(path, 'utf8', (err, data) => {
+            fs.readdir(path, async (err, files) => {
                 if (err) {
-                    return false;
-                } 
-            resolve(data);
+                    status = false;
+                }  else {
+                    files.forEach(async (file) => {
+                        let fileName = examName + '#' + file.substr(0, file.indexOf('.')) + '.pdf';
+                        status = await this.execShellCommand(`cd .. && cd temp && cd papers && ..\\..\\dividni\\wkhtmltopdf ` + file + ` ` + fileName);
+                    });
+                }  
+            resolve(status);   
             });
         });
-    }*/
+    }
 
     async fetchUserExams(userID: string) {  
         return this.ExamsModel.find({ userID: userID }).sort({$natural:-1}).exec();
