@@ -149,17 +149,16 @@ export class ExamsService {
                 //Header with name
                 let examHTML = `<html><head><meta charset="utf-8"/><title>` + exam.name + `</title></head><body>`;
                 //Cover page
-                exam.coverPage !== '' ? examHTML += `<div id="coverPage">` + exam.coverPage +  `</div>` : null;
+                exam.coverPage !== '' ? examHTML += `<div id="coverPage">` + exam.coverPage +  `</div><br />` : null;
                 //Questions
-                examHTML += `<div id="questions">` + questionHTML + `</div>`;
+                examHTML += `<div id="questions">` + questionHTML + `</div><br />`;
                 //Appendix
-                exam.appendix !== '' ? examHTML += `<div id="appendix">` + exam.appendix + `</div></body></html>` : examHTML += `</body></html>`;
+                exam.appendix !== '' ? examHTML += `<div id="appendix">` + exam.appendix + `</div><br /></body></html>` : examHTML += `</body></html>`;
                 //Create a file for the html
                 continueLoop = await this.makeFile('../temp/Exam.Template.html', examHTML);
                 //Generate exam
                 continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -htmlFolder papers -answerFolder answers -paperCount ` + exam.paperCount + ` Exam.Template.html`);
-                
-                //If there is more than one paper, create an html file that combines all versions
+                //If there is more than one paper, create a pdf of all the combined versions
                 if (exam.paperCount > 1) {
                     
                 }   
