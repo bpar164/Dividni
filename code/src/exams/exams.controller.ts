@@ -43,8 +43,16 @@ export class ExamsController {
                 return false; //Exam not created
             }
         } catch (err) {
-            console.log('error', err)
             return false; //Exam not created
+        }   
+    }
+
+    @Get('exams/merge/:name')
+    async mergePDFs(@Param('name') examName): Promise<boolean> { 
+        try {
+            return await this.examsService.mergePDFs(examName);
+        } catch (err) {
+            return false; 
         }   
     }
 

@@ -288,6 +288,10 @@ generateExam = () => {
       if (res === 'true') {
         //Exam generated
         document.getElementById('optionsModalContent').innerHTML = '<p>Exam generated.</p>';
+        if ((exam.paperCount > 1) && (examType === 'standard')) {
+          document.getElementById('optionsModalContent').innerHTML += 
+            `<button class="btn waves-effect waves-light" onClick="mergePDFs('` + exam.name + `');">Merge PDFs?</button>`;
+        }
       } else if (res === 'false') {
         //Exam not generated
         document.getElementById('optionsModalContent').innerHTML = '<p>Error generating exam.</p>';
@@ -334,6 +338,15 @@ createExamQuestionList = () => {
     questionList.push(tempQuestion);
   }
   return questionList;
+}
+
+mergePDFs = (examName) => {
+  $.ajax({
+    url: 'exams/merge/' + examName,
+    method: 'GET',
+    dataType: 'json',
+  });
+  document.getElementById('optionsModalContent').innerHTML = '<p>PDFs merged.</p>'; 
 }
 
  

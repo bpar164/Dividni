@@ -126,6 +126,9 @@ export class ExamsService {
     async createExam(exam, questionXML, questionHTML): Promise<any> {
         let success;
         let continueLoop; 
+        let fileList = [];
+        let path = process.cwd();
+        path = path.substring(0, path.length-5) + `\\temp\\papers`; //Remove \code from path
         //Stop executing if any of the actions fail
         while (continueLoop != false) {
             success = false;
@@ -158,12 +161,8 @@ export class ExamsService {
                 continueLoop = await this.makeFile('../temp/Exam.Template.html', examHTML);
                 //Generate exam
                 continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -htmlFolder papers -answerFolder answers -paperCount ` + exam.paperCount + ` Exam.Template.html`);
-                //If there is more than one paper, create a pdf of all the combined versions
-                if (exam.paperCount > 1) {
-                    
-                }   
                 //Convert all html question files in the papers folder to pdf
-                continueLoop = await this.convertFilesToPDF("../temp/papers", exam.name); 
+                continueLoop = await this.convertFilesToPDF("../temp/papers", exam.name, fileList, path);    
             } else if (exam.examType === 'canvas') { //Create Canvas compatible zip 
                 continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\QtiGen.exe" -qtiVers 1.2 -variant ` + exam.paperCount + ` -id ` + exam.name + questionList);
             } else { //Create Inspera compatible zip 
@@ -175,6 +174,37 @@ export class ExamsService {
         return success;
     }
 
+    convertFilesToPDF(folderPath: string, examName: string, fileList: string[], path: string): Promise<any> {
+        let status;
+        return new Promise((resolve) => {
+            fs.readdir(folderPath, async (err, files) => {
+                if (err) {
+                    status = false;
+                }  else {
+                    files.forEach(async (file) => {
+                        status = await this.convertFile(file, examName, fileList, path);
+                    });
+                }  
+            resolve(status);  
+            });  
+        });
+    }
+
+    convertFile(file: string, examName: string, fileList: string[], path: string): Promise<any> {
+        let status;
+        return new Promise(async (resolve) => {
+            let fileName = examName + '#' + file.substr(0, file.indexOf('.')) + '.pdf';
+            fileList.push(path + `\\` +  fileName);
+            status = await this.execShellCommand(`cd .. && cd temp && cd papers && ..\\..\\dividni\\wkhtmltopdf ` + file + ` ` + fileName);
+            resolve(status);   
+        });
+    }
+
+    async mergePDFs(examName: string) {
+        let status = await this.execShellCommand(`cd .. && cd temp && cd papers && pdftk *.pdf cat output ` + examName + `.pdf`);
+        return status;
+    }
+    
     //Make a directory 
     makeFolder(path: string): Promise<any> {
         let status;
@@ -216,23 +246,6 @@ export class ExamsService {
                     status = true;
                 }
             resolve(status);
-            });
-        });
-    }
-
-    convertFilesToPDF(path: string, examName: string): Promise<any> {
-        let status;
-        return new Promise((resolve) => {
-            fs.readdir(path, async (err, files) => {
-                if (err) {
-                    status = false;
-                }  else {
-                    files.forEach(async (file) => {
-                        let fileName = examName + '#' + file.substr(0, file.indexOf('.')) + '.pdf';
-                        status = await this.execShellCommand(`cd .. && cd temp && cd papers && ..\\..\\dividni\\wkhtmltopdf ` + file + ` ` + fileName);
-                    });
-                }  
-            resolve(status);   
             });
         });
     }
