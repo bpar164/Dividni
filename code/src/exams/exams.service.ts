@@ -128,26 +128,26 @@ export class ExamsService {
         let continueLoop; 
         let fileList = [];
         let path = process.cwd();
-        path = path.substring(0, path.length-5) + `\\temp\\papers`; //Remove \code from path
+        path = path.substring(0, path.length-5) + `\\` + exam.name + `\\papers`; //Remove \code from path
         //Stop executing if any of the actions fail
         while (continueLoop != false) {
             success = false;
             let questionList = "";
             //Create a temporary folder to hold the exam
-            continueLoop = await this.makeFolder('../temp');
+            continueLoop = await this.makeFolder(`../` + exam.name);
             //Create a file for each question and then convert it to C#
             for (let i = 0; i < questionXML.length; i++) {
                 //Create the xml files
-                continueLoop = await this.makeFile('../temp/Q' + i + '.xml', questionXML[i]);
+                continueLoop = await this.makeFile(`../` + exam.name + `/Q` + i + `.xml`, questionXML[i]);
                 //Generate the C# and HTML files
-                continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\XmlQuest.exe" Q` + i + `.xml`);
+                continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\XmlQuest.exe" Q` + i + `.xml`);
                 //Add file to list to be compiled
                 questionList += " Q" + i + '.cs';     
             }  
             //Create standard exam with html template
             if (exam.examType === 'standard') {
                 //Compile all of the questions
-                continueLoop = await this.execShellCommand(`cd .. && cd temp && mcs -t:library -lib:"..\\dividni" -r:Utilities.Courses.dll -out:QHelper.dll` + questionList);
+                continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mcs -t:library -lib:"..\\dividni" -r:Utilities.Courses.dll -out:QHelper.dll` + questionList);
                 //Create html template
                 //Header with name
                 let examHTML = `<html><head><meta charset="utf-8"/><title>` + exam.name + `</title></head><body>`;
@@ -158,15 +158,15 @@ export class ExamsService {
                 //Appendix
                 exam.appendix !== '' ? examHTML += `<div id="appendix">` + exam.appendix + `</div><br /></body></html>` : examHTML += `</body></html>`;
                 //Create a file for the html
-                continueLoop = await this.makeFile('../temp/Exam.Template.html', examHTML);
+                continueLoop = await this.makeFile(`../` + exam.name + `/Exam.Template.html`, examHTML);
                 //Generate exam
-                continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -htmlFolder papers -answerFolder answers -paperCount ` + exam.paperCount + ` Exam.Template.html`);
+                continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -htmlFolder papers -answerFolder answers -paperCount ` + exam.paperCount + ` Exam.Template.html`);
                 //Convert all html question files in the papers folder to pdf
-                continueLoop = await this.convertFilesToPDF("../temp/papers", exam.name, fileList, path);    
+                continueLoop = await this.convertFilesToPDF(`../` + exam.name + `/papers`, exam.name, fileList, path);    
             } else if (exam.examType === 'canvas') { //Create Canvas compatible zip 
-                continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\QtiGen.exe" -qtiVers 1.2 -variant ` + exam.paperCount + ` -id ` + exam.name + questionList);
+                continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\QtiGen.exe" -qtiVers 1.2 -variant ` + exam.paperCount + ` -id ` + exam.name + questionList);
             } else { //Create Inspera compatible zip 
-                continueLoop = await this.execShellCommand(`cd .. && cd temp && mono "..\\dividni\\QtiGen.exe" -qtiVers 2.1 -variant ` + exam.paperCount + ` -id ` + exam.name + questionList);
+                continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\QtiGen.exe" -qtiVers 2.1 -variant ` + exam.paperCount + ` -id ` + exam.name + questionList);
             }
             success = true; //Only true if reach last operation
             continueLoop = false;
@@ -195,13 +195,20 @@ export class ExamsService {
         return new Promise(async (resolve) => {
             let fileName = examName + '#' + file.substr(0, file.indexOf('.')) + '.pdf';
             fileList.push(path + `\\` +  fileName);
-            status = await this.execShellCommand(`cd .. && cd temp && cd papers && ..\\..\\dividni\\wkhtmltopdf ` + file + ` ` + fileName);
+            status = await this.execShellCommand(`cd .. && cd ` + examName + ` && cd papers && ..\\..\\dividni\\wkhtmltopdf ` + file + ` ` + fileName);
             resolve(status);   
         });
     }
 
     async mergePDFs(examName: string) {
-        let status = await this.execShellCommand(`cd .. && cd temp && cd papers && pdftk *.pdf cat output ` + examName + `.pdf`);
+        let status = await this.execShellCommand(`cd .. && cd ` + examName + ` && cd papers && pdftk *.pdf cat output ` + examName + `.pdf`);
+        return status;
+    }
+
+
+    //Navigate to dividni folder tar cf archive.zip temp
+    async zipFolder(examName: string) {
+        let status = await this.execShellCommand(`cd .. && tar cf` + examName + `.zip` + examName);
         return status;
     }
     
