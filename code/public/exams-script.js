@@ -290,19 +290,24 @@ generateExam = () => {
         document.getElementById('optionsModalContent').innerHTML = '<p>Exam generated.</p>';
         if ((exam.paperCount > 1) && (examType === 'standard')) {
           document.getElementById('optionsModalContent').innerHTML += 
-            `<button class="btn waves-effect waves-light" onClick="mergePDFs('` + exam.name + `');">Merge PDFs?</button>`;
+            `<div class=row><button class="btn waves-effect waves-light" id="mergePDFs" onClick="mergePDFs('` + exam.name + `');">Merge PDFs?</button></div>`;   
         }
+        document.getElementById('optionsModalContent').innerHTML +=
+          `<div class=row><button class="btn waves-effect waves-light" onClick="downloadExam('` + exam.name + `');">Download Exam</button></div>`;
       } else if (res === 'false') {
         //Exam not generated
-        document.getElementById('optionsModalContent').innerHTML = '<p>Error generating exam.</p>';
-        document.getElementById('optionsModalRetry').classList.remove("disabled");
+        enableAllOptionsButtons();
       }  
     },
     error: () => {
-      document.getElementById('optionsModalContent').innerHTML = '<p>Error generating exam.</p>';
-      document.getElementById('optionsModalRetry').classList.remove("disabled");
+      enableAllOptionsButtons();
     }
   });
+}
+
+enableAllOptionsButtons = () => {
+  document.getElementById('optionsModalContent').innerHTML = '<p>Error generating exam.</p>';
+  document.getElementById('optionsModalRetry').classList.remove("disabled");
   document.getElementById('optionsModalCreate').classList.remove("disabled");
   document.getElementById('optionsModalView').classList.remove("disabled");
 }
@@ -344,9 +349,34 @@ mergePDFs = (examName) => {
   $.ajax({
     url: 'exams/merge/' + examName,
     method: 'GET',
-    dataType: 'json',
+    dataType: 'json'
   });
-  document.getElementById('optionsModalContent').innerHTML = '<p>PDFs merged.</p>'; 
+  document.getElementById('mergePDFs').classList.add('disabled');
+}
+
+downloadExam = (examName) => {
+  $.ajax({
+    url: 'exams/download/' + examName,
+    method: 'GET',
+    dataType: 'json',
+
+
+    success: (res) => {
+      if (res === 'true') {
+        console.log('true')
+      } else if (res === 'false') {
+        console.log('false')
+      }  
+    },
+    error: (err) => {
+      console.log(err);
+    }
+
+
+  });
+  document.getElementById('optionsModalContent').innerHTML = '<p>Exam download will begin shortly.</p>';
+  document.getElementById('optionsModalCreate').classList.remove("disabled");
+  document.getElementById('optionsModalView').classList.remove("disabled");
 }
 
  

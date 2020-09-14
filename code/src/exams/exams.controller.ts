@@ -1,4 +1,4 @@
-import { Controller, Get, Render, Request, UseFilters, UseGuards, Post, Param } from '@nestjs/common';
+import { Controller, Get, Render, Request, UseFilters, UseGuards, Post, Param, Res } from '@nestjs/common';
 import { ExamsService } from './exams.service';
 import { AuthExceptionFilter } from 'src/user/auth-exceptions.filter';
 import { AuthenticatedGuard } from 'src/user/authenticated.guard';
@@ -51,6 +51,20 @@ export class ExamsController {
     async mergePDFs(@Param('name') examName): Promise<boolean> { 
         try {
             return await this.examsService.mergePDFs(examName);
+        } catch (err) {
+            return false; 
+        }   
+    }
+
+    @Get('exams/download/:name')
+    async downloadExam(@Param('name') examName, @Res() response): Promise<boolean> { 
+        let path = process.cwd();
+        path = path.substring(0, path.length-5) + `\\` + examName + `.zip`; //Remove \code from path
+        try {
+            await this.examsService.zipFolder(examName);
+            response.download(path, examName + `.zip`);
+            //return this.examsService.deleteFolder(examName);
+            return true;
         } catch (err) {
             return false; 
         }   

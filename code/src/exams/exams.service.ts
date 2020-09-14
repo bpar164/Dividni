@@ -98,10 +98,6 @@ export class ExamsService {
         } else {
             return false;
         }  
-        /*
-        //Delete the folder and its contents
-        await this.execShellCommand(`cd .. && rmdir /Q /S question`);
-        */
     } 
 
     //Convert multiple-choice question to XML format
@@ -206,9 +202,14 @@ export class ExamsService {
     }
 
 
-    //Navigate to dividni folder tar cf archive.zip temp
-    async zipFolder(examName: string) {
-        let status = await this.execShellCommand(`cd .. && tar cf` + examName + `.zip` + examName);
+    async zipFolder(folderName: string) {
+        let status = await this.execShellCommand(`cd .. && tar cf ` + folderName + `.zip ` + folderName);
+        return status;
+    }
+
+    async deleteFolder(folderName: string) {
+        //Also remove zip
+        let status = await this.execShellCommand(`cd .. && rmdir /Q /S ` + folderName);
         return status;
     }
     
