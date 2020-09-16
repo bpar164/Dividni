@@ -38,7 +38,8 @@ export class ExamsController {
         try {
             exam = req.body;
             if (this.examsService.validateExam(exam)) {
-                return await this.examsService.generateExam(exam, id); 
+                await this.examsService.generateExam(exam, id); 
+                return true; 
             } else {
                 return false; //Exam not created
             }
@@ -57,14 +58,13 @@ export class ExamsController {
     }
 
     @Get('exams/download/:name')
-    async downloadExam(@Param('name') examName, @Res() response): Promise<boolean> { 
+    async downloadExam(@Param('name') examName, @Res() res): Promise<boolean> { 
         let path = process.cwd();
         path = path.substring(0, path.length-5) + `\\` + examName + `.zip`; //Remove \code from path
         try {
             await this.examsService.zipFolder(examName);
-            response.download(path, examName + `.zip`);
-            //return this.examsService.deleteFolder(examName);
-            return true;
+            res.download(path, examName + `.zip`);
+            return this.examsService.deleteFolder(examName);
         } catch (err) {
             return false; 
         }   

@@ -29,11 +29,13 @@
             </li></p>
             <p><li>Clicking the <b>GENERATE</b> button will bring up a window with a list of the available exam types. 
               See the next section for an explanation of these types.
-              Make a selection and click on <b>SELECT</b> to generate the exam.
-              A window will be displayed to show you the outcome of the action.
-              If the exam was generated, you will have the options to create another exam, 
-              or view all of the exams that you have created. 
-              Additionally, if there was a problem, you will also be able to modify the exam details and try again.  
+              Make a selection and click on <b>SELECT</b> to generate the exam. This may take a minute or so.
+              The window will display the outcome of the action. If there was a problem, you will be able to modify the exam details and try again.
+              If the exam generated multiple versions of the paper (e.g. the paper count was greater than one and the exam type was standard), 
+              you can click on the <b>Merge PDFs?</b> button. This will create a combined pdf of all of the different versions of the exam, for ease of printing.
+              The final step is to click on <b>Download Exam</b>. The exam will download as a .zip file. 
+              See the <i>Exam .zip File Contents</i> section for an explanation of this file.
+              You will then have the options to create another exam,  or view all of the exams that you have created. 
             </li></p>
           </ol>
         </div>
@@ -42,8 +44,19 @@
         <p>Selecting <i>standard</i> will create the desired number of papers in pdf format. 
           The generated exams will incorporate any of the following if present: the cover page, appendix, and instruction sections.
         </p>
-        <p>Selecting any of the learning management system options will generate a zip file (using the exam name), that can be imported into the appropriate system.
+        <p>Selecting any of the learning management system options will generate a zip file (using the exam name), that can be imported into the corresponding system.
           At present these options DO NOT allow anything except for actual questions to be included in the exam, so all instruction sections etc. will be ignored.
+        </p>
+        <h5 class="teal-text">Exam .zip File Contents</h5>
+        <p>Every type of exam downloads as a single .zip folder, which will have the name given to the exam when it was created. Extract the contents to start.</p>
+        <p>For <i>standard</i> exams, the folder will consist of two subfolders and some files. 
+          The <i>answers</i> folder contains text files with the solutions to each version of the exam.
+          The <i>papers</i> folder will contain pdfs of each version of the exam, and a combined version (it will have the same name as the exam), if it was generated.
+          Most users will not need any of the other files in the main folder or any of the non-pdf files in the <i>papers</i> folder. These can be deleted.
+        </p>
+        <p>For learning management system exams, the folder will contain some files and another .zip folder with the same name as the exam.
+          This second .zip folder can be uploaded to the learning management system to create an exam. 
+          The other files can be ignored or deleted.   
         </p>
     </div>
 

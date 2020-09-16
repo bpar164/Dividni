@@ -292,8 +292,8 @@ generateExam = () => {
           document.getElementById('optionsModalContent').innerHTML += 
             `<div class=row><button class="btn waves-effect waves-light" id="mergePDFs" onClick="mergePDFs('` + exam.name + `');">Merge PDFs?</button></div>`;   
         }
-        document.getElementById('optionsModalContent').innerHTML +=
-          `<div class=row><button class="btn waves-effect waves-light" onClick="downloadExam('` + exam.name + `');">Download Exam</button></div>`;
+        document.getElementById('optionsModalContent').innerHTML += 
+          `<div class=row><a class="waves-effect waves-light btn" href="exams/download/` + exam.name + `" onClick="downloadExam();">Download Exam</a></div>`
       } else if (res === 'false') {
         //Exam not generated
         enableAllOptionsButtons();
@@ -354,26 +354,7 @@ mergePDFs = (examName) => {
   document.getElementById('mergePDFs').classList.add('disabled');
 }
 
-downloadExam = (examName) => {
-  $.ajax({
-    url: 'exams/download/' + examName,
-    method: 'GET',
-    dataType: 'json',
-
-
-    success: (res) => {
-      if (res === 'true') {
-        console.log('true')
-      } else if (res === 'false') {
-        console.log('false')
-      }  
-    },
-    error: (err) => {
-      console.log(err);
-    }
-
-
-  });
+downloadExam = () => {
   document.getElementById('optionsModalContent').innerHTML = '<p>Exam download will begin shortly.</p>';
   document.getElementById('optionsModalCreate').classList.remove("disabled");
   document.getElementById('optionsModalView').classList.remove("disabled");

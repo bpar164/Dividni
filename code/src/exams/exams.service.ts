@@ -9,6 +9,7 @@ import { Exams } from './exams.schema';
 import { QuestionFormDTO } from '../multiple-choice/question-form.dto';
 import { MultipleChoice } from '../multiple-choice/multiple-choice.schema';
 import { QuestionDTO } from './question.dto';
+import { ExamsDTO } from './exams.dto';
 
 @Injectable()
 export class ExamsService {
@@ -89,12 +90,11 @@ export class ExamsService {
         let result = await this.createExam(exam, questionXML, questionHTML);
         if (result === true) {
             //Save exam settings to database
-            /*let userID = id; 
+            let userID = id; 
             let examsDTO = new ExamsDTO();
             examsDTO = { exam, userID };
             let newExam = new this.ExamsModel(examsDTO);
-            return newExam.save(); */
-            return true;
+            return newExam.save(); 
         } else {
             return false;
         }  
@@ -208,8 +208,8 @@ export class ExamsService {
     }
 
     async deleteFolder(folderName: string) {
-        //Also remove zip
-        let status = await this.execShellCommand(`cd .. && rmdir /Q /S ` + folderName);
+        let status = await this.execShellCommand(`cd .. && del ` + folderName + `.zip`); //Also remove zip
+        status = await this.execShellCommand(`cd .. && rmdir /Q /S ` + folderName);
         return status;
     }
     
@@ -249,6 +249,7 @@ export class ExamsService {
         return new Promise((resolve) => {
             exec(cmd, (err, stdout, stderr) => {
                 if (err) {
+                    console.log(err)
                     status = false;
                 } else {
                     status = true;
