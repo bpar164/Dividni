@@ -11,6 +11,7 @@ import { ExamFormDTO } from './exam-form.dto';
 
 export class ExamsController {
     constructor(private readonly examsService: ExamsService, private readonly userService: UserService, private readonly multipleChoiceService: MultipleChoiceService) {}
+
     @UseGuards(AuthenticatedGuard)
     @Get('exams')
     @Render('exams')
@@ -25,6 +26,7 @@ export class ExamsController {
           };
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Post('exams/:id')
     async generateExam(@Request() req, @Param('id') id): Promise<boolean> { 
         let userID = await this.userService.getUserIDByEmail(req.user.email);
@@ -48,6 +50,7 @@ export class ExamsController {
         }   
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Get('exams/merge/:name')
     async mergePDFs(@Param('name') examName): Promise<boolean> { 
         try {
@@ -57,6 +60,7 @@ export class ExamsController {
         }   
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Get('exams/download/:name')
     async downloadExam(@Param('name') examName, @Res() res): Promise<boolean> { 
         let path = process.cwd();
@@ -69,6 +73,26 @@ export class ExamsController {
             return false; 
         }   
     }
+
+    /*
+    @UseGuards(AuthenticatedGuard)
+    @Put('multiple-choice/:id')
+    async updateQuestion(@Request() req, @Param('id') id): Promise<boolean> { 
+        let question = new QuestionFormDTO();
+        try {
+            question = req.body;
+            question.correctAnswers = this.multipleChoiceService.removeEmptyElements(question.correctAnswers);
+            question.incorrectAnswers = this.multipleChoiceService.removeEmptyElements(question.incorrectAnswers);
+            if (this.multipleChoiceService.validateQuestion(question)) {
+                await this.multipleChoiceService.updateQuestion(id, question);
+                return true; //Question created
+            } else {
+                return false; //Question not created
+            }
+        } catch (err) {
+            return false; //Question not created
+        }    
+    }*/
 
     @UseGuards(AuthenticatedGuard)
     @Get('exams-my')
@@ -83,4 +107,28 @@ export class ExamsController {
             picture: req.user ? req.user.picture : null 
           };
     }
+
+    @UseGuards(AuthenticatedGuard)
+    @Get('exams-my/:id')
+    async getExam(@Param('id') id) {
+        return await this.examsService.getExam(id);
+    }
+
+    /*@UseGuards(AuthenticatedGuard)
+    @Delete('multiple-choice-my/:id')
+    async deleteQuestion(@Param('id') id) {
+        await this.multipleChoiceService.deleteQuestion(id);
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @Get('template-question/:id')
+    templateQuestion(@Param('id') id) {
+        this.multipleChoiceService.setQuestionMode(id, 'TEMPLATE');
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @Get('edit-question/:id')
+    editQuestion(@Param('id') id) {
+        this.multipleChoiceService.setQuestionMode(id, 'EDIT');
+    }*/
 }

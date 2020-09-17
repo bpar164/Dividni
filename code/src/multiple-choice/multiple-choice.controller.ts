@@ -34,6 +34,7 @@ export class MultipleChoiceController {
           };
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Post('multiple-choice/:id')
     async generateQuestion(@Request() req, @Param('id') id): Promise<boolean> { 
         let userID = await this.userService.getUserIDByEmail(req.user.email);
@@ -59,6 +60,7 @@ export class MultipleChoiceController {
         }    
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Put('multiple-choice/:id')
     async updateQuestion(@Request() req, @Param('id') id): Promise<boolean> { 
         let question = new QuestionFormDTO();
@@ -91,21 +93,25 @@ export class MultipleChoiceController {
           };
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Get('multiple-choice-my/:id')
     async getQuestion(@Param('id') id) {
         return await this.multipleChoiceService.getQuestion(id);
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Delete('multiple-choice-my/:id')
     async deleteQuestion(@Param('id') id) {
         await this.multipleChoiceService.deleteQuestion(id);
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Get('template-question/:id')
     templateQuestion(@Param('id') id) {
         this.multipleChoiceService.setQuestionMode(id, 'TEMPLATE');
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Get('edit-question/:id')
     editQuestion(@Param('id') id) {
         this.multipleChoiceService.setQuestionMode(id, 'EDIT');

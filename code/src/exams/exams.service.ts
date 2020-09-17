@@ -262,5 +262,9 @@ export class ExamsService {
     async fetchUserExams(userID: string) {  
         return this.ExamsModel.find({ userID: userID }).sort({$natural:-1}).exec();
     }
+
+    async getExam(id: string) {  
+        return this.ExamsModel.findOne({ _id: id }, '-_id').exec();
+    }
 }
 

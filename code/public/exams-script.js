@@ -118,8 +118,8 @@ document.getElementById("btnInstructions").addEventListener("click", () => {
 });
 
 createInstructionTextAreaAndButtons = () => {
-   //If the textArea already exists, remove it 
-   if (document.getElementById("instructionSectionsTextArea") !== null) {
+  //If the textArea already exists, remove it 
+  if (document.getElementById("instructionSectionsTextArea") !== null) {
     removeInstructionSection();
   }
   createTextArea('instructionSections');
@@ -326,17 +326,18 @@ fetchFormValues = () => {
 
 createExamQuestionList = () => {
   let selectedQuestionIds = fetchAllSelectedQuestionIds();
+  let selectedQuestionNames = fetchAllSelectedQuestionNames(selectedQuestionIds);
   let questionList = [];
   let instructionSectionsIndex = 0;
   for (let i = 0; i < selectedQuestionIds.length; i++) {
     let tempQuestion = {};
+    tempQuestion.id = selectedQuestionIds[i];
+    tempQuestion.name = selectedQuestionNames[i];
     if (selectedQuestionIds[i].length === 24) { //All questions have ids of length 24 
       tempQuestion.type = 'mc';
-      tempQuestion.id = selectedQuestionIds[i];
       tempQuestion.contents = null;
     } else {
       tempQuestion.type = 'is';
-      tempQuestion.id = selectedQuestionIds[i];
       tempQuestion.contents = instructionSections[instructionSectionsIndex];
       instructionSectionsIndex++;
     }
@@ -359,6 +360,8 @@ downloadExam = () => {
   document.getElementById('optionsModalCreate').classList.remove("disabled");
   document.getElementById('optionsModalView').classList.remove("disabled");
 }
+
+
 
  
 
