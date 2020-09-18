@@ -1,65 +1,76 @@
 <%- include('partials/header') -%>
 
-  <!-- main -->
-  <section class="section container blue lighten-5" id="main">
-    <div class="row">
-      <div class="col">
-        <h5 class="teal-text">My Exams</h5>
-        <p>Below are all of the exams that you have created.</p>
-        <p>You can write a new question on the <a href="exams" target="_blank">create <i class="tiny material-icons">open_in_new</i></a> page.</p>
-        <p>Review the <a href="tutorials-exams" target="_blank">tutorial <i class="tiny material-icons">open_in_new</i></a> for help.</p>
-      </div>
-    </div>
-    <div class="row">
-      <% if (exams.length === 0) { %>
-        <p>No exams created yet - try creating one.</p>
-      <% } else { %>
-        <div class="col s12 m8 l6">
-          <ul class="collection with-header">
-            <% exams.forEach(e => { %>
-              <li id="<%= e.id %>" class="collection-item"><div><%= e.exam.name %><a href="#!" class="dropdown-trigger secondary-content" data-target='dropdown' onClick="setCurrentExam('<%= e.id %>', '<%= e.exam.name %>');">
-                <i class="material-icons">more_vert</i>
-              </a></div></li>         
-            <% }) %>
-          </ul>
-        </div>
-      <% } %>
-    </div>
-  </section>
-
-  <!-- Dropdown List -->
-  <ul id='dropdown' class='dropdown-content'>
-    <li><a href="#previewModal" class="modal-trigger" onClick="previewExam();"><i class="material-icons">assignment_turned_in</i>Preview</a></li>
-    <li><a href="#confirmModal" class="modal-trigger" onClick="confirmDialog('EDIT');"><i class="material-icons">edit</i>Edit</a></li>
-    <li><a href="#confirmModal" class="modal-trigger" onClick="confirmDialog('DELETE');"><i class="material-icons">delete</i>Delete</a></li>
-    <li><a href="#confirmModal" class="modal-trigger" onClick="confirmDialog('TEMPLATE');"><i class="material-icons">content_copy</i>Template</a></li>
-    <li><a href="#confirmModal" class="modal-trigger" onClick="confirmDialog('SHARE');"><i class="material-icons">send</i>Share</a></li>
-  </ul>
-
-  <!-- Preview Modal -->
-  <div id="previewModal" class="modal modal-fixed-footer">
-    <div class="modal-content">
-      <h4>Question Preview</h4>
-      <div id="previewModalContent"></div>
-    </div>
-    <div class="modal-footer">
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">CLOSE</a>
+<!-- main -->
+<section class="section container blue lighten-5" id="main">
+  <div class="row">
+    <div class="col">
+      <h5 class="teal-text">My Exams</h5>
+      <p>Below are all of the exams that you have created.</p>
+      <p>You can write a new question on the <a href="exams" target="_blank">create <i
+            class="tiny material-icons">open_in_new</i></a> page.</p>
+      <p>Review the <a href="tutorials-exams" target="_blank">tutorial <i
+            class="tiny material-icons">open_in_new</i></a> for help.</p>
     </div>
   </div>
-
-  <!-- Confirmation Modal -->
-  <div id="confirmModal" class="modal modal-fixed-footer dialog-modal">
-    <div class="modal-content">
-      <h4>Confirm Action</h4>
-      <div id="confirmModalContent"></div>
+  <div class="row">
+    <% if (exams.length === 0) { %>
+    <p>No exams created yet - try creating one.</p>
+    <% } else { %>
+    <div class="col s12 m8 l6">
+      <ul class="collection with-header">
+        <% exams.forEach(e => { %>
+        <li id="<%= e.id %>" class="collection-item">
+          <div><%= e.exam.name %><a href="#!" class="dropdown-trigger secondary-content" data-target='dropdown'
+              onClick="setCurrentExam('<%= e.id %>', '<%= e.exam.name %>');">
+              <i class="material-icons">more_vert</i>
+            </a></div>
+        </li>
+        <% }) %>
+      </ul>
     </div>
-    <div class="modal-footer">
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat" id="confirmModalNo">NO</a>
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat" id="confirmModalYes">YES</a>
-    </div>
+    <% } %>
   </div>
+</section>
+
+<!-- Dropdown List -->
+<ul id='dropdown' class='dropdown-content'>
+  <li><a href="#previewModal" class="modal-trigger" onClick="previewExam();"><i
+        class="material-icons">assignment_turned_in</i>Preview</a></li>
+  <li><a href="#confirmModal" class="modal-trigger" onClick="confirmDialog('EDIT');"><i
+        class="material-icons">edit</i>Edit</a></li>
+  <li><a href="#confirmModal" class="modal-trigger" onClick="confirmDialog('DELETE');"><i
+        class="material-icons">delete</i>Delete</a></li>
+  <li><a href="#confirmModal" class="modal-trigger" onClick="confirmDialog('TEMPLATE');"><i
+        class="material-icons">content_copy</i>Template</a></li>
+  <li><a href="#confirmModal" class="modal-trigger" onClick="confirmDialog('SHARE');"><i
+        class="material-icons">send</i>Share</a></li>
+</ul>
+
+<!-- Preview Modal -->
+<div id="previewModal" class="modal modal-fixed-footer">
+  <div class="modal-content">
+    <h4>Question Preview</h4>
+    <div id="previewModalContent"></div>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-close waves-effect waves-green btn-flat">CLOSE</a>
+  </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirmModal" class="modal modal-fixed-footer dialog-modal">
+  <div class="modal-content">
+    <h4>Confirm Action</h4>
+    <div id="confirmModalContent"></div>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-close waves-effect waves-green btn-flat" id="confirmModalNo">NO</a>
+    <a href="#!" class="modal-close waves-effect waves-green btn-flat" id="confirmModalYes">YES</a>
+  </div>
+</div>
 
 <%- include('partials/footer') -%>
 <script src="exams-my-script.js"></script>
 </body>
+
 </html>

@@ -1,9 +1,9 @@
-$(document).ready(function(){
+$(document).ready(function () {
     $('.sidenav').sidenav();
     $(".dropdown-trigger").dropdown();
     $('.tooltipped').tooltip();
     $('.modal').modal();
-    $('.modal-not-dismissible').modal({ dismissible: false});
+    $('.modal-not-dismissible').modal({ dismissible: false });
     $('#modal').modal('open');
     //Create an alert if there is a message waiting on the page.
     if (document.getElementById('message') !== null) {
@@ -11,6 +11,6 @@ $(document).ready(function(){
         if ((message !== null) && (message !== '')) {
             alert(message);
         }
-    }   
+    }
 });
 

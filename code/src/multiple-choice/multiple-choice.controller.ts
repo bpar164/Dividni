@@ -10,12 +10,12 @@ import { AuthExceptionFilter } from 'src/user/auth-exceptions.filter';
 @UseFilters(AuthExceptionFilter)
 
 export class MultipleChoiceController {
-    constructor(private readonly multipleChoiceService: MultipleChoiceService, private readonly userService: UserService) {}
+    constructor(private readonly multipleChoiceService: MultipleChoiceService, private readonly userService: UserService) { }
 
     @UseGuards(AuthenticatedGuard)
     @Get('multiple-choice')
     @Render('multiple-choice')
-    getMultipleChoiceView(@Request() req) { 
+    getMultipleChoiceView(@Request() req) {
         let questionID = null;
         let questionAction = null;
         let questionMode = this.multipleChoiceService.getQuestionMode();
@@ -23,26 +23,26 @@ export class MultipleChoiceController {
             questionID = questionMode.id;
             questionAction = questionMode.action;
             this.multipleChoiceService.setQuestionMode(null, null);
-        } 
-        return { 
-            title: 'Multiple-Choice', 
+        }
+        return {
+            title: 'Multiple-Choice',
             description: 'Create questions with multiple answers',
             id: questionID,
             action: questionAction,
             loggedIn: (req.user !== undefined) ? true : false,
             picture: req.user ? req.user.picture : null
-          };
+        };
     }
 
     @UseGuards(AuthenticatedGuard)
     @Post('multiple-choice/:id')
-    async generateQuestion(@Request() req, @Param('id') id): Promise<boolean> { 
+    async generateQuestion(@Request() req, @Param('id') id): Promise<boolean> {
         let userID = await this.userService.getUserIDByEmail(req.user.email);
         if (id === 'currentUserID') {
             id = userID;
         } else if (id == userID) {
             //User must not share question with self
-            return false;   
+            return false;
         }
         let question = new QuestionFormDTO();
         try {
@@ -57,12 +57,12 @@ export class MultipleChoiceController {
             }
         } catch (err) {
             return false; //Question not created
-        }    
+        }
     }
 
     @UseGuards(AuthenticatedGuard)
     @Put('multiple-choice/:id')
-    async updateQuestion(@Request() req, @Param('id') id): Promise<boolean> { 
+    async updateQuestion(@Request() req, @Param('id') id): Promise<boolean> {
         let question = new QuestionFormDTO();
         try {
             question = req.body;
@@ -76,21 +76,21 @@ export class MultipleChoiceController {
             }
         } catch (err) {
             return false; //Question not created
-        }    
+        }
     }
 
     @UseGuards(AuthenticatedGuard)
     @Get('multiple-choice-my')
-    @Render('multiple-choice-my') 
-    async getMultipleChoiceMyView(@Request() req) { 
+    @Render('multiple-choice-my')
+    async getMultipleChoiceMyView(@Request() req) {
         let userID = await this.userService.getUserIDByEmail(req.user.email);
-        return { 
-            title: 'Multiple-Choice', 
+        return {
+            title: 'Multiple-Choice',
             description: 'Browse the multiple-choice questions that you have created',
             questions: await this.multipleChoiceService.fetchUserQuestions(userID),
             loggedIn: (req.user !== undefined) ? true : false,
             picture: req.user ? req.user.picture : null
-          };
+        };
     }
 
     @UseGuards(AuthenticatedGuard)

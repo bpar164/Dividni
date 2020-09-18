@@ -1,107 +1,117 @@
 <%- include('partials/header') -%>
 
-  <% if (id && action) { %>
-    <div id="questionMode" data-question-id="<%= id %>" data-question-action="<%= action %>"></div> 
-  <% } %>
- 
-  <!-- form -->
-  <section class="section container blue lighten-5" id="main">
+<% if (id && action) { %>
+<div id="questionMode" data-question-id="<%= id %>" data-question-action="<%= action %>"></div>
+<% } %>
+
+<!-- form -->
+<section class="section container blue lighten-5" id="main">
+  <div class="row">
+    <div class="col">
+      <h5 class="teal-text">Question Details</h5>
+      <p>Fill-out the details of the question below, and click on <b>PREVIEW</b> to see what the question will look
+        like.</p>
+      <p>Review the <a href="tutorials-mc" target="_blank">tutorial <i class="tiny material-icons">open_in_new</i></a>
+        for help.</p>
+    </div>
+  </div>
+  <form id="questionForm">
     <div class="row">
-      <div class="col">
-        <h5 class="teal-text">Question Details</h5>
-        <p>Fill-out the details of the question below, and click on <b>PREVIEW</b> to see what the question will look like.</p>
-        <p>Review the <a href="tutorials-mc" target="_blank">tutorial <i class="tiny material-icons">open_in_new</i></a> for help.</p>
-      </div>
-    </div>
-    <form id="questionForm">
-      <div class="row">
-        <div class="col s12 m8 l5">
-          <div class="input-field">
-            <label for="name">Question name</label>
-            <input type="text" id="name" name="name" required pattern="^[a-zA-Z0-9][a-zA-Z0-9 ]*">
-          </div> 
-          <div class="input-field">
-            <p>Question type:</p>
-            <p><label>
-                <input class="with-gap" type="radio" id="truth" name="type" value="Truth" required onClick="createAnswers('Truth', null, null);">
-                <span>Truth</span>
-            </label></p>
-            <p><label>
-                <input class="with-gap" type="radio" id="xyz" name="type" value="Xyz" required onClick="createAnswers('Xyz', null, null);">
-                <span>XYZ</span>
-            </label></p>
-          </div>
-          <div class="input-field">
-              <label for="marks">Marks</label>
-              <input type="number" min="0" max="10" step="0.5" id="marks" name="marks" required>
-          </div>
-        </div>    
-      </div>
-      <div class="row">
-        <div class="col s12 m10 l8">
-          <h6>Question Text</h6>
-          <div class="input-field tinymce-description required-field" id="questionText" name="questionText"></div>
-        </div>   
-      </div>
-      <div class="row">
-        <div class="col s12 m8 l5">
-          <div id="correctAnswers">
-            <h6>Correct Answers</h6>
-            <div id="correct"></div>
-            <a class="btn-floating btn-small waves-effect waves-light red disabled" id="addCorrect" onClick="addAnswer('correct', false);">
-              <i class="material-icons">add</i>
-            </a>
-          </div>
+      <div class="col s12 m8 l5">
+        <div class="input-field">
+          <label for="name">Question name</label>
+          <input type="text" id="name" name="name" required pattern="^[a-zA-Z0-9][a-zA-Z0-9 ]*">
         </div>
-        <div class="col s12 m8 l5 offset-l2">
-          <div id="incorrectAnswers">
-            <h6>Incorrect Answers</h6>
-            <div id="incorrect"></div>
-            <a class="btn-floating btn-small waves-effect waves-light red disabled" id="addIncorrect" onClick="addAnswer('incorrect', false);">
-              <i class="material-icons">add</i>
-            </a>
-          </div>
+        <div class="input-field">
+          <p>Question type:</p>
+          <p><label>
+              <input class="with-gap" type="radio" id="truth" name="type" value="Truth" required
+                onClick="createAnswers('Truth', null, null);">
+              <span>Truth</span>
+            </label></p>
+          <p><label>
+              <input class="with-gap" type="radio" id="xyz" name="type" value="Xyz" required
+                onClick="createAnswers('Xyz', null, null);">
+              <span>XYZ</span>
+            </label></p>
+        </div>
+        <div class="input-field">
+          <label for="marks">Marks</label>
+          <input type="number" min="0" max="10" step="0.5" id="marks" name="marks" required>
         </div>
       </div>
-      <div class="row">
-        <a class="waves-effect waves-light btn right disabled modal-trigger" id="preview" href="#previewModal" onClick="previewAnswer();">
-          Preview<i class="material-icons right">assignment_turned_in</i>
-        </a>
+    </div>
+    <div class="row">
+      <div class="col s12 m10 l8">
+        <h6>Question Text</h6>
+        <div class="input-field tinymce-description required-field" id="questionText" name="questionText"></div>
       </div>
-      <div class="row">
-        <button class="btn waves-effect waves-light right disabled" id="generate" type="submit"> 
-          Generate<i class="material-icons right">send</i>
-        </button> 
+    </div>
+    <div class="row">
+      <div class="col s12 m8 l5">
+        <div id="correctAnswers">
+          <h6>Correct Answers</h6>
+          <div id="correct"></div>
+          <a class="btn-floating btn-small waves-effect waves-light red disabled" id="addCorrect"
+            onClick="addAnswer('correct', false);">
+            <i class="material-icons">add</i>
+          </a>
+        </div>
       </div>
-    </form>
-  </section>
+      <div class="col s12 m8 l5 offset-l2">
+        <div id="incorrectAnswers">
+          <h6>Incorrect Answers</h6>
+          <div id="incorrect"></div>
+          <a class="btn-floating btn-small waves-effect waves-light red disabled" id="addIncorrect"
+            onClick="addAnswer('incorrect', false);">
+            <i class="material-icons">add</i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <a class="waves-effect waves-light btn right disabled modal-trigger" id="preview" href="#previewModal"
+        onClick="previewAnswer();">
+        Preview<i class="material-icons right">assignment_turned_in</i>
+      </a>
+    </div>
+    <div class="row">
+      <button class="btn waves-effect waves-light right disabled" id="generate" type="submit">
+        Generate<i class="material-icons right">send</i>
+      </button>
+    </div>
+  </form>
+</section>
 
-  <!-- Preview Modal -->
-  <div id="previewModal" class="modal modal-fixed-footer">
-    <div class="modal-content">
-      <h4>Question Preview</h4>
-      <p>Review these details before clicking <b>GENERATE</b>:</p>
-      <div id="previewModalContent"></div>
-    </div>
-    <div class="modal-footer">
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">CLOSE</a>
-    </div>
+<!-- Preview Modal -->
+<div id="previewModal" class="modal modal-fixed-footer">
+  <div class="modal-content">
+    <h4>Question Preview</h4>
+    <p>Review these details before clicking <b>GENERATE</b>:</p>
+    <div id="previewModalContent"></div>
   </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-close waves-effect waves-green btn-flat">CLOSE</a>
+  </div>
+</div>
 
-  <!-- Options Modal -->
-  <div id="optionsModal" class="modal modal-fixed-footer modal-not-dismissible dialog-modal">
-    <div class="modal-content">
-      <h4>Options</h4>
-      <div id="optionsModalContent"></div>
-    </div>
-    <div class="modal-footer" id="optionsModalFooter">
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat disabled" id="optionsModalRetry">RETRY</a>
-      <a href="multiple-choice" class="modal-close waves-effect waves-green btn-flat disabled" id="optionsModalCreate">CREATE NEW</a>
-      <a href="multiple-choice-my" class="modal-close waves-effect waves-green btn-flat disabled" id="optionsModalView">VIEW CREATED</a>
-    </div>
+<!-- Options Modal -->
+<div id="optionsModal" class="modal modal-fixed-footer modal-not-dismissible dialog-modal">
+  <div class="modal-content">
+    <h4>Options</h4>
+    <div id="optionsModalContent"></div>
   </div>
+  <div class="modal-footer" id="optionsModalFooter">
+    <a href="#!" class="modal-close waves-effect waves-green btn-flat disabled" id="optionsModalRetry">RETRY</a>
+    <a href="multiple-choice" class="modal-close waves-effect waves-green btn-flat disabled"
+      id="optionsModalCreate">CREATE NEW</a>
+    <a href="multiple-choice-my" class="modal-close waves-effect waves-green btn-flat disabled"
+      id="optionsModalView">VIEW CREATED</a>
+  </div>
+</div>
 
 <%- include('partials/footer') -%>
 <script src="mc-script.js"></script>
 </body>
+
 </html>

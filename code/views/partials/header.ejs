@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
   <link rel="stylesheet" href="styles.css">
   <title>Dividni</title>
 </head>
+
 <body>
 
   <!-- navbar -->
@@ -25,12 +27,13 @@
           <i class="material-icons">menu</i>
         </a>
         <ul class="right">
-          <li><a href="profile" class="dropdown-trigger tooltipped btn-floating btn-med teal" data-tooltip="Profile" data-target="dropdownProfile">
-            <% if ((picture !== null) && (picture !== '')) { %> 
+          <li><a href="profile" class="dropdown-trigger tooltipped btn-floating btn-med teal" data-tooltip="Profile"
+              data-target="dropdownProfile">
+              <% if ((picture !== null) && (picture !== '')) { %>
               <img class="profile-pic" src="<%= picture %>">
-            <% } else { %>  
+              <% } else { %>
               <i class="material-icons">account_box</i></a></li>
-            <% } %>    
+          <% } %>
           </a></li>
         </ul>
         <ul class="right hide-on-med-and-down">
@@ -48,10 +51,10 @@
           <li><a href="exams-my">View Created</a></li>
           <li><a href="#" class="grey lighten-2 black-text left-align not-active">Tutorials</a></li>
           <li><a href="tutorials-mc">Multiple-Choice</a></li>
-          <li><a href="tutorials-exams">Exams</a></li> 
+          <li><a href="tutorials-exams">Exams</a></li>
         </ul>
       </div>
-    </nav>  
+    </nav>
   </header>
 
   <!-- dropdown lists for navbar -->
@@ -69,16 +72,16 @@
   </ul>
   <ul id="dropdownProfile" class="dropdown-content">
     <% if (loggedIn === false) { %>
-      <div id="login">
-        <li><a href="login">Login</a></li>
-      </div>
+    <div id="login">
+      <li><a href="login">Login</a></li>
+    </div>
     <% } else { %>
-      <div id="logout">
-        <li><a href="logout">Logout</a></li>
-      </div> 
+    <div id="logout">
+      <li><a href="logout">Logout</a></li>
+    </div>
     <% } %>
   </ul>
-    <!-- intro -->
+  <!-- intro -->
   <section class="section container center-align grey" id="intro">
     <div class="row">
       <h4 class="white-text"><%= title %></h4>

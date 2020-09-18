@@ -11,4 +11,4 @@ import { SessionSerializer } from './session.serializer';
   controllers: [UserController],
   providers: [UserService, GoogleStrategy, SessionSerializer]
 })
-export class UserModule {}
+export class UserModule { }

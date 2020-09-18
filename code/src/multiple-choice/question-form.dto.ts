@@ -1,7 +1,7 @@
 export class QuestionFormDTO {
-	name: string;
+    name: string;
     type: string;
-	marks: number;
+    marks: number;
     questionText: string;
     correctAnswers: string[];
     incorrectAnswers: string[];

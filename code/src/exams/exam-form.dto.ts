@@ -1,5 +1,5 @@
 export class ExamFormDTO {
-	name: string;
+    name: string;
     paperCount: number;
     coverPage: string;
     questionList: object[];

@@ -8,9 +8,9 @@ import { UserSchema, User } from 'src/user/user.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: MultipleChoice.name, schema: MCSchema }]), 
+    MongooseModule.forFeature([{ name: MultipleChoice.name, schema: MCSchema }]),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])],
   controllers: [MultipleChoiceController],
   providers: [MultipleChoiceService, UserService]
 })
-export class MultipleChoiceModule {}
+export class MultipleChoiceModule { }

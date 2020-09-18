@@ -1,4 +1,4 @@
-let instructionSections = []; 
+let instructionSections = [];
 let examType = 'standard'; //Standard as a default
 let questionList = document.getElementById('questionList');
 let sortable = Sortable.create(questionList);
@@ -27,11 +27,11 @@ createHTMLElement = (element, id, classList) => {
 //Initialize TinyMCE editor
 loadTextArea = () => {
   tinymce.init({
-    selector: '.tinymce-description', 
+    selector: '.tinymce-description',
     height: '30em',
     menubar: '',
     toolbar: 'undo redo | styleselect | bold italic underline strikethrough superscript subscript removeformat | bullist numlist table | ',
-    plugins: [ 'lists table' ]
+    plugins: ['lists table']
   });
 }
 
@@ -57,7 +57,7 @@ previewQuestion = (id) => {
         document.getElementById('previewModalContent').innerHTML = content;
       } else {
         document.getElementById('previewModalContent').innerHTML = '<p>Could not find question.</p>';
-      }  
+      }
     },
     error: () => {
       document.getElementById('previewModalContent').innerHTML = '<p>Error fetching question.</p>';
@@ -83,7 +83,7 @@ generatePreviewContent = (question) => {
   question.incorrectAnswers.forEach(ans => {
     content += '<li>' + ans + '</li>';
   });
-  content += '</ol>'; 
+  content += '</ol>';
   return content;
 }
 
@@ -102,19 +102,19 @@ document.getElementById("btnInstructions").addEventListener("click", () => {
       //Create li item to append to display list
       let instructionItem = createHTMLElement('li', 'is' + sectionId, ['collection-item', 'teal', 'lighten-4']);
       instructionItem.setAttribute("name", "Instruction Section #" + (sectionId + 1));
-      instructionItem.innerHTML =  
-      `<div>Instruction Section #` + (sectionId + 1) + `<a href="#!" class="secondary-content">
+      instructionItem.innerHTML =
+        `<div>Instruction Section #` + (sectionId + 1) + `<a href="#!" class="secondary-content">
           <label><input type="checkbox" onChange="liCheckBoxChanged('is` + sectionId + `');" checked/><span></span></label></a>  
         <a href="#previewModal" class="secondary-content modal-trigger" onClick="previewInstructionSection(` + sectionId + `);"><i class="material-icons">zoom_in</i></a> 
         <a href="#" class="secondary-content" onClick="editInstructionSection(` + sectionId + `);"><i class="material-icons">edit</i></a> 
-      </div>`; 
-      document.getElementById('questionList').appendChild(instructionItem); 
+      </div>`;
+      document.getElementById('questionList').appendChild(instructionItem);
     }
     removeInstructionSection();
-  }); 
+  });
   document.getElementById("btnCancel").addEventListener("click", () => {
     removeInstructionSection();
-  }); 
+  });
 });
 
 createInstructionTextAreaAndButtons = () => {
@@ -149,7 +149,7 @@ previewInstructionSection = (id) => {
 
 //Make changes to existing instruction section element
 editInstructionSection = (id) => {
-  createInstructionTextAreaAndButtons(); 
+  createInstructionTextAreaAndButtons();
   //Load contents into textArea
   tinyMCE.get('instructionSectionsTextArea').setContent(instructionSections[id]);
   //Add corresponding onClick listeners to buttons
@@ -159,10 +159,10 @@ editInstructionSection = (id) => {
       instructionSections[id] = temp;
     }
     removeInstructionSection();
-  }); 
+  });
   document.getElementById("btnCancel").addEventListener("click", () => {
     removeInstructionSection();
-  }); 
+  });
 }
 
 //Preview exam and display in modal
@@ -179,21 +179,21 @@ generateExamPreviewContent = () => {
   content += '<b>Name: </b>' + document.getElementById('name').value + '</br>';
   content += '</br><b>Paper Count: </b>' + document.getElementById('paperCount').value + '</br>';
   document.getElementById('coverPageCheckBox').checked ?
-    content += '</br><b>Cover Page:</b></br>' + tinyMCE.get('coverPageTextArea').getContent() + '</br>' : null; 
-  let selectedQuestionIds =  fetchAllSelectedQuestionIds(); 
+    content += '</br><b>Cover Page:</b></br>' + tinyMCE.get('coverPageTextArea').getContent() + '</br>' : null;
+  let selectedQuestionIds = fetchAllSelectedQuestionIds();
   let selectedQuestionNames = fetchAllSelectedQuestionNames(selectedQuestionIds);
   content += '</br><b>Questions:</b><ol>';
   selectedQuestionNames.forEach(qName => {
     content += '<li>' + qName + '</li>';
   });
-  content += '</ol>'; 
+  content += '</ol>';
   document.getElementById('appendixCheckBox').checked ?
-    content += '</br><b>Appendix:</b></br>' + tinyMCE.get('appendixTextArea').getContent() + '</br>' : null; 
+    content += '</br><b>Appendix:</b></br>' + tinyMCE.get('appendixTextArea').getContent() + '</br>' : null;
   return content;
 }
 
 fetchAllSelectedQuestionIds = () => {
-  let selectedQuestions = document.querySelectorAll('#questions>ul>li.teal'); 
+  let selectedQuestions = document.querySelectorAll('#questions>ul>li.teal');
   let selectedQuestionIds = [];
   for (let i = 0; i < selectedQuestions.length; i++) {
     selectedQuestionIds.push(selectedQuestions[i].id);
@@ -220,13 +220,13 @@ $("#examForm").submit((event) => {
     if (tinyMCE.get('coverPageTextArea').getContent() === '') {
       missingRequired = true;
       content += '<li>Complete cover page, or uncheck the corresponding box.</li>';
-    }   
+    }
   }
   if (document.getElementById('appendixCheckBox').checked) {
     if (tinyMCE.get('appendixTextArea').getContent() === '') {
       missingRequired = true;
       content += '<li>Complete appendix, or uncheck the corresponding box.</li>';
-    }   
+    }
   }
   //At least one question must be checked
   let selectedQuestionIds = fetchAllSelectedQuestionIds();
@@ -234,7 +234,7 @@ $("#examForm").submit((event) => {
   selectedQuestionIds.forEach(qId => {
     if (qId.length === 24) { //All questions have ids of length 24 
       questionFound = true;
-    } 
+    }
   });
   if (!(questionFound)) {
     missingRequired = true;
@@ -276,7 +276,7 @@ setExamType = (type) => {
 }
 
 generateExam = () => {
-  document.getElementById('optionsModalRetry').classList.add("disabled");   
+  document.getElementById('optionsModalRetry').classList.add("disabled");
   document.getElementById('optionsModalContent').innerHTML = '<p>Generating exam...</p>';
   //Get the values from the form
   let exam = fetchFormValues();
@@ -289,15 +289,15 @@ generateExam = () => {
         //Exam generated
         document.getElementById('optionsModalContent').innerHTML = '<p>Exam generated.</p>';
         if ((exam.paperCount > 1) && (examType === 'standard')) {
-          document.getElementById('optionsModalContent').innerHTML += 
-            `<div class=row><button class="btn waves-effect waves-light" id="mergePDFs" onClick="mergePDFs('` + exam.name + `');">Merge PDFs?</button></div>`;   
+          document.getElementById('optionsModalContent').innerHTML +=
+            `<div class=row><button class="btn waves-effect waves-light" id="mergePDFs" onClick="mergePDFs('` + exam.name + `');">Merge PDFs?</button></div>`;
         }
-        document.getElementById('optionsModalContent').innerHTML += 
+        document.getElementById('optionsModalContent').innerHTML +=
           `<div class=row><a class="waves-effect waves-light btn" href="exams/download/` + exam.name + `" onClick="downloadExam();">Download Exam</a></div>`
       } else if (res === 'false') {
         //Exam not generated
         enableAllOptionsButtons();
-      }  
+      }
     },
     error: () => {
       enableAllOptionsButtons();
@@ -314,7 +314,7 @@ enableAllOptionsButtons = () => {
 
 fetchFormValues = () => {
   exam = {};
-  exam.name = document.getElementById('name').value.replace(/\s/g, "-");
+  exam.name = document.getElementById('name').value;
   exam.paperCount = document.getElementById('paperCount').value;
   exam.examType = examType;
   exam.questionList = createExamQuestionList();
@@ -363,6 +363,5 @@ downloadExam = () => {
 
 
 
- 
 
- 
+

@@ -8,11 +8,11 @@ import { MultipleChoiceDTO } from './multiple-choice.dto';
 @Injectable()
 export class MultipleChoiceService {
     private QuestionMode: { id: string, action: string };
-    constructor(@InjectModel(MultipleChoice.name) private MCModel: Model<MultipleChoice>) {}
+    constructor(@InjectModel(MultipleChoice.name) private MCModel: Model<MultipleChoice>) { }
 
     //Remove all empty string elements
     removeEmptyElements(array: string[]) {
-        return array.filter((i) => {return i != '';});
+        return array.filter((i) => { return i != ''; });
     }
 
     /* Check for required inputs and types etc.
@@ -24,12 +24,12 @@ export class MultipleChoiceService {
             return false;
         }
         //Field types are all correct
-        if ((typeof(form.name) !== 'string') ||
-            (typeof(form.type) !== 'string') ||
-            (typeof(form.marks) !== 'string') ||
-            (typeof(form.questionText) !== 'string') ||
-            (typeof(form.correctAnswers) !== 'object') ||
-            (typeof(form.incorrectAnswers) !== 'object')
+        if ((typeof (form.name) !== 'string') ||
+            (typeof (form.type) !== 'string') ||
+            (typeof (form.marks) !== 'string') ||
+            (typeof (form.questionText) !== 'string') ||
+            (typeof (form.correctAnswers) !== 'object') ||
+            (typeof (form.incorrectAnswers) !== 'object')
         ) {
             return false;
         }
@@ -37,7 +37,7 @@ export class MultipleChoiceService {
         const re = new RegExp("^[a-zA-Z0-9][a-zA-Z0-9 ]*");
         if (!(re.test(form.name))) {
             return false;
-        } 
+        }
         //Type = Truth or Xyz
         if ((form.type !== 'Truth') && (form.type !== 'Xyz')) {
             return false;
@@ -65,38 +65,38 @@ export class MultipleChoiceService {
         }
         return true;
     }
-    
+
     //Create the Dividni question 
     async generateQuestion(question: QuestionFormDTO, id: string): Promise<any> {
-        let userID = id; 
+        let userID = id;
         //Save question to database
         let multipleChoiceDTO = new MultipleChoiceDTO();
         multipleChoiceDTO = { question, userID };
         let newQuestion = new this.MCModel(multipleChoiceDTO);
-        return newQuestion.save();    
-    } 
-
-    async fetchUserQuestions(userID: string) {  
-        return this.MCModel.find({ userID: userID }).sort({$natural:-1}).exec();
+        return newQuestion.save();
     }
 
-    async getQuestion(id: string) {  
+    async fetchUserQuestions(userID: string) {
+        return this.MCModel.find({ userID: userID }).sort({ $natural: -1 }).exec();
+    }
+
+    async getQuestion(id: string) {
         return this.MCModel.findOne({ _id: id }, '-_id').exec();
     }
 
-    async deleteQuestion(id: string) {  
+    async deleteQuestion(id: string) {
         return this.MCModel.findByIdAndDelete({ _id: id }).exec();
     }
 
     async updateQuestion(id: string, question) {
-        return this.MCModel.updateOne({ _id: id}, {question: question}).exec();
+        return this.MCModel.updateOne({ _id: id }, { question: question }).exec();
     }
 
     getQuestionMode() {
         return this.QuestionMode;
     }
 
-    setQuestionMode(questionID : string, questionAction: string) {
+    setQuestionMode(questionID: string, questionAction: string) {
         let id = questionID;
         let action = questionAction;
         this.QuestionMode = { id, action };

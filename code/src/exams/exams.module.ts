@@ -10,10 +10,10 @@ import { MultipleChoiceService } from 'src/multiple-choice/multiple-choice.servi
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Exams.name, schema: ExamsSchema }]), 
+    MongooseModule.forFeature([{ name: Exams.name, schema: ExamsSchema }]),
     MongooseModule.forFeature([{ name: MultipleChoice.name, schema: MCSchema }]),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])],
   controllers: [ExamsController],
   providers: [ExamsService, UserService, MultipleChoiceService]
 })
-export class ExamsModule {}
+export class ExamsModule { }

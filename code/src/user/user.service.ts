@@ -6,7 +6,7 @@ import { UserDTO } from './user.dto';
 
 @Injectable()
 export class UserService {
-    constructor(@InjectModel(User.name) private UserModel: Model<User>) {}
+    constructor(@InjectModel(User.name) private UserModel: Model<User>) { }
 
     googleLogin(req) {
         if (!req.user) {
@@ -15,19 +15,19 @@ export class UserService {
             return req.user;
         }
     }
-    
-    async getUserByEmail(email: string) {  
+
+    async getUserByEmail(email: string) {
         return this.UserModel.findOne({ email: email }).exec();
     }
 
-    async getUserIDByEmail(email: string) {  
+    async getUserIDByEmail(email: string) {
         let user = this.UserModel.findOne({ email: email }).exec();
         return (await user)._id;
     }
 
-    async addUser(user: UserDTO) {  
-        let newUser= new this.UserModel(user);
-        return newUser.save();  
-    } 
+    async addUser(user: UserDTO) {
+        let newUser = new this.UserModel(user);
+        return newUser.save();
+    }
 
 }

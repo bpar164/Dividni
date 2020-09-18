@@ -13,7 +13,7 @@ import { ExamsDTO } from './exams.dto';
 
 @Injectable()
 export class ExamsService {
-    constructor(@InjectModel(Exams.name) private ExamsModel: Model<Exams>, @InjectModel(MultipleChoice.name) private MCModel: Model<MultipleChoice>) {}
+    constructor(@InjectModel(Exams.name) private ExamsModel: Model<Exams>, @InjectModel(MultipleChoice.name) private MCModel: Model<MultipleChoice>) { }
 
     /* Check for required inputs and types etc.
     Just returns false if there is an issue, without explanation.
@@ -23,13 +23,13 @@ export class ExamsService {
         if ((!(form.name)) || (!(form.paperCount)) || (!(form.examType))) {
             return false;
         }
-         //Field types are all correct
-         if ((typeof(form.name) !== 'string') ||
-         (typeof(form.paperCount) !== 'string') ||
-         (typeof(form.examType) !== 'string') ||
-         (typeof(form.coverPage) !== 'string') ||
-         (typeof(form.questionList) !== 'object') ||
-         (typeof(form.appendix) !== 'string') 
+        //Field types are all correct
+        if ((typeof (form.name) !== 'string') ||
+            (typeof (form.paperCount) !== 'string') ||
+            (typeof (form.examType) !== 'string') ||
+            (typeof (form.coverPage) !== 'string') ||
+            (typeof (form.questionList) !== 'object') ||
+            (typeof (form.appendix) !== 'string')
         ) {
             return false;
         }
@@ -41,7 +41,7 @@ export class ExamsService {
         const re = new RegExp("^[a-zA-Z0-9][a-zA-Z0-9 ]*");
         if (!(re.test(form.name))) {
             return false;
-        } 
+        }
         //paperCount in [1, 100] and divisible by 1
         let paperCount = parseFloat(form.paperCount);
         if (isNaN(paperCount)) {
@@ -77,54 +77,54 @@ export class ExamsService {
                 let mcQuestion = new QuestionFormDTO;
                 Object.keys(multipleChoice.question).map(key => mcQuestion[key] = multipleChoice.question[key]);
                 //Convert question to xml and save to array
-                questionXML.push(this.convertToXML(mcQuestion, 'Q' + i));  
+                questionXML.push(this.convertToXML(mcQuestion, 'Q' + i));
                 //Add the question ID to the list in the HTML
                 questionHTML += `<li class="q"><p class="cws_code_q">Q` + i + `</p></li>`;
             } else {
                 questionHTML += question.contents;
-            }     
+            }
         }
-         //Close the questionHTML string
-         questionHTML += `</ol></div>`;  
+        //Close the questionHTML string
+        questionHTML += `</ol></div>`;
         //Create the actual exam files
         let result = await this.createExam(exam, questionXML, questionHTML);
         if (result === true) {
             //Save exam settings to database
-            let userID = id; 
+            let userID = id;
             let examsDTO = new ExamsDTO();
             examsDTO = { exam, userID };
             let newExam = new this.ExamsModel(examsDTO);
-            return newExam.save(); 
+            return newExam.save();
         } else {
             return false;
-        }  
-    } 
+        }
+    }
 
     //Convert multiple-choice question to XML format
     convertToXML(question: QuestionFormDTO, id) {
         const root = create()
-            .ele('Question', {type: question.type, id: id, marks: question.marks}) 
-                .ele('Stem').txt(question.questionText).up();
+            .ele('Question', { type: question.type, id: id, marks: question.marks })
+            .ele('Stem').txt(question.questionText).up();
         const trueAnswers = root.ele('TrueAnswers');
         for (let i = 0; i < question.correctAnswers.length; i++) {
             trueAnswers.ele('Answer').txt(question.correctAnswers[i]).up()
-        }    
-        trueAnswers.up();       
+        }
+        trueAnswers.up();
         const falseAnswers = root.ele('FalseAnswers');
         for (let i = 0; i < question.incorrectAnswers.length; i++) {
             falseAnswers.ele('Answer').txt(question.incorrectAnswers[i]).up()
-        }    
-        falseAnswers.up();     
+        }
+        falseAnswers.up();
         return root.end({ prettyPrint: true });
     }
 
     //Uses the Dividni tools to create the question and exam files
     async createExam(exam, questionXML, questionHTML): Promise<any> {
         let success;
-        let continueLoop; 
+        let continueLoop;
         let fileList = [];
         let path = process.cwd();
-        path = path.substring(0, path.length-5) + `\\` + exam.name + `\\papers`; //Remove \code from path
+        path = path.substring(0, path.length - 5) + `\\` + exam.name + `\\papers`; //Remove \code from path
         //Stop executing if any of the actions fail
         while (continueLoop != false) {
             success = false;
@@ -138,8 +138,8 @@ export class ExamsService {
                 //Generate the C# and HTML files
                 continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\XmlQuest.exe" Q` + i + `.xml`);
                 //Add file to list to be compiled
-                questionList += " Q" + i + '.cs';     
-            }  
+                questionList += " Q" + i + '.cs';
+            }
             //Create standard exam with html template
             if (exam.examType === 'standard') {
                 //Compile all of the questions
@@ -148,7 +148,7 @@ export class ExamsService {
                 //Header with name
                 let examHTML = `<html><head><meta charset="utf-8"/><title>` + exam.name + `</title></head><body>`;
                 //Cover page
-                exam.coverPage !== '' ? examHTML += `<div id="coverPage">` + exam.coverPage +  `</div><p style="page-break-after: always;" />` : null;
+                exam.coverPage !== '' ? examHTML += `<div id="coverPage">` + exam.coverPage + `</div><p style="page-break-after: always;" />` : null;
                 //Questions
                 examHTML += `<div id="questions">` + questionHTML + `</div>`;
                 //Appendix
@@ -158,7 +158,7 @@ export class ExamsService {
                 //Generate exam
                 continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -htmlFolder papers -answerFolder answers -paperCount ` + exam.paperCount + ` Exam.Template.html`);
                 //Convert all html question files in the papers folder to pdf
-                continueLoop = await this.convertFilesToPDF(`../` + exam.name + `/papers`, exam.name, fileList, path);    
+                continueLoop = await this.convertFilesToPDF(`../` + exam.name + `/papers`, exam.name, fileList, path);
             } else if (exam.examType === 'canvas') { //Create Canvas compatible zip 
                 continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\QtiGen.exe" -qtiVers 1.2 -variant ` + exam.paperCount + ` -id ` + exam.name + questionList);
             } else { //Create Inspera compatible zip 
@@ -176,13 +176,13 @@ export class ExamsService {
             fs.readdir(folderPath, async (err, files) => {
                 if (err) {
                     status = false;
-                }  else {
+                } else {
                     files.forEach(async (file) => {
                         status = await this.convertFile(file, examName, fileList, path);
                     });
-                }  
-            resolve(status);  
-            });  
+                }
+                resolve(status);
+            });
         });
     }
 
@@ -190,9 +190,9 @@ export class ExamsService {
         let status;
         return new Promise(async (resolve) => {
             let fileName = examName + '#' + file.substr(0, file.indexOf('.')) + '.pdf';
-            fileList.push(path + `\\` +  fileName);
+            fileList.push(path + `\\` + fileName);
             status = await this.execShellCommand(`cd .. && cd ` + examName + ` && cd papers && ..\\..\\dividni\\wkhtmltopdf ` + file + ` ` + fileName);
-            resolve(status);   
+            resolve(status);
         });
     }
 
@@ -212,7 +212,7 @@ export class ExamsService {
         status = await this.execShellCommand(`cd .. && rmdir /Q /S ` + folderName);
         return status;
     }
-    
+
     //Make a directory 
     makeFolder(path: string): Promise<any> {
         let status;
@@ -223,7 +223,7 @@ export class ExamsService {
                 } else {
                     status = true;
                 }
-            resolve(status);
+                resolve(status);
             });
         });
     }
@@ -238,7 +238,7 @@ export class ExamsService {
                 } else {
                     status = true;
                 }
-            resolve(status);
+                resolve(status);
             });
         });
     }
@@ -254,17 +254,21 @@ export class ExamsService {
                 } else {
                     status = true;
                 }
-            resolve(status);
+                resolve(status);
             });
         });
     }
 
-    async fetchUserExams(userID: string) {  
-        return this.ExamsModel.find({ userID: userID }).sort({$natural:-1}).exec();
+    async fetchUserExams(userID: string) {
+        return this.ExamsModel.find({ userID: userID }).sort({ $natural: -1 }).exec();
     }
 
-    async getExam(id: string) {  
+    async getExam(id: string) {
         return this.ExamsModel.findOne({ _id: id }, '-_id').exec();
+    }
+
+    async deleteExam(id: string) {
+        return this.ExamsModel.findByIdAndDelete({ _id: id }).exec();
     }
 }
 

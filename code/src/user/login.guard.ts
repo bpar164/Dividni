@@ -10,5 +10,5 @@ export class LoginGuard extends AuthGuard('google') {
     await super.logIn(request);
     return result;
   }
-  
+
 }

@@ -1,26 +1,26 @@
- let correctCount = 0;
- let incorrectCount = 0;
- let currentType;
- const minCorrectTruth = 1;
- const minIncorrectTruth = 4;
- const minCorrectXYZ = 3;
- const minIncorrectXYZ = 3;
- const limit = 25;
- let currentQuestionID;
- let currentQuestionName;
+let correctCount = 0;
+let incorrectCount = 0;
+let currentType;
+const minCorrectTruth = 1;
+const minIncorrectTruth = 4;
+const minCorrectXYZ = 3;
+const minIncorrectXYZ = 3;
+const limit = 25;
+let currentQuestionID;
+let currentQuestionName;
 
- $(document).ready(() => {
-   //Create questionText editor
+$(document).ready(() => {
+  //Create questionText editor
   tinymce.init({
-    selector: '.tinymce-description', 
+    selector: '.tinymce-description',
     height: '15em',
     menubar: '',
     toolbar: 'undo redo | styleselect | bold italic underline strikethrough superscript subscript removeformat | bullist numlist table | ',
-    plugins: [ 'lists table' ]
+    plugins: ['lists table']
   });
   //Check if there is data for a question that needs to be populated
   let questionMode = document.getElementById('questionMode');
-  if (questionMode) { 
+  if (questionMode) {
     setTimeout(() => { populateQuestionForm(questionMode.getAttribute('data-question-id')); }, 500); //Give tinyMCE time to load
   }
 });
@@ -35,8 +35,8 @@ loadAnswerEditors = () => {
   });
 }
 
- /*Creates the answer slots, based on the question types
- Transfers existing answers when switching between types*/
+/*Creates the answer slots, based on the question types
+Transfers existing answers when switching between types*/
 createAnswers = (type, correctAnswers, incorrectAnswers) => {
   currentType = type;
   //Enable both add answer and preview buttons
@@ -44,7 +44,7 @@ createAnswers = (type, correctAnswers, incorrectAnswers) => {
   document.getElementById('addIncorrect').classList.remove("disabled");
   document.getElementById('preview').classList.remove("disabled");
   //Answers will be empty unless the method is called by template or edit
-  if (!(correctAnswers)) { 
+  if (!(correctAnswers)) {
     //Fetch any existing answers 
     correctAnswers = [];
     for (i = 1; i <= correctCount; i++) {
@@ -63,7 +63,7 @@ createAnswers = (type, correctAnswers, incorrectAnswers) => {
   //Reset counts
   correctCount = 0;
   incorrectCount = 0;
- //Add the correct number of correct and incorrect answers for the corresponding type
+  //Add the correct number of correct and incorrect answers for the corresponding type
   if (type === 'Truth') {
     createCorrectAnswers(minCorrectTruth, correctAnswers, true);
     createIncorrectAnswers(minIncorrectTruth, incorrectAnswers, true);
@@ -99,7 +99,7 @@ createIncorrectAnswers = (numAnswers, incorrectAnswers, required) => {
     if (incorrectAnswers.length >= 1) { //Add any existing answers to the slots
       existingVal = incorrectAnswers[0];
       incorrectAnswers.shift(); // Remove the first element
-    } 
+    }
     addAnswer('incorrect', required, existingVal);
   }
 }
@@ -182,7 +182,7 @@ generatePreviewContent = (question) => {
   question.incorrectAnswers.forEach(ans => {
     content += '<li>' + ans + '</li>';
   });
-  content += '</ol>'; 
+  content += '</ol>';
   return content;
 }
 
@@ -218,7 +218,7 @@ $("#questionForm").submit((event) => {
     } else {
       generateQuestion(); //Create question
     }
-  } 
+  }
 });
 
 //Make the actual request to add the question to the database
@@ -238,7 +238,7 @@ generateQuestion = () => {
         //Question not generated
         document.getElementById('optionsModalContent').innerHTML = '<p>Error generating question.</p>';
         document.getElementById('optionsModalRetry').classList.remove("disabled");
-      }  
+      }
     },
     error: () => {
       document.getElementById('optionsModalContent').innerHTML = '<p>Error generating question.</p>';
@@ -266,7 +266,7 @@ updateQuestion = (id) => {
         //Question not updated
         document.getElementById('optionsModalContent').innerHTML = '<p>Error editing question.</p>';
         document.getElementById('optionsModalRetry').classList.remove("disabled");
-      }  
+      }
     },
     error: () => {
       document.getElementById('optionsModalContent').innerHTML = '<p>Error editing question.</p>';
@@ -286,7 +286,7 @@ setCurrentQuestion = (id, name) => {
 //Creates a confirmation modal
 confirmDialog = (action) => {
   //Reset buttons
-  document.getElementById('confirmModalNo').innerHTML= "NO";
+  document.getElementById('confirmModalNo').innerHTML = "NO";
   document.getElementById('confirmModalYes').classList.remove("disabled");
   //Build the display string and set the correct onClick function for the yes button
   let content = '<p>';
@@ -324,7 +324,7 @@ previewQuestion = () => {
         document.getElementById('previewModalContent').innerHTML = content;
       } else {
         document.getElementById('previewModalContent').innerHTML = '<p>Error fetching question.</p>';
-      }  
+      }
     },
     error: () => {
       document.getElementById('previewModalContent').innerHTML = '<p>Error fetching question.</p>';
@@ -336,8 +336,8 @@ previewQuestion = () => {
 deleteQuestion = (id) => {
   document.getElementById(id).remove();
   $.ajax({
-    url : 'multiple-choice-my/' + id,
-    method : 'delete'
+    url: 'multiple-choice-my/' + id,
+    method: 'delete'
   })
 }
 
@@ -347,7 +347,7 @@ editQuestion = (id) => {
     url: 'edit-question/' + id,
     method: 'GET',
     success: (res) => {
-      window.location.href ="multiple-choice";
+      window.location.href = "multiple-choice";
     }
   });
 }
@@ -358,7 +358,7 @@ templateQuestion = (id) => {
     url: 'template-question/' + id,
     method: 'GET',
     success: (res) => {
-      window.location.href ="multiple-choice";
+      window.location.href = "multiple-choice";
     }
   });
 }
@@ -374,7 +374,7 @@ shareQuestion = () => {
                     SHARE<i class="material-icons right">send</i>
                   </button> 
                 </form>`;
-  document.getElementById('confirmModalNo').innerHTML= "CANCEl";
+  document.getElementById('confirmModalNo').innerHTML = "CANCEl";
   document.getElementById('confirmModalYes').classList.add("disabled");
   document.getElementById('confirmModalContent').innerHTML = content;
 }
@@ -408,23 +408,23 @@ submitShareForm = (event) => {
                     document.getElementById('confirmModalContent').innerHTML = '<p>Question shared.</p>';
                   } else if (res === 'false') {
                     document.getElementById('confirmModalContent').innerHTML = '<p>Error sharing question.</p>';
-                  }  
+                  }
                 }
               });
             } else {
               document.getElementById('confirmModalContent').innerHTML = '<p>Error fetching question.</p>';
-            }  
+            }
           }
         });
       } else { //Could not find user
-        document.getElementById('confirmModalContent').innerHTML= '<p>Could not find user.</p>';
+        document.getElementById('confirmModalContent').innerHTML = '<p>Could not find user.</p>';
       }
     },
     error: () => {
       document.getElementById('confirmModalContent').innerHTML = '<p>Error sharing question.</p>';
     }
   });
-  document.getElementById('confirmModalNo').innerHTML= "CLOSE";
+  document.getElementById('confirmModalNo').innerHTML = "CLOSE";
   document.getElementById('confirmModalYes').classList.add('modal-close');
 }
 
@@ -452,7 +452,7 @@ populateQuestionForm = (id) => {
         let incorrectAnswers = res.question.incorrectAnswers;
         createAnswers(res.question.type, correctAnswers, incorrectAnswers);
         tinyMCE.get('questionText').setContent(res.question.questionText);
-      }  
+      }
     },
     error: () => {
       $('#previewModal').modal();
@@ -468,7 +468,7 @@ populateQuestionForm = (id) => {
 
 
 
-  
+
 
 
 

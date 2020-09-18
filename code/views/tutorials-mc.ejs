@@ -1,67 +1,94 @@
 <%- include('partials/header') -%>
 
-  <!-- main -->
-  <section class="section container blue lighten-5" id="main">
-    <div class="row">
-      <div class="col s12">
-        <h5 class="teal-text">Instructions</h5>
-        <p>Follow these instructions to create a <a href="multiple-choice" target="_blank">multiple-choice question <i class="tiny material-icons">open_in_new</i></a>.</p>
-        <div id="instructions">
-          <ol>
-            <p><li>Fill-in the question name (text, numbers, and spaces only). This is to help you identify the question later.</li></p>
-            <p><li>Select a question type: Truth or XYZ.
+<!-- main -->
+<section class="section container blue lighten-5" id="main">
+  <div class="row">
+    <div class="col s12">
+      <h5 class="teal-text">Instructions</h5>
+      <p>Follow these instructions to create a <a href="multiple-choice" target="_blank">multiple-choice question <i
+            class="tiny material-icons">open_in_new</i></a>.</p>
+      <div id="instructions">
+        <ol>
+          <p>
+            <li>Fill-in the question name (text, numbers, and spaces only). This is to help you identify the question
+              later.</li>
+          </p>
+          <p>
+            <li>Select a question type: Truth or XYZ.
               Truth questions have 5 different answer options, whilst XYZ has 2 fixed answers with 3 options.
-              (See the example section below.)</li></p>
-            <p><li>Next, enter the marks for the question. This value can be between 0 and 10, in intervals of 0.5.</li></p>
-            <p><li>The question text section is where you write the actual question. This section can contain formatting.</li></p>
-            <p><li>The correct and incorrect answers section will be set-up with the minimum required number of answers.
+              (See the example section below.)</li>
+          </p>
+          <p>
+            <li>Next, enter the marks for the question. This value can be between 0 and 10, in intervals of 0.5.</li>
+          </p>
+          <p>
+            <li>The question text section is where you write the actual question. This section can contain formatting.
+            </li>
+          </p>
+          <p>
+            <li>The correct and incorrect answers section will be set-up with the minimum required number of answers.
               Truth requires 1 correct and 4 incorrect answers, whilst XYZ requires 3 correct and 3 incorrect answers.
-              <b>You will not be able to enter answers or preview the question until a question type has been selected.</b>
+              <b>You will not be able to enter answers or preview the question until a question type has been
+                selected.</b>
               Click on the <i class="tiny material-icons">add_circle</i> icon to create the slot for a new answer.
               You are encouraged to add many answers, but do not worry if you leave an answer slot blank -
               the question will generate once the minimum number of answers has been entered.
-              The answers will not be lost if you switch between question types. 
+              The answers will not be lost if you switch between question types.
               Answers can contain formatting, and <b>all of the answers for the question must be unique</b>.
-            </li></p>
-            <p><li>Click the <b>PREVIEW</b> button to see a preview of the question. 
+            </li>
+          </p>
+          <p>
+            <li>Click the <b>PREVIEW</b> button to see a preview of the question.
               If you are happy with the question, you can click on <b>GENERATE</b> to create the question.
-              Otherwise, you can still make changes and click on <b>PREVIEW</b> to view the modified question. 
-            </li></p>
-            <p><li>Clicking the <b>GENERATE</b> button will create the question.
+              Otherwise, you can still make changes and click on <b>PREVIEW</b> to view the modified question.
+            </li>
+          </p>
+          <p>
+            <li>Clicking the <b>GENERATE</b> button will create the question.
               A window will be displayed to show you the outcome of the action.
-              If the question was generated, you will have the options to create another question, 
-              or view all of the multiple-choice questions that you have created. 
-              Additionally, if there was a problem, you will also be able to modify the question details and try again.  
-            </li></p>
-          </ol>
-        </div>
-        <h5 class="teal-text">Example Questions</h5>
-        <p>This example illustrates the difference between Truth and XYZ questions:</p>
-        <img src="mc-example.png">
-        <p>Question 1 is of type XYZ and question 2 is of type Truth.
-        The question content and answers are the same for both questions - the only difference is the type.</p>
-        <h5 class="teal-text">Viewing your Questions</h5>
-        <p>The <a href="multiple-choice-my" target="_blank">my created multiple-choice <i class="tiny material-icons">open_in_new</i></a> page displays all of the questions that you have created.</p>
-        <p>You can click on the <i class="tiny material-icons">more_vert</i> next to the question name to see the list of actions that you can perform.</p> 
-        <p>Select <b>PREVIEW</b> to see the details of the question.</p>
-        <h5 class="teal-text">Editing a Question</h5>
-        <p>Select <b>EDIT</b> from the actions list. A window will be displayed asking you to confirm your choice.</p>
-        <p>You will be redirected to the create multiple-choice question page and the details of the question will be pre-loaded into the form.</p>
-        <p>To save any changes, you will need to preview and generate the question.</p>
-        <h5 class="teal-text">Deleting a Question</h5>
-        <p>Select <b>DELETE</b> from the actions list. A window will be displayed asking you to confirm your choice.</p>
-        <h5 class="teal-text">Using a Question as a Template</h5>
-        <p>Select <b>TEMPLATE</b> from the actions list. A window will be displayed asking you to confirm your choice.</p>
-        <p>You will be redirected to the create multiple-choice question page and the details of the question will be pre-loaded into the form.</p>
-        <p>To save the question, you will need to preview and generate it. Note that using a question as a template leaves the original question unchanged.</p>
-        <h5 class="teal-text">Sharing a Question</h5>
-        <p>Select <b>SHARE</b> from the actions list. A window will be displayed asking you to confirm your choice.</p>
-        <p>A small form will be displayed where you can enter the email of the user with whom you wish to share the question. Click <b>SHARE </b><i class="tiny material-icons">send</i> to complete the process.</p>
-        <p>Note that the other user will receive of copy of the question, and any changes he or she makes to it will not be reflected on your version of the question.</p>
+              If the question was generated, you will have the options to create another question,
+              or view all of the multiple-choice questions that you have created.
+              Additionally, if there was a problem, you will also be able to modify the question details and try again.
+            </li>
+          </p>
+        </ol>
       </div>
+      <h5 class="teal-text">Example Questions</h5>
+      <p>This example illustrates the difference between Truth and XYZ questions:</p>
+      <img src="mc-example.png">
+      <p>Question 1 is of type XYZ and question 2 is of type Truth.
+        The question content and answers are the same for both questions - the only difference is the type.</p>
+      <h5 class="teal-text">Viewing your Questions</h5>
+      <p>The <a href="multiple-choice-my" target="_blank">my created multiple-choice <i
+            class="tiny material-icons">open_in_new</i></a> page displays all of the questions that you have created.
+      </p>
+      <p>You can click on the <i class="tiny material-icons">more_vert</i> next to the question name to see the list of
+        actions that you can perform.</p>
+      <p>Select <b>PREVIEW</b> to see the details of the question.</p>
+      <h5 class="teal-text">Editing a Question</h5>
+      <p>Select <b>EDIT</b> from the actions list. A window will be displayed asking you to confirm your choice.</p>
+      <p>You will be redirected to the create multiple-choice question page and the details of the question will be
+        pre-loaded into the form.</p>
+      <p>To save any changes, you will need to preview and generate the question.</p>
+      <h5 class="teal-text">Deleting a Question</h5>
+      <p>Select <b>DELETE</b> from the actions list. A window will be displayed asking you to confirm your choice.</p>
+      <h5 class="teal-text">Using a Question as a Template</h5>
+      <p>Select <b>TEMPLATE</b> from the actions list. A window will be displayed asking you to confirm your choice.</p>
+      <p>You will be redirected to the create multiple-choice question page and the details of the question will be
+        pre-loaded into the form.</p>
+      <p>To save the question, you will need to preview and generate it. Note that using a question as a template leaves
+        the original question unchanged.</p>
+      <h5 class="teal-text">Sharing a Question</h5>
+      <p>Select <b>SHARE</b> from the actions list. A window will be displayed asking you to confirm your choice.</p>
+      <p>A small form will be displayed where you can enter the email of the user with whom you wish to share the
+        question. Click <b>SHARE </b><i class="tiny material-icons">send</i> to complete the process.</p>
+      <p>Note that the other user will receive of copy of the question, and any changes he or she makes to it will not
+        be reflected on your version of the question.</p>
     </div>
-  </section>
+  </div>
+</section>
 
 <%- include('partials/footer') -%>
 </body>
+
 </html>
