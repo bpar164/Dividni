@@ -148,11 +148,11 @@ export class ExamsService {
                 //Header with name
                 let examHTML = `<html><head><meta charset="utf-8"/><title>` + exam.name + `</title></head><body>`;
                 //Cover page
-                exam.coverPage !== '' ? examHTML += `<div id="coverPage">` + exam.coverPage +  `</div><br />` : null;
+                exam.coverPage !== '' ? examHTML += `<div id="coverPage">` + exam.coverPage +  `</div><p style="page-break-after: always;" />` : null;
                 //Questions
-                examHTML += `<div id="questions">` + questionHTML + `</div><br />`;
+                examHTML += `<div id="questions">` + questionHTML + `</div>`;
                 //Appendix
-                exam.appendix !== '' ? examHTML += `<div id="appendix">` + exam.appendix + `</div><br /></body></html>` : examHTML += `</body></html>`;
+                exam.appendix !== '' ? examHTML += `<p style="page-break-before: always;" /><div id="appendix">` + exam.appendix + `</div></body></html>` : examHTML += `</body></html>`;
                 //Create a file for the html
                 continueLoop = await this.makeFile(`../` + exam.name + `/Exam.Template.html`, examHTML);
                 //Generate exam
