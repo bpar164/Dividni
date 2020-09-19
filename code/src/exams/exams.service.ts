@@ -11,6 +11,26 @@ import { MultipleChoice } from '../multiple-choice/multiple-choice.schema';
 import { QuestionDTO } from './question.dto';
 import { ExamsDTO } from './exams.dto';
 
+let examCSS =
+    `
+    body {
+        font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    }
+         
+    ol.qlist > li.q {
+        margin: 2em 0;
+    }
+
+    li > ol.a {
+        list-style: upper-alpha;
+    }
+         
+    .xyz {
+        padding-top: 1em;
+        padding-bottom: 1em;
+    }
+    `;
+
 @Injectable()
 export class ExamsService {
     constructor(@InjectModel(Exams.name) private ExamsModel: Model<Exams>, @InjectModel(MultipleChoice.name) private MCModel: Model<MultipleChoice>) { }
@@ -146,7 +166,7 @@ export class ExamsService {
                 continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mcs -t:library -lib:"..\\dividni" -r:Utilities.Courses.dll -out:QHelper.dll` + questionList);
                 //Create html template
                 //Header with name
-                let examHTML = `<html><head><meta charset="utf-8"/><title>` + exam.name + `</title></head><body>`;
+                let examHTML = `<html><head><meta charset="utf-8"/><title>` + exam.name + `</title><style>` + examCSS + `</style></head><body>`;
                 //Cover page
                 exam.coverPage !== '' ? examHTML += `<div id="coverPage">` + exam.coverPage + `</div><p style="page-break-after: always;" />` : null;
                 //Questions
@@ -249,7 +269,6 @@ export class ExamsService {
         return new Promise((resolve) => {
             exec(cmd, (err, stdout, stderr) => {
                 if (err) {
-                    console.log(err)
                     status = false;
                 } else {
                     status = true;
@@ -270,5 +289,6 @@ export class ExamsService {
     async deleteExam(id: string) {
         return this.ExamsModel.findByIdAndDelete({ _id: id }).exec();
     }
+
 }
 
