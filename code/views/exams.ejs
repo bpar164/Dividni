@@ -1,5 +1,9 @@
 <%- include('partials/header') -%>
 
+<% if (id && action) { %>
+  <div id="examMode" data-exam-id="<%= id %>" data-exam-action="<%= action %>"></div>
+  <% } %>
+
 <!-- main -->
 <section class="section container blue lighten-5" id="main">
   <div class="row">

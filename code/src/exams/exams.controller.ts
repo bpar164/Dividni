@@ -1,4 +1,4 @@
-import { Controller, Get, Render, Request, UseFilters, UseGuards, Post, Param, Res, Delete } from '@nestjs/common';
+import { Controller, Get, Render, Request, UseFilters, UseGuards, Post, Param, Res, Delete, Put } from '@nestjs/common';
 import { ExamsService } from './exams.service';
 import { AuthExceptionFilter } from 'src/user/auth-exceptions.filter';
 import { AuthenticatedGuard } from 'src/user/authenticated.guard';
@@ -16,11 +16,21 @@ export class ExamsController {
     @Get('exams')
     @Render('exams')
     async getExamsView(@Request() req) {
+        let examID = null;
+        let examAction = null;
+        let examMode = this.examsService.getExamMode();
+        if (examMode) {
+            examID = examMode.id;
+            examAction = examMode.action;
+            this.examsService.setExamMode(null, null);
+        }
         let userID = await this.userService.getUserIDByEmail(req.user.email);
         return {
             title: 'Exams',
             description: 'Create exams using your multiple-choice questions',
             mcQuestions: await this.multipleChoiceService.fetchUserQuestions(userID),
+            id: examID,
+            action: examAction,
             loggedIn: (req.user !== undefined) ? true : false,
             picture: req.user ? req.user.picture : null
         };
@@ -36,6 +46,23 @@ export class ExamsController {
             //User must not share exam with self
             return false;
         }
+        let exam = new ExamFormDTO();
+        try {
+            exam = req.body;
+            if (this.examsService.validateExam(exam)) {
+                await this.examsService.generateExam(exam, id);
+                return true;
+            } else {
+                return false; //Exam not created
+            }
+        } catch (err) {
+            return false; //Exam not created
+        }
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @Put('multiple-choice/:id')
+    async updateExam(@Request() req, @Param('id') id): Promise<boolean> {
         let exam = new ExamFormDTO();
         try {
             exam = req.body;
@@ -74,26 +101,6 @@ export class ExamsController {
         }
     }
 
-    /*
-    @UseGuards(AuthenticatedGuard)
-    @Put('multiple-choice/:id')
-    async updateQuestion(@Request() req, @Param('id') id): Promise<boolean> { 
-        let question = new QuestionFormDTO();
-        try {
-            question = req.body;
-            question.correctAnswers = this.multipleChoiceService.removeEmptyElements(question.correctAnswers);
-            question.incorrectAnswers = this.multipleChoiceService.removeEmptyElements(question.incorrectAnswers);
-            if (this.multipleChoiceService.validateQuestion(question)) {
-                await this.multipleChoiceService.updateQuestion(id, question);
-                return true; //Question created
-            } else {
-                return false; //Question not created
-            }
-        } catch (err) {
-            return false; //Question not created
-        }    
-    }*/
-
     @UseGuards(AuthenticatedGuard)
     @Get('exams-my')
     @Render('exams-my')
@@ -120,16 +127,15 @@ export class ExamsController {
         await this.examsService.deleteExam(id);
     }
 
-    /*
     @UseGuards(AuthenticatedGuard)
-    @Get('template-question/:id')
-    templateQuestion(@Param('id') id) {
-        this.multipleChoiceService.setQuestionMode(id, 'TEMPLATE');
+    @Get('template-exam/:id')
+    templateExam(@Param('id') id) {
+        this.examsService.setExamMode(id, 'TEMPLATE');
     }
 
     @UseGuards(AuthenticatedGuard)
-    @Get('edit-question/:id')
-    editQuestion(@Param('id') id) {
-        this.multipleChoiceService.setQuestionMode(id, 'EDIT');
-    }*/
+    @Get('edit-exam/:id')
+    editExam(@Param('id') id) {
+        this.examsService.setExamMode(id, 'EDIT');
+    }
 }

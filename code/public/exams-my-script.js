@@ -87,11 +87,23 @@ deleteExam = (id) => {
 
 
 editExam = (id) => {
-  console.log('Edit', id);
+  $.ajax({
+    url: 'edit-exam/' + id,
+    method: 'GET',
+    success: (res) => {
+      window.location.href = "exams";
+    }
+  });
 }
 
 templateExam = (id) => {
-  console.log('Template', id);
+  $.ajax({
+    url: 'template-exam/' + id,
+    method: 'GET',
+    success: (res) => {
+      window.location.href = "exams";
+    }
+  });
 }
 
 //Creates a small form in the current modal, for submitting an email

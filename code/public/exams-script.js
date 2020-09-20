@@ -3,6 +3,15 @@ let examType = 'standard'; //Standard as a default
 let questionList = document.getElementById('questionList');
 let sortable = Sortable.create(questionList);
 
+
+$(document).ready(() => {
+  //Check if there is data for an exam that needs to be populated
+  let examMode = document.getElementById('examMode');
+  if (examMode) {
+    populateExamForm(examMode.getAttribute('data-exam-id'));
+  }
+});
+
 checkBoxChanged = (checkbox, divName) => {
   checkbox.checked ? createTextArea(divName) : removeTextArea(divName);
 }
@@ -102,12 +111,7 @@ document.getElementById("btnInstructions").addEventListener("click", () => {
       //Create li item to append to display list
       let instructionItem = createHTMLElement('li', 'is' + sectionId, ['collection-item', 'teal', 'lighten-4']);
       instructionItem.setAttribute("name", "Instruction Section #" + (sectionId + 1));
-      instructionItem.innerHTML =
-        `<div>Instruction Section #` + (sectionId + 1) + `<a href="#!" class="secondary-content">
-          <label><input type="checkbox" onChange="liCheckBoxChanged('is` + sectionId + `');" checked/><span></span></label></a>  
-        <a href="#previewModal" class="secondary-content modal-trigger" onClick="previewInstructionSection(` + sectionId + `);"><i class="material-icons">zoom_in</i></a> 
-        <a href="#" class="secondary-content" onClick="editInstructionSection(` + sectionId + `);"><i class="material-icons">edit</i></a> 
-      </div>`;
+      instructionItem.innerHTML = createInstructionSectionHTML(sectionId);
       document.getElementById('questionList').appendChild(instructionItem);
     }
     removeInstructionSection();
@@ -116,6 +120,14 @@ document.getElementById("btnInstructions").addEventListener("click", () => {
     removeInstructionSection();
   });
 });
+
+createInstructionSectionHTML = (id) => {
+  return `<div>Instruction Section #` + (id + 1) + `<a href="#!" class="secondary-content">
+          <label><input type="checkbox" onChange="liCheckBoxChanged('is` + id + `');" checked/><span></span></label></a>  
+        <a href="#previewModal" class="secondary-content modal-trigger" onClick="previewInstructionSection(` + id + `);"><i class="material-icons">zoom_in</i></a> 
+        <a href="#" class="secondary-content" onClick="editInstructionSection(` + id + `);"><i class="material-icons">edit</i></a> 
+      </div>`;
+}
 
 createInstructionTextAreaAndButtons = () => {
   //If the textArea already exists, remove it 
@@ -361,6 +373,45 @@ downloadExam = () => {
   document.getElementById('optionsModalView').classList.remove("disabled");
 }
 
+populateExamForm = (id) => {
+  //Fetch exam
+  $.ajax({
+    url: 'exams-my/' + id,
+    method: 'GET',
+    dataType: 'json',
+    success: (res) => {
+      if (!(res.exam)) {
+        //Display message if no exam found
+        $('#previewModal').modal();
+        document.getElementById('previewModalContent').innerHTML = '<p>Error loading exam.</p>';
+      } else {
+        //Populate form
+        document.getElementById('name').value = res.exam.name;
+        document.getElementById('paperCount').value = res.exam.paperCount;
+        if (res.exam.coverPage !== "") {
+          document.getElementById("coverPageCheckBox").setAttribute("checked", true);
+          createTextArea('coverPage');
+          setTimeout(() => { tinyMCE.get('coverPageTextArea').setContent(res.exam.coverPage); }, 500); //Give tinyMCE time to load
+        }
+        if (res.exam.appendix !== "") {
+          document.getElementById("appendixCheckBox").setAttribute("checked", true);
+          createTextArea('appendix');
+          setTimeout(() => { tinyMCE.get('appendixTextArea').setContent(res.exam.appendix); }, 500); //Give tinyMCE time to load
+        }
+        populateExamQuestionList(res.exam.questionList);
+      }
+    },
+    error: () => {
+      $('#previewModal').modal();
+      document.getElementById('previewModalContent').innerHTML = '<p>Error loading exam.</p>';
+    }
+  });
+}
+
+populateExamQuestionList = (questionList) => {
+  //Add questions to existing list
+  console.log(questionList)
+}
 
 
 

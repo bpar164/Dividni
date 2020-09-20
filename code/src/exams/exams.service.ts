@@ -33,6 +33,7 @@ let examCSS =
 
 @Injectable()
 export class ExamsService {
+    private examMode: { id: string, action: string };
     constructor(@InjectModel(Exams.name) private ExamsModel: Model<Exams>, @InjectModel(MultipleChoice.name) private MCModel: Model<MultipleChoice>) { }
 
     /* Check for required inputs and types etc.
@@ -290,5 +291,18 @@ export class ExamsService {
         return this.ExamsModel.findByIdAndDelete({ _id: id }).exec();
     }
 
+    async updateExam(id: string, exam) {
+        return this.ExamsModel.updateOne({ _id: id }, { exam: exam }).exec();
+    }
+
+    getExamMode() {
+        return this.examMode;
+    }
+
+    setExamMode(examID: string, examAction: string) {
+        let id = examID;
+        let action = examAction;
+        this.examMode = { id, action };
+    }
 }
 
