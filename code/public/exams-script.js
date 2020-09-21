@@ -111,7 +111,7 @@ document.getElementById("btnInstructions").addEventListener("click", () => {
       //Create li item to append to display list
       let instructionItem = createHTMLElement('li', 'is' + sectionId, ['collection-item', 'teal', 'lighten-4']);
       instructionItem.setAttribute("name", "Instruction Section #" + (sectionId + 1));
-      instructionItem.innerHTML = createInstructionSectionHTML(sectionId);
+      instructionItem.innerHTML = createInstructionItemHTML(sectionId);
       document.getElementById('questionList').appendChild(instructionItem);
     }
     removeInstructionSection();
@@ -121,12 +121,20 @@ document.getElementById("btnInstructions").addEventListener("click", () => {
   });
 });
 
-createInstructionSectionHTML = (id) => {
+createInstructionItemHTML = (id) => {
   return `<div>Instruction Section #` + (id + 1) + `<a href="#!" class="secondary-content">
           <label><input type="checkbox" onChange="liCheckBoxChanged('is` + id + `');" checked/><span></span></label></a>  
         <a href="#previewModal" class="secondary-content modal-trigger" onClick="previewInstructionSection(` + id + `);"><i class="material-icons">zoom_in</i></a> 
         <a href="#" class="secondary-content" onClick="editInstructionSection(` + id + `);"><i class="material-icons">edit</i></a> 
       </div>`;
+}
+
+createQuestionItemHTML = (id, name) => {
+  return `<div>` + name + `<a href="#!" class="secondary-content">
+            <label><input type="checkbox" onChange="liCheckBoxChanged('` + id + `');" checked/><span></span></label></a>
+            <a href="#previewModal" class="secondary-content modal-trigger"
+            onClick="previewQuestion('` + id + `');"><i class="material-icons">zoom_in</i></a>
+        </div>`;
 }
 
 createInstructionTextAreaAndButtons = () => {
@@ -409,10 +417,28 @@ populateExamForm = (id) => {
 }
 
 populateExamQuestionList = (questionList) => {
+  //First check that question ul exists and create it if necessary
+  if (document.getElementById('questionList') === null) {
+    //Create ul
+    let ul = createHTMLElement('ul', 'questionList', ['collection', 'with-header']);
+    document.getElementById('questions').appendChild(ul);
+  }
   //Add questions to existing list
   console.log(questionList)
+  for (let i = 0; i < questionList.length; i++) {
+    //Create instruction li items to append to display list
+    let item = createHTMLElement('li', questionList[i].id, ['collection-item', 'teal', 'lighten-4']);
+    item.setAttribute("name", questionList[i].name);
+    if (questionList[i].type === 'is') {
+      instructionSections.push(questionList[i].contents)
+      item.innerHTML = createInstructionItemHTML(i);
+    } else {
+      item.innerHTML = createQuestionItemHTML(questionList[i].id, questionList[i].name);   
+    }
+    document.getElementById('questionList').appendChild(item);
+  }
+  //Remove duplicate lis
 }
 
-
-
+//Issue if someone shares an exam with you and you want to edit the questions 
 
