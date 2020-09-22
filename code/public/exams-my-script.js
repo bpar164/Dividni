@@ -170,3 +170,5 @@ submitShareForm = (event) => {
   document.getElementById('confirmModalNo').innerHTML = "CLOSE";
   document.getElementById('confirmModalYes').classList.add('modal-close');
 }
+
+//Issue if someone shares an exam with you and you want to edit the questions 

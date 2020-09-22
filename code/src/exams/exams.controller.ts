@@ -61,19 +61,19 @@ export class ExamsController {
     }
 
     @UseGuards(AuthenticatedGuard)
-    @Put('multiple-choice/:id')
+    @Put('exam/:id')
     async updateExam(@Request() req, @Param('id') id): Promise<boolean> {
         let exam = new ExamFormDTO();
         try {
             exam = req.body;
             if (this.examsService.validateExam(exam)) {
-                await this.examsService.generateExam(exam, id);
+                await this.examsService.updateExam(id, exam);
                 return true;
             } else {
-                return false; //Exam not created
+                return false; //Exam not updated
             }
         } catch (err) {
-            return false; //Exam not created
+            return false; //Exam not updated
         }
     }
 

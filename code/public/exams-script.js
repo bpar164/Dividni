@@ -298,6 +298,20 @@ setExamType = (type) => {
 generateExam = () => {
   document.getElementById('optionsModalRetry').classList.add("disabled");
   document.getElementById('optionsModalContent').innerHTML = '<p>Generating exam...</p>';
+  //Check if exam is being edited or being created
+  let examMode = document.getElementById('examMode');
+  if ((examMode) && (examMode.getAttribute('data-exam-action') === 'EDIT')) {
+    updateExam(examMode.getAttribute('data-exam-id')); //Edit exam
+  } else if (examMode.getAttribute('data-exam-action') === 'DOWNLOAD') {
+    
+    //DOWNLOAD
+
+  } else {
+    generateNewExam(); //Create new exam (from scratch or from template)
+  }
+}
+
+generateNewExam = () => {
   //Get the values from the form
   let exam = fetchFormValues();
   $.ajax({
@@ -316,17 +330,46 @@ generateExam = () => {
           `<div class=row><a class="waves-effect waves-light btn" href="exams/download/` + exam.name + `" onClick="downloadExam();">Download Exam</a></div>`
       } else if (res === 'false') {
         //Exam not generated
+        document.getElementById('optionsModalContent').innerHTML = '<p>Error generating exam.</p>';
         enableAllOptionsButtons();
       }
     },
     error: () => {
+      document.getElementById('optionsModalContent').innerHTML = '<p>Error generating exam.</p>';
       enableAllOptionsButtons();
     }
   });
 }
 
+//Make the actual request to update the exam in the database
+updateExam = (id) => {
+  document.getElementById('optionsModalContent').innerHTML = '<p>Editing exam...</p>';
+  //Get the values from the form
+  let exam = fetchFormValues();
+  $.ajax({
+    url: 'exam/' + id,
+    method: 'PUT',
+    data: exam,
+    success: (res) => {
+      if (res === 'true') {
+        //Exam updated
+        document.getElementById('optionsModalContent').innerHTML = '<p>Exam edited.</p>';
+        enableAllOptionsButtons();
+        document.getElementById('optionsModalRetry').classList.add("disabled");
+      } else if (res === 'false') {
+        //Exam not generated
+        document.getElementById('optionsModalContent').innerHTML = '<p>Error generating exam.</p>';
+        enableAllOptionsButtons();
+      }
+    },
+    error: () => {
+      document.getElementById('optionsModalContent').innerHTML = '<p>Error generating exam.</p>';
+      enableAllOptionsButtons();
+    }
+  });
+}
+   
 enableAllOptionsButtons = () => {
-  document.getElementById('optionsModalContent').innerHTML = '<p>Error generating exam.</p>';
   document.getElementById('optionsModalRetry').classList.remove("disabled");
   document.getElementById('optionsModalCreate').classList.remove("disabled");
   document.getElementById('optionsModalView').classList.remove("disabled");
@@ -424,7 +467,7 @@ populateExamQuestionList = (questionList) => {
     document.getElementById('questions').appendChild(ul);
   }
   //Add questions to existing list
-  console.log(questionList)
+  let examQuestionIDs = [];
   for (let i = 0; i < questionList.length; i++) {
     //Create instruction li items to append to display list
     let item = createHTMLElement('li', questionList[i].id, ['collection-item', 'teal', 'lighten-4']);
@@ -433,12 +476,22 @@ populateExamQuestionList = (questionList) => {
       instructionSections.push(questionList[i].contents)
       item.innerHTML = createInstructionItemHTML(i);
     } else {
-      item.innerHTML = createQuestionItemHTML(questionList[i].id, questionList[i].name);   
+      item.innerHTML = createQuestionItemHTML(questionList[i].id, questionList[i].name);
+      examQuestionIDs.push(questionList[i].id);
     }
     document.getElementById('questionList').appendChild(item);
   }
   //Remove duplicate lis
+  let questions = document.querySelectorAll('#questions>ul>li');
+  for (let i = 0; i < questions.length; i++) {
+    if (questions[i].classList.length === 1) { //Unselected questions have only one class
+      if (examQuestionIDs.includes(questions[i].id)) {
+        let li = document.getElementById(questions[i].id);
+        document.getElementById('questionList').removeChild(li);
+      }
+    }
+  }
 }
 
-//Issue if someone shares an exam with you and you want to edit the questions 
+
 
