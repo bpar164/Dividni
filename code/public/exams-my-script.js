@@ -17,6 +17,9 @@ confirmDialog = (action) => {
   if (action === 'DELETE') {
     content += 'Delete exam:</br><b>' + currentExamName + '</b>';
     document.getElementById('confirmModalYes').setAttribute('onClick', `deleteExam('` + currentExamID + `');`);
+  } else if (action === 'DOWNLOAD') {
+    content += 'Download exam:</br><b>' + currentExamName + '</b>';
+    document.getElementById('confirmModalYes').setAttribute('onClick', `downloadExam('` + currentExamID + `');`);
   } else if (action === 'EDIT') {
     content += 'Edit exam:</br><b>' + currentExamName + '</b>';
     document.getElementById('confirmModalYes').setAttribute('onClick', `editExam('` + currentExamID + `');`);
@@ -85,10 +88,19 @@ deleteExam = (id) => {
   })
 }
 
-
 editExam = (id) => {
   $.ajax({
     url: 'edit-exam/' + id,
+    method: 'GET',
+    success: (res) => {
+      window.location.href = "exams";
+    }
+  });
+}
+
+downloadExam = (id) => {
+  $.ajax({
+    url: 'download-exam/' + id,
     method: 'GET',
     success: (res) => {
       window.location.href = "exams";

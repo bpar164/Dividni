@@ -3,11 +3,12 @@ let examType = 'standard'; //Standard as a default
 let questionList = document.getElementById('questionList');
 let sortable = Sortable.create(questionList);
 
-
 $(document).ready(() => {
   //Check if there is data for an exam that needs to be populated
   let examMode = document.getElementById('examMode');
-  if (examMode) {
+  if ((examMode) && (examMode.getAttribute('data-exam-action') === 'DOWNLOAD')) {
+    downloadExistingExam(examMode.getAttribute('data-exam-id'));
+  } else if (examMode) {
     populateExamForm(examMode.getAttribute('data-exam-id'));
   }
 });
@@ -298,14 +299,10 @@ setExamType = (type) => {
 generateExam = () => {
   document.getElementById('optionsModalRetry').classList.add("disabled");
   document.getElementById('optionsModalContent').innerHTML = '<p>Generating exam...</p>';
-  //Check if exam is being edited or being created
+  //Check what action is being performed on the exam
   let examMode = document.getElementById('examMode');
   if ((examMode) && (examMode.getAttribute('data-exam-action') === 'EDIT')) {
     updateExam(examMode.getAttribute('data-exam-id')); //Edit exam
-  } else if (examMode.getAttribute('data-exam-action') === 'DOWNLOAD') {
-    
-    //DOWNLOAD
-
   } else {
     generateNewExam(); //Create new exam (from scratch or from template)
   }
@@ -493,5 +490,40 @@ populateExamQuestionList = (questionList) => {
   }
 }
 
+downloadExistingExam = (id) => {
+  //Bring up the display window
+  $('#optionsModal').modal('open');
+  document.getElementById('optionsModalContent').innerHTML = '<p>Generating exam files...</p>';
+  $.ajax({
+    url: 'exams-my/download/' + id,
+    method: 'GET',
+    success: (res) => {
+      if (res.exam) {
+        //Exam fetched and generated
+        document.getElementById('optionsModalContent').innerHTML = '<p>Exam files generated.</p>';
+        if ((res.exam.paperCount > 1) && (res.exam.examType === 'standard')) {
+          document.getElementById('optionsModalContent').innerHTML +=
+            `<div class=row><button class="btn waves-effect waves-light" id="mergePDFs" onClick="mergePDFs('` + res.exam.name + `');">Merge PDFs?</button></div>`;
+        }
+        document.getElementById('optionsModalContent').innerHTML +=
+          `<div class=row><a class="waves-effect waves-light btn" href="exams/download/` + res.exam.name + `" onClick="downloadExam();">Download Exam</a></div>`
+      } else {
+        //Exam not generated
+        document.getElementById('optionsModalContent').innerHTML = '<p>Error generating exam.</p>';
+        enableAllOptionsButtons();
+        document.getElementById('optionsModalRetry').classList.add("disabled");
+      }
+    },
+    error: () => {
+      document.getElementById('optionsModalContent').innerHTML = '<p>Error generating exam.</p>';
+      enableAllOptionsButtons();
+      document.getElementById('optionsModalRetry').classList.add("disabled");
+    }
+  });
+}
 
+
+
+  
+ 
 

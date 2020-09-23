@@ -102,6 +102,23 @@ export class ExamsController {
     }
 
     @UseGuards(AuthenticatedGuard)
+    @Get('exams-my/download/:id')
+    async downloadExistingExam(@Param('id') id) {
+        let examForm = new ExamFormDTO();
+        try {
+            let exam = await this.examsService.getExam(id);
+          
+            //Generate exam files only (don't add to database)
+            await this.examsService.generateExam(exam.exam, id);
+
+
+            return exam;
+        } catch (err) {
+            return null;
+        }
+    }
+
+    @UseGuards(AuthenticatedGuard)
     @Get('exams-my')
     @Render('exams-my')
     async getExamsMyView(@Request() req) {
@@ -124,7 +141,7 @@ export class ExamsController {
     @UseGuards(AuthenticatedGuard)
     @Delete('exams-my/:id')
     async deleteExam(@Param('id') id) {
-        await this.examsService.deleteExam(id);
+        return await this.examsService.deleteExam(id);
     }
 
     @UseGuards(AuthenticatedGuard)
@@ -137,5 +154,11 @@ export class ExamsController {
     @Get('edit-exam/:id')
     editExam(@Param('id') id) {
         this.examsService.setExamMode(id, 'EDIT');
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @Get('download-exam/:id')
+    downloadMyExam(@Param('id') id) {
+        this.examsService.setExamMode(id, 'DOWNLOAD');
     }
 }
