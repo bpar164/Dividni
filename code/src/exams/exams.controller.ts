@@ -50,7 +50,7 @@ export class ExamsController {
         try {
             exam = req.body;
             if (this.examsService.validateExam(exam)) {
-                await this.examsService.generateExam(exam, id);
+                await this.examsService.generateExam(exam, id, true);
                 return true;
             } else {
                 return false; //Exam not created
@@ -103,15 +103,13 @@ export class ExamsController {
 
     @UseGuards(AuthenticatedGuard)
     @Get('exams-my/download/:id')
-    async downloadExistingExam(@Param('id') id) {
-        let examForm = new ExamFormDTO();
+    async downloadExistingExam(@Param('id') id) {  
         try {
             let exam = await this.examsService.getExam(id);
-          
+            let examForm = new ExamFormDTO();
+            Object.keys(exam.exam).map(key => examForm[key] = exam.exam[key]);
             //Generate exam files only (don't add to database)
-            await this.examsService.generateExam(exam.exam, id);
-
-
+            await this.examsService.generateExam(examForm, id, false);
             return exam;
         } catch (err) {
             return null;

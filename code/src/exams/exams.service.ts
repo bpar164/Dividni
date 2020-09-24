@@ -81,7 +81,7 @@ export class ExamsService {
     }
 
     //Create the Dividni exam
-    async generateExam(exam: ExamFormDTO, id: string): Promise<any> {
+    async generateExam(exam: ExamFormDTO, id: string, saveToDB: boolean): Promise<any> {
         //String for holding the html with question ids and instruction sections
         let questionHTML = `<div id="Questions"><ol class="qlist">`;
         //Convert all questions to xml, and create html question list
@@ -109,7 +109,7 @@ export class ExamsService {
         questionHTML += `</ol></div>`;
         //Create the actual exam files
         let result = await this.createExam(exam, questionXML, questionHTML);
-        if (result === true) {
+        if ((result === true) && (saveToDB === true)){
             //Save exam settings to database
             let userID = id;
             let examsDTO = new ExamsDTO();
@@ -117,7 +117,7 @@ export class ExamsService {
             let newExam = new this.ExamsModel(examsDTO);
             return newExam.save();
         } else {
-            return false;
+            return result;
         }
     }
 
