@@ -114,6 +114,7 @@ document.getElementById("btnInstructions").addEventListener("click", () => {
       instructionItem.setAttribute("name", "Instruction Section #" + (sectionId + 1));
       instructionItem.innerHTML = createInstructionItemHTML(sectionId);
       document.getElementById('questionList').appendChild(instructionItem);
+      $('.tooltipped').tooltip({ enterDelay: 500 });
     }
     removeInstructionSection();
   });
@@ -125,16 +126,18 @@ document.getElementById("btnInstructions").addEventListener("click", () => {
 createInstructionItemHTML = (id) => {
   return `<div>Instruction Section #` + (id + 1) + `<a href="#!" class="secondary-content">
           <label><input type="checkbox" onChange="liCheckBoxChanged('is` + id + `');" checked/><span></span></label></a>  
-        <a href="#previewModal" class="secondary-content modal-trigger" onClick="previewInstructionSection(` + id + `);"><i class="material-icons">zoom_in</i></a> 
-        <a href="#" class="secondary-content" onClick="editInstructionSection(` + id + `);"><i class="material-icons">edit</i></a> 
+        <a href="#previewModal" class="secondary-content modal-trigger tooltipped" data-position="right"
+          data-tooltip="Display Contents" onClick="previewInstructionSection(` + id + `);"><i class="material-icons">zoom_in</i></a> 
+        <a href="#" class="secondary-content tooltipped" data-position="right" data-tooltip="Edit" 
+          onClick="editInstructionSection(` + id + `);"><i class="material-icons">edit</i></a> 
       </div>`;
 }
 
 createQuestionItemHTML = (id, name) => {
   return `<div>` + name + `<a href="#!" class="secondary-content">
             <label><input type="checkbox" onChange="liCheckBoxChanged('` + id + `');" checked/><span></span></label></a>
-            <a href="#previewModal" class="secondary-content modal-trigger"
-            onClick="previewQuestion('` + id + `');"><i class="material-icons">zoom_in</i></a>
+            <a href="#previewModal" class="secondary-content modal-trigger tooltipped" data-position="right"
+              data-tooltip="Display Contents" onClick="previewQuestion('` + id + `');"><i class="material-icons">zoom_in</i></a>
         </div>`;
 }
 
@@ -365,7 +368,7 @@ updateExam = (id) => {
     }
   });
 }
-   
+
 enableAllOptionsButtons = () => {
   document.getElementById('optionsModalRetry').classList.remove("disabled");
   document.getElementById('optionsModalCreate').classList.remove("disabled");
@@ -477,6 +480,7 @@ populateExamQuestionList = (questionList) => {
       examQuestionIDs.push(questionList[i].id);
     }
     document.getElementById('questionList').appendChild(item);
+    $('.tooltipped').tooltip({ enterDelay: 500 });
   }
   //Remove duplicate lis
   let questions = document.querySelectorAll('#questions>ul>li');
@@ -524,6 +528,6 @@ downloadExistingExam = (id) => {
 
 
 
-  
- 
+
+
 

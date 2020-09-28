@@ -1,8 +1,8 @@
 <%- include('partials/header') -%>
 
 <% if (id && action) { %>
-  <div id="examMode" data-exam-id="<%= id %>" data-exam-action="<%= action %>"></div>
-  <% } %>
+<div id="examMode" data-exam-id="<%= id %>" data-exam-action="<%= action %>"></div>
+<% } %>
 
 <!-- main -->
 <section class="section container blue lighten-5" id="main">
@@ -54,8 +54,9 @@
                   <label>
                     <input type="checkbox" onChange="liCheckBoxChanged('<%= q.id %>');" /><span></span>
                   </label>
-                </a><a href="#previewModal" class="secondary-content modal-trigger"
-                  onClick="previewQuestion('<%= q.id %>');"><i class="material-icons">zoom_in</i></a></div>
+                </a><a href="#previewModal" class="secondary-content modal-trigger tooltipped" data-position="right"
+                  data-tooltip="Display Contents" onClick="previewQuestion('<%= q.id %>');"><i
+                    class="material-icons">zoom_in</i></a></div>
             </li>
             <% }) %>
           </ul>

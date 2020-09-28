@@ -1,7 +1,12 @@
 $(document).ready(function () {
     $('.sidenav').sidenav();
     $(".dropdown-trigger").dropdown();
-    $('.tooltipped').tooltip();
+    $('.tooltipped').tooltip({
+        enterDelay: 500
+    });
+    $(".dropdown-trigger").dropdown({
+        constrainWidth: false
+    });
     $('.modal').modal();
     $('.modal-not-dismissible').modal({ dismissible: false });
     $('#modal').modal('open');
