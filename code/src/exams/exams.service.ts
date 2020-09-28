@@ -59,7 +59,7 @@ export class ExamsService {
             return false;
         }
         //Name matches regular expression
-        const re = new RegExp("^[a-zA-Z0-9][a-zA-Z0-9 ]*");
+        const re = new RegExp("^[a-zA-Z0-9][a-zA-Z0-9-]*");
         if (!(re.test(form.name))) {
             return false;
         }
