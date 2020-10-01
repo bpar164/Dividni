@@ -5,7 +5,14 @@ $(document).ready(function () {
         enterDelay: 500
     });
     $(".dropdown-trigger").dropdown({
-        constrainWidth: false
+        constrainWidth: false,
+        container: document.getElementById('main'),
+    });
+    $(".dropdown-trigger-nav").dropdown({
+        constrainWidth: false,
+        container: document.getElementById('main'),
+        hover: true,
+        coverTrigger: false
     });
     $('.modal').modal();
     $('.modal-not-dismissible').modal({ dismissible: false });
