@@ -15,6 +15,11 @@ export class MultipleChoiceService {
         return array.filter((i) => { return i != ''; });
     }
 
+    //Check if an array contains duplicate elements (true if there are duplicates)
+    checkForDuplicateAnswers = (array: string[]) => {
+        return (new Set(array)).size !== array.length;
+    }
+
     /* Check for required inputs and types etc.
     Just returns false if there is an issue, without explanation.
     Validation also performed on frontend, so this is only false when the user has somehow avoided the frontend. */
@@ -62,6 +67,10 @@ export class MultipleChoiceService {
         } else if (form.type === 'Xyz') {
             if (form.correctAnswers.length < minCorrectXYZ) return false;
             if (form.incorrectAnswers.length < minIncorrectXYZ) return false;
+        }
+        //Make sure that all answers are unique
+        if (this.checkForDuplicateAnswers(form.correctAnswers) || this.checkForDuplicateAnswers(form.incorrectAnswers)) {
+            return false;
         }
         return true;
     }

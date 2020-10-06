@@ -201,12 +201,22 @@ $("#questionForm").submit((event) => {
       missingFieldIDs.push(field.id);
     }
   });
-  if (missingRequired) {
-    let content = '<p>Please complete the following fields:<ul>'
-    missingFieldIDs.forEach(id => {
-      content += '<li>' + id + '</li>'
-    });
-    content += '</ul></p>';
+  //Check that answers are not duplicated
+  let question = fetchFormValues();
+  let dupCorrects = checkForDuplicateAnswers(question.correctAnswers);
+  let dupIncorrects = checkForDuplicateAnswers(question.incorrectAnswers);
+  if ((missingRequired) || (dupCorrects) || (dupIncorrects)) {
+    let content = '';
+    if (missingRequired) {
+      content += '<p>Please complete the following fields:<ul>'
+      missingFieldIDs.forEach(id => {
+        content += '<li>' + id + '</li>'
+      });
+      content += '</ul></p>';
+    } 
+    if ((dupCorrects) || (dupIncorrects)) {
+      content += '<p>Please ensure that all answers are unique.</p>'
+    }
     document.getElementById('optionsModalContent').innerHTML = content;
     document.getElementById('optionsModalRetry').classList.remove("disabled");
   } else { //All required fields filled in
@@ -220,6 +230,11 @@ $("#questionForm").submit((event) => {
     }
   }
 });
+
+//True if there are duplicates
+checkForDuplicateAnswers = (array) => {
+  return (new Set(array)).size !== array.length;
+}
 
 //Make the actual request to add the question to the database
 generateQuestion = () => {
