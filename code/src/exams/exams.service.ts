@@ -109,7 +109,7 @@ export class ExamsService {
         questionHTML += `</ol></div>`;
         //Create the actual exam files
         let result = await this.createExam(exam, questionXML, questionHTML);
-        if ((result === true) && (saveToDB === true)){
+        if ((result === true) && (saveToDB === true)) {
             //Save exam settings to database
             let userID = id;
             let examsDTO = new ExamsDTO();
@@ -174,16 +174,29 @@ export class ExamsService {
                 examHTML += `<div id="questions">` + questionHTML + `</div>`;
                 //Appendix
                 exam.appendix !== '' ? examHTML += `<p style="page-break-before: always;" /><div id="appendix">` + exam.appendix + `</div></body></html>` : examHTML += `</body></html>`;
-                //Create a file for the html
+                //Create a file for the HTML
                 continueLoop = await this.makeFile(`../` + exam.name + `/Exam.Template.html`, examHTML);
                 //Generate exam
                 continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -htmlFolder papers -answerFolder answers -paperCount ` + exam.paperCount + ` Exam.Template.html`);
                 //Convert all html question files in the papers folder to pdf
                 continueLoop = await this.convertFilesToPDF(`../` + exam.name + `/papers`, exam.name, fileList, path);
-            } else if (exam.examType === 'canvas') { //Create Canvas compatible zip 
-                continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\QtiGen.exe" -qtiVers 1.2 -variant ` + exam.paperCount + ` -id ` + exam.name + questionList);
-            } else { //Create Inspera compatible zip 
-                continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\QtiGen.exe" -qtiVers 2.1 -variant ` + exam.paperCount + ` -id ` + exam.name + questionList);
+            } else {
+                //Determine qtiVers
+                let qtiVers = '';
+                exam.examType === 'canvas' ? qtiVers = '1.2' : qtiVers = '2.1';
+                //Cover Page and Appendix
+                if (exam.coverPage !== '') {
+                    let coverPageHTML = this.createHTMLDocument(exam.name + ' Cover Page', exam.coverPage);
+                    continueLoop = await this.makeFile(`../` + exam.name + `/Exam.CoverPage.html`, coverPageHTML);
+                    questionList = ' Exam.CoverPage.html' + questionList;
+                }
+                if (exam.appendix !== '') {
+                    let appendixHTML = this.createHTMLDocument(exam.name + ' Appendix', exam.appendix);
+                    continueLoop = await this.makeFile(`../` + exam.name + `/Exam.Appendix.html`, appendixHTML);
+                    questionList += ' Exam.Appendix.html';
+                }
+                //Create LMS compatible zip 
+                continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\QtiGen.exe" -qtiVers ` + qtiVers + ` -variant ` + exam.paperCount + ` -id ` + exam.name + questionList);
             }
             success = true; //Only true if reach last operation
             continueLoop = false;
@@ -277,6 +290,13 @@ export class ExamsService {
                 resolve(status);
             });
         });
+    }
+
+    //Creates HTML document string
+    createHTMLDocument(title: string, contentHTML: string) {
+        let docHTML = `<html><head><meta charset="utf-8"/><title>` + title + `</title><style>` + examCSS + `</style></head><body>`;
+        docHTML += `<div>` + contentHTML + `</div></body></html>`;
+        return docHTML;
     }
 
     async fetchUserExams(userID: string) {
