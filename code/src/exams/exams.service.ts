@@ -193,7 +193,7 @@ export class ExamsService {
                     questionList += ' Exam.Appendix.html';
                 }
                 if (exam.examType === 'moodle') {
-                    continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\MoodleGen.exe" -variants ` + exam.paperCount + ` -bank ` + exam.name + questionList);
+                    continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\MoodleGen.exe" -variants ` + exam.paperCount + ` -xmlFolder ` + exam.name + ` -bank ` + exam.name + questionList);
                 } else {
                     //Determine qtiVers
                     let qtiVers = '';
