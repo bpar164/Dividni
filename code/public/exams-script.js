@@ -286,6 +286,10 @@ createExamTypeForm = () => {
           <span>Canvas</span>
       </label></p>
       <p><label>
+          <input class="with-gap" type="radio" name="type" value="moodle" required" onClick="setExamType('moodle');">
+          <span>Moodle</span>
+      </label></p>
+      <p><label>
           <input class="with-gap" type="radio" name="type" value="inspera" required" onClick="setExamType('inspera');">
           <span>Inspera</span>
       </label></p>

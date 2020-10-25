@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<quiz xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <question type="category">
+    <category>
+      <text>dvdn-desc</text>
+    </category>
+  </question>
+</quiz>

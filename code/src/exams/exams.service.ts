@@ -74,7 +74,7 @@ export class ExamsService {
         }
         //examType can only have 3 options
         let examType = form.examType;
-        if (!((examType === 'standard') || (examType === 'canvas') || (examType === 'inspera'))) {
+        if (!((examType === 'standard') || (examType === 'canvas') || (examType === 'moodle') || (examType === 'inspera'))) {
             return false;
         }
         return true;
@@ -180,10 +180,7 @@ export class ExamsService {
                 continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\TestGen.exe" -lib QHelper.dll -htmlFolder papers -answerFolder answers -paperCount ` + exam.paperCount + ` Exam.Template.html`);
                 //Convert all html question files in the papers folder to pdf
                 continueLoop = await this.convertFilesToPDF(`../` + exam.name + `/papers`, exam.name, fileList, path);
-            } else {
-                //Determine qtiVers
-                let qtiVers = '';
-                exam.examType === 'canvas' ? qtiVers = '1.2' : qtiVers = '2.1';
+            } else { //LMS Exam
                 //Cover Page and Appendix
                 if (exam.coverPage !== '') {
                     let coverPageHTML = this.createHTMLDocument(exam.name + ' Cover Page', exam.coverPage);
@@ -195,8 +192,16 @@ export class ExamsService {
                     continueLoop = await this.makeFile(`../` + exam.name + `/Exam.Appendix.html`, appendixHTML);
                     questionList += ' Exam.Appendix.html';
                 }
-                //Create LMS compatible zip 
-                continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\QtiGen.exe" -qtiVers ` + qtiVers + ` -variant ` + exam.paperCount + ` -id ` + exam.name + questionList);
+                if (exam.examType === 'moodle') {
+                    continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\MoodleGen.exe" -variants ` + exam.paperCount + ` -bank ` + exam.name + questionList);
+                } else {
+                    //Determine qtiVers
+                    let qtiVers = '';
+                    exam.examType === 'canvas' ? qtiVers = '1.2' : qtiVers = '2.1';
+                    //Create LMS compatible zip 
+                    continueLoop = await this.execShellCommand(`cd .. && cd ` + exam.name + ` && mono "..\\dividni\\QtiGen.exe" -qtiVers ` + qtiVers + ` -variant ` + exam.paperCount + ` -id ` + exam.name + questionList);
+                }
+
             }
             success = true; //Only true if reach last operation
             continueLoop = false;
